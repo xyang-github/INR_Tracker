@@ -1,10 +1,11 @@
+import re
 from main_ui import Ui_MainWindow
 import sys
-from PyQt5.QtSql import QSqlDatabase
+import sqlite3
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 
-connection = QSqlDatabase.addDatabase("QSQLITE")
-connection.setDatabaseName("inr_database.db")
+
+con = sqlite3.connect('inr_database.db')
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -13,22 +14,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.pushEnter.clicked.connect(self.search_patient)
 
+    def validate_mrn(self, candidate):
+        """
+        :param candidate: the value typed into the MRN textbox
+        :return: a message box if invalid entry, or no matching record found
+        """
+        if re.match("[^0-9]+", candidate):
+            QMessageBox.warning(None, "Error", "Only enter the numeric medical record number.")
+
+        return candidate
+
     def search_patient(self):
-        med_rec_num = self.textMRN.text()
-        if not med_rec_num:
-            QMessageBox.critical(None, "Error", "No match found in the database.")
+        """
+        Takes a valid medical record number, and select a matching entry from the database
+        """
+        patient_mrn = int(self.validate_mrn(self.textMRN.text()))
+        cur = con.cursor()
+        cur.execute("select * from patient where patient_id = ?;", (patient_mrn,))
+        print(cur.fetchone())
 
 
 if __name__ == "__main__":
-    if not connection.open():
-        QMessageBox.critical(
-            None,
-            "Error!",
-            "Database Error: {}".format(connection.lastError().databaseText(), ))
-        print("Unable to connect to the database")
-        sys.exit(1)
-    else:
-        myapp = QApplication(sys.argv)
-        main = MainWindow()
-        main.show()
-        sys.exit(myapp.exec_())
+    myapp = QApplication(sys.argv)
+    main = MainWindow()
+    main.show()
+    sys.exit(myapp.exec_())
