@@ -11,15 +11,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-
-
-class Buttons(Ui_MainWindow):
-    def __init__(self):
-        self.search_button = main_ui.pushEnter
-        self.search_button.clicked.connect("search_patient")
+        self.pushEnter.clicked.connect(self.search_patient)
 
     def search_patient(self):
-        print("works")
+        med_rec_num = self.textMRN.text()
+        if not med_rec_num:
+            QMessageBox.critical(None, "Error", "No match found in the database.")
 
 
 if __name__ == "__main__":
