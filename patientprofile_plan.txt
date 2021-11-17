@@ -1,0 +1,17 @@
+//////////Summary information//////////
+Fname
+LName
+Phone
+Indication(s)
+INR Goal
+TTR
+Next Appointment
+
+//////////Results//////////
+Add result
+Delete result
+Edit result
+
+INR
+Date
+Goal
