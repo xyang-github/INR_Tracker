@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>dlgMain</class>
+ <widget class="QMainWindow" name="dlgMain">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -81,10 +81,10 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>INR Tracker</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="Title">
+   <widget class="QLabel" name="lblTitle">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -115,7 +115,7 @@
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
           <red>238</red>
           <green>144</green>
@@ -144,7 +144,7 @@
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
           <red>238</red>
           <green>144</green>
@@ -173,11 +173,11 @@
         </brush>
        </colorrole>
        <colorrole role="PlaceholderText">
-        <brush brushstyle="SolidPattern">
+        <brush brushstyle="NoBrush">
          <color alpha="128">
-          <red>0</red>
-          <green>0</green>
-          <blue>0</blue>
+          <red>238</red>
+          <green>144</green>
+          <blue>2</blue>
          </color>
         </brush>
        </colorrole>
@@ -193,14 +193,17 @@
     <property name="text">
      <string>inr tracker</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
-   <widget class="QPushButton" name="pushNewPatient">
+   <widget class="QPushButton" name="btnNewPatient">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>880</x>
       <y>10</y>
-      <width>131</width>
-      <height>31</height>
+      <width>141</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -213,12 +216,10 @@
      <string>Create a new patient profile</string>
     </property>
     <property name="statusTip">
-     <string>Create a new patient profile</string>
+     <string>New patient profile</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">pushNewPatient {
-    border-radius: 5px;
-}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>New Patient</string>
@@ -227,13 +228,22 @@
      <iconset>
       <normaloff>img/outline_add_circle_black_24dp.png</normaloff>img/outline_add_circle_black_24dp.png</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>13</width>
+      <height>13</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+N</string>
+    </property>
    </widget>
-   <widget class="QLineEdit" name="textMRN">
+   <widget class="QLineEdit" name="ledMRN">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>360</y>
-      <width>221</width>
+      <x>400</x>
+      <y>350</y>
+      <width>211</width>
       <height>31</height>
      </rect>
     </property>
@@ -244,20 +254,26 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>Enter patient's MRN</string>
+     <string>Enter patient's medical record number</string>
+    </property>
+    <property name="statusTip">
+     <string>Enter medical record number</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
     </property>
     <property name="placeholderText">
      <string>Enter patient's MRN</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushEnter">
+   <widget class="QPushButton" name="btnSearch">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>360</y>
+      <x>620</x>
+      <y>350</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -305,6 +321,12 @@
       <pointsize>12</pointsize>
      </font>
     </property>
+    <property name="toolTip">
+     <string>Click to search patient profile</string>
+    </property>
+    <property name="statusTip">
+     <string>Search patient profile</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -312,9 +334,61 @@
      <iconset>
       <normaloff>img/outline_search_black_24dp.png</normaloff>img/outline_search_black_24dp.png</iconset>
     </property>
+    <property name="shortcut">
+     <string>Return</string>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1044</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionAdd_New_Patient"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionINR_Tracker_Help"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionINR_Tracker_Help">
+   <property name="text">
+    <string>INR Tracker Help</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionAdd_New_Patient">
+   <property name="text">
+    <string>Add New Patient</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
