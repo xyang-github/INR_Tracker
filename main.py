@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
-from main_ui import *
+from gui.main_ui import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):

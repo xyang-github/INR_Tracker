@@ -226,7 +226,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>img/outline_add_circle_black_24dp.png</normaloff>img/outline_add_circle_black_24dp.png</iconset>
+      <normaloff>../img/outline_add_circle_black_24dp.png</normaloff>../img/outline_add_circle_black_24dp.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -332,7 +332,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>img/outline_search_black_24dp.png</normaloff>img/outline_search_black_24dp.png</iconset>
+      <normaloff>../img/outline_search_black_24dp.png</normaloff>../img/outline_search_black_24dp.png</iconset>
     </property>
     <property name="shortcut">
      <string>Return</string>
