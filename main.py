@@ -15,12 +15,30 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
 
     def evt_btnSearch_clicked(self):
-        database = QSqlDatabase.addDatabase("QSQLITE")
-        database.setDatabaseName("database.db")
-        if database.open():
-            pass
+        self.database = QSqlDatabase.addDatabase("QSQLITE")
+        self.database.setDatabaseName("database.db")
+        if self.database.open():
+            self.searchPatient()
         else:
             QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
+
+    def searchPatient(self):
+        """
+        Find a match in the database with the provided MRN. Will show message boxes for errors.
+        """
+        mrn = self.ledMRN.text()
+        if self.ledMRN.text() == "":
+            QMessageBox.critical(self, "No MRN Entered", "Please enter a medical record number.")
+        else:
+            query = QSqlQuery()
+            query.prepare("SELECT patient_id from patient WHERE patient_id = (:id)")
+            query.bindValue(":id", mrn)
+            query.exec_()
+
+            if not query.next():
+                QMessageBox.critical(self, "No Match Found", "The medical record number entered into the search "
+                                                             "box does not match an existing record in the database.")
+
 
     def evt_actionExit_triggered(self):
         """
