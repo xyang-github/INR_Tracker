@@ -39,6 +39,8 @@ class DlgMain(QMainWindow, Ui_dlgMain):
                 QMessageBox.critical(self, "No Match Found", "The medical record number entered into the search "
                                                              "box does not match an existing record in the database.")
 
+        self.ledMRN.clear()  # clear text box after searching
+
 
     def evt_actionExit_triggered(self):
         """
