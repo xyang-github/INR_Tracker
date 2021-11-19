@@ -34,8 +34,9 @@ class DlgMain(QMainWindow, Ui_dlgMain):
             query.prepare("SELECT patient_id from patient WHERE patient_id = (:id)")
             query.bindValue(":id", mrn)
             query.exec_()
+            query.next()
 
-            if not query.next():
+            if not query.isValid():
                 QMessageBox.critical(self, "No Match Found", "The medical record number entered into the search "
                                                              "box does not match an existing record in the database.")
 
