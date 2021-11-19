@@ -20,7 +20,6 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         self.database.setDatabaseName("database.db")
         if self.database.open():
             self.searchPatient()
-
         else:
             QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
 
@@ -61,15 +60,21 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
-        self.populatePatientSummary(id)
+        self.lst_patient_summary_info = self.populatePatientSummary(id)
+
+        self.ledFirstName.setText(self.lst_patient_summary_info[0])
 
     def populatePatientSummary(self, id):
+        """
+        :param id:  the medical record number for patient
+        :return:  a list of values in the patient table
+        """
         query = QSqlQuery()
         bOk = query.exec("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to from patient WHERE patient_id = {}".format(id))
         if bOk:
             query.next()
             if query.isValid():
-                return ([query.value('fname'), query.value('lname')])
+                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to')])
 
 
 
