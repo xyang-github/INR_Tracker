@@ -6,16 +6,21 @@ from gui.patientprofile import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
+    """
+    Main window for application
+    """
     def __init__(self):
         super(DlgMain, self).__init__()
         self.setupUi(self)
 
         # event handlers
-        self.actionExit.triggered.connect(self.evt_actionExit_triggered)  # exit signal
+        self.actionExit.triggered.connect(self.evt_actionExit_triggered)
         self.btnSearch.clicked.connect(self.evt_btnSearch_clicked)
 
-
     def evt_btnSearch_clicked(self):
+        """
+        Creates database connection when the search button is clicked
+        """
         self.database = QSqlDatabase.addDatabase("QSQLITE")
         self.database.setDatabaseName("database.db")
         if self.database.open():
@@ -57,12 +62,19 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
+    """
+    Dialog box for patient profile
+    """
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
-        self.lst_patient_summary_info = self.populatePatientSummary(id)
 
+        self.lst_patient_summary_info = self.populatePatientSummary(id)
         self.ledFirstName.setText(self.lst_patient_summary_info[0])
+        self.ledLastName.setText(self.lst_patient_summary_info[1])
+        self.ledDOB.setText(self.lst_patient_summary_info[2])
+        self.ledIndications.setText(self.lst_patient_summary_info[6])
+        self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
 
     def populatePatientSummary(self, id):
         """
@@ -70,11 +82,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         :return:  a list of values in the patient table
         """
         query = QSqlQuery()
-        bOk = query.exec("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to from patient WHERE patient_id = {}".format(id))
+        bOk = query.exec("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p JOIN patient_indication pi ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = {}".format(id))
         if bOk:
             query.next()
             if query.isValid():
-                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to')])
+                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
 
 
 
