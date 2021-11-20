@@ -151,6 +151,9 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="Summary">
+      <property name="focusPolicy">
+       <enum>Qt::TabFocus</enum>
+      </property>
       <attribute name="title">
        <string>Summary</string>
       </attribute>
@@ -340,6 +343,20 @@
           <column>
            <property name="text">
             <string>Goal</string>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="textAlignment">
+            <set>AlignTrailing|AlignVCenter</set>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Total Dose</string>
            </property>
            <property name="font">
             <font>
