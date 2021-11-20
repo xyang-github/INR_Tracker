@@ -1,8 +1,11 @@
 import sys
+
+from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
 from gui.patientprofile import *
+from gui.addresult import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -69,12 +72,17 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
 
+        # Populate patient data
         self.lst_patient_summary_info = self.populatePatientSummary(id)
         self.ledFirstName.setText(self.lst_patient_summary_info[0])
         self.ledLastName.setText(self.lst_patient_summary_info[1])
         self.ledDOB.setText(self.lst_patient_summary_info[2])
         self.ledIndications.setText(self.lst_patient_summary_info[6])
         self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
+        self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+
+        # Event handlers
+        self.btnAdd.clicked.connect(self.evt_addResult_clicked)
 
     def populatePatientSummary(self, id):
         """
@@ -87,6 +95,41 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             query.next()
             if query.isValid():
                 return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
+
+    def evt_addResult_clicked(self):
+        dlgAddResult = DlgAddResult()
+        dlgAddResult.show()
+        dlgAddResult.exec_()
+
+
+class DlgAddResult(QDialog, Ui_DlgAddResult):
+    """
+    Dialog box for adding INR result to database
+    """
+    def __init__(self):
+        super(DlgAddResult, self).__init__()
+        self.setupUi(self)
+        self.dteDate.setDate(QDate.currentDate())
+        self.ledResult.setFocus()
+
+        self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
+
+    def evt_acceptResults_clicked(self):
+        self.result = self.ledResult.text()
+
+        self.doseMonday = self.ledMonday.text()
+        self.doseTuesday = self.ledTuesday.text()
+        self.doseWednesday = self.ledWednesday.text()
+        self.doseThursday = self.ledThursday.text()
+        self.doseFriday = self.ledFriday.text()
+        self.doseSaturday = self.ledSaturday.text()
+        self.doseSunday = self.ledSunday.text()
+
+
+
+    def calculateTotal(self):
+        pass
+
 
 
 
