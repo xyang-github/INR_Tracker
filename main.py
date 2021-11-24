@@ -12,6 +12,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
     """
     Main window for application
     """
+
     def __init__(self):
         super(DlgMain, self).__init__()
         self.setupUi(self)
@@ -56,7 +57,6 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         self.ledMRN.clear()  # clear text box after searching
 
-
     def evt_actionExit_triggered(self):
         """
         Exit the program when user clicks on File > Exit
@@ -68,6 +68,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     """
     Dialog box for patient profile
     """
+
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
@@ -91,11 +92,14 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         :return:  a list of values in the patient table
         """
         query = QSqlQuery()
-        bOk = query.exec("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p JOIN patient_indication pi ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = {}".format(id))
+        bOk = query.exec(
+            "SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p JOIN patient_indication pi ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = {}".format(
+                id))
         if bOk:
             query.next()
             if query.isValid():
-                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
+                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'),
+                         query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
 
     def evt_addResult_clicked(self):
         dlgAddResult = DlgAddResult(self.mrn)
@@ -107,11 +111,31 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
     """
     Dialog box for adding INR result to database
     """
+
     def __init__(self, id):
         super(DlgAddResult, self).__init__()
         self.setupUi(self)
         self.dteDate.setDate(QDate.currentDate())
         self.ledResult.setFocus()
+
+        # set default values for doses
+        self.ledMonday.setText("0")
+        self.ledTuesday.setText("0")
+        self.ledWednesday.setText("0")
+        self.ledThursday.setText("0")
+        self.ledFriday.setText("0")
+        self.ledSaturday.setText("0")
+        self.ledSunday.setText("0")
+
+        # signal for text change in doses
+        self.ledMonday.textEdited.connect(self.evt_text_changed)
+        self.ledTuesday.textEdited.connect(self.evt_text_changed)
+        self.ledWednesday.textEdited.connect(self.evt_text_changed)
+        self.ledThursday.textEdited.connect(self.evt_text_changed)
+        self.ledFriday.textEdited.connect(self.evt_text_changed)
+        self.ledSaturday.textEdited.connect(self.evt_text_changed)
+        self.ledSunday.textEdited.connect(self.evt_text_changed)
+
         self.mrn = id  # patient MRN for use in query
 
         self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
@@ -119,7 +143,6 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
     def evt_acceptResults_clicked(self):
         self.result = self.ledResult.text()
-
 
     def evt_noChanges_clicked(self, chk):
         if chk:
@@ -135,10 +158,11 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
             # populate line edit boxes for daily doses
             query = QSqlQuery()
-            bOk = query.exec(f"SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = {self.mrn} ORDER BY date DESC LIMIT 1")
+            bOk = query.exec(
+                f"SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = {self.mrn} ORDER BY date DESC LIMIT 1")
             if bOk:
                 query.next()
-                if query.isValid():  # False for some reason, seems like query is not pulling up data
+                if query.isValid():
                     self.ledMonday.setText(query.value('dose_mon'))
                     self.ledTuesday.setText(query.value('dose_tue'))
                     self.ledWednesday.setText(query.value('dose_wed'))
@@ -150,16 +174,19 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                     QMessageBox.critical(self, "Error", "No previous doses detected on record.")
                     self.chkNoChanges.setChecked(False)
 
-
-
-
-    def calculateTotal(self):
-        pass
-
-
-
-
-
+    def evt_text_changed(self):
+        """
+        Calculates the total dose of warfarin, and displays in line edit box
+        """
+        self.ledTotal.setText(str(
+            float(self.ledMonday.text()) +
+            float(self.ledTuesday.text()) +
+            float(self.ledWednesday.text()) +
+            float(self.ledThursday.text()) +
+            float(self.ledFriday.text()) +
+            float(self.ledSaturday.text()) +
+            float(self.ledSunday.text())
+        ))
 
 
 if __name__ == "__main__":
