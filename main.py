@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
 from gui.patientprofile import *
-from gui.addresult import *
+from gui.add_update_result import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -73,7 +73,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.setupUi(self)
 
         # Populate patient data
-        self.lst_patient_summary_info = self.populatePatientSummary(id)
+        self.mrn = id
+        self.lst_patient_summary_info = self.populatePatientSummary(self.mrn)
         self.ledFirstName.setText(self.lst_patient_summary_info[0])
         self.ledLastName.setText(self.lst_patient_summary_info[1])
         self.ledDOB.setText(self.lst_patient_summary_info[2])
@@ -97,7 +98,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'), query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
 
     def evt_addResult_clicked(self):
-        dlgAddResult = DlgAddResult()
+        dlgAddResult = DlgAddResult(self.mrn)
         dlgAddResult.show()
         dlgAddResult.exec_()
 
@@ -106,24 +107,49 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
     """
     Dialog box for adding INR result to database
     """
-    def __init__(self):
+    def __init__(self, id):
         super(DlgAddResult, self).__init__()
         self.setupUi(self)
         self.dteDate.setDate(QDate.currentDate())
         self.ledResult.setFocus()
+        self.mrn = id  # patient MRN for use in query
 
         self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
+        self.chkNoChanges.clicked.connect(self.evt_noChanges_clicked)
 
     def evt_acceptResults_clicked(self):
         self.result = self.ledResult.text()
 
-        self.doseMonday = self.ledMonday.text()
-        self.doseTuesday = self.ledTuesday.text()
-        self.doseWednesday = self.ledWednesday.text()
-        self.doseThursday = self.ledThursday.text()
-        self.doseFriday = self.ledFriday.text()
-        self.doseSaturday = self.ledSaturday.text()
-        self.doseSunday = self.ledSunday.text()
+
+    def evt_noChanges_clicked(self, chk):
+        if chk:
+
+            # set line edit boxes for daily doses to read only
+            self.ledMonday.setReadOnly(True)
+            self.ledTuesday.setReadOnly(True)
+            self.ledWednesday.setReadOnly(True)
+            self.ledThursday.setReadOnly(True)
+            self.ledFriday.setReadOnly(True)
+            self.ledSaturday.setReadOnly(True)
+            self.ledSunday.setReadOnly(True)
+
+            # populate line edit boxes for daily doses
+            query = QSqlQuery()
+            bOk = query.exec(f"SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = {self.mrn} ORDER BY date DESC LIMIT 1")
+            if bOk:
+                query.next()
+                if query.isValid():  # False for some reason, seems like query is not pulling up data
+                    self.ledMonday.setText(query.value('dose_mon'))
+                    self.ledTuesday.setText(query.value('dose_tue'))
+                    self.ledWednesday.setText(query.value('dose_wed'))
+                    self.ledThursday.setText(query.value('dose_thu'))
+                    self.ledFriday.setText(query.value('dose_fri'))
+                    self.ledSaturday.setText(query.value('dose_sat'))
+                    self.ledSunday.setText(query.value('dose_sun'))
+                else:
+                    QMessageBox.critical(self, "Error", "No previous doses detected on record.")
+                    self.chkNoChanges.setChecked(False)
+
 
 
 
