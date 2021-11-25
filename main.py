@@ -2,7 +2,7 @@ import sys
 import re
 from decimal import Decimal
 
-from PyQt5.QtCore import QDateTime, QDate
+from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
@@ -20,21 +20,21 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         self.setupUi(self)
 
         # event handlers
-        self.actionExit.triggered.connect(self.evt_actionExit_triggered)
-        self.btnSearch.clicked.connect(self.evt_btnSearch_clicked)
+        self.actionExit.triggered.connect(self.evt_action_exit_triggered)
+        self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
 
-    def evt_btnSearch_clicked(self):
+    def evt_btn_search_clicked(self):
         """
         Creates database connection when the search button is clicked
         """
         self.database = QSqlDatabase.addDatabase("QSQLITE")
         self.database.setDatabaseName("database.db")
         if self.database.open():
-            self.searchPatient()
+            self.search_patient()
         else:
             QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
 
-    def searchPatient(self):
+    def search_patient(self):
         """
         Find a match in the database with the provided MRN. Will show message boxes for errors.
         """
@@ -43,7 +43,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
             QMessageBox.critical(self, "No MRN Entered", "Please enter a medical record number.")
         else:
             query = QSqlQuery()
-            query.prepare("SELECT patient_id from patient WHERE patient_id = (:id)")
+            query.prepare("SELECT patient_id FROM patient WHERE patient_id = (:id)")
             query.bindValue(":id", self.mrn)
             query.exec_()
             query.next()
@@ -59,7 +59,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         self.ledMRN.clear()  # clear text box after searching
 
-    def evt_actionExit_triggered(self):
+    def evt_action_exit_triggered(self):
         """
         Exit the program when user clicks on File > Exit
         """
@@ -77,7 +77,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Populate patient data
         self.mrn = id
-        self.lst_patient_summary_info = self.populatePatientSummary(self.mrn)
+        self.lst_patient_summary_info = self.populate_patient_summary(self.mrn)
         self.ledFirstName.setText(self.lst_patient_summary_info[0])
         self.ledLastName.setText(self.lst_patient_summary_info[1])
         self.ledDOB.setText(self.lst_patient_summary_info[2])
@@ -88,7 +88,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         # Event handlers
         self.btnAdd.clicked.connect(self.evt_addResult_clicked)
 
-    def populatePatientSummary(self, id):
+    def populate_patient_summary(self, id):
         """
         :param id:  the medical record number for patient
         :return:  a list of values in the patient table
@@ -134,7 +134,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSunday.textEdited.connect(self.evt_text_changed)
 
         # signal for buttons
-        self.chkNoChanges.clicked.connect(self.evt_noChanges_clicked)
+        self.chkNoChanges.clicked.connect(self.evt_no_changes_clicked)
         self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
 
     def evt_acceptResults_clicked(self):
@@ -172,7 +172,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             else:
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
-    def evt_noChanges_clicked(self, chk):
+    def evt_no_changes_clicked(self, chk):
         """
         If check box state is True, then will make line edit boxes read-only and populate with previous doses.
         If check box state is False, will revert read-only setting and populate line edits with "0".
@@ -214,7 +214,6 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             self.ledSaturday.setReadOnly(False)
             self.ledSunday.setReadOnly(False)
             self.set_default_values()
-
 
     def evt_text_changed(self):
         """
