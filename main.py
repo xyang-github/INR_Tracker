@@ -1,6 +1,8 @@
 import sys
+import re
+from decimal import Decimal
 
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDateTime, QDate
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
@@ -115,6 +117,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
     def __init__(self, id):
         super(DlgAddResult, self).__init__()
         self.setupUi(self)
+        self.mrn = id  # patient MRN for use in query
         self.dteDate.setDate(QDate.currentDate())
         self.ledResult.setFocus()
 
@@ -136,17 +139,53 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSaturday.textEdited.connect(self.evt_text_changed)
         self.ledSunday.textEdited.connect(self.evt_text_changed)
 
-        self.mrn = id  # patient MRN for use in query
-
-        self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
+        # signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_noChanges_clicked)
+        self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
 
     def evt_acceptResults_clicked(self):
-        self.result = self.ledResult.text()
+        """
+        Insert data into the INR table if no error message is returned
+        """
+        error_message = self.validate_entry()
+
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+        else:
+            sql_command = """
+            INSERT INTO inr (patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, dose_sat, 
+            dose_sun, comment) VALUES (:id, :date, :result, :mon, :tue, :wed, :thu, :fri, :sat, :sun, :com)
+            """
+            query = QSqlQuery()
+            query.prepare(sql_command)
+            query.bindValue(":id", self.mrn)
+            query.bindValue(":date", self.dteDate.date().toString("yyyy-MM-dd"))
+
+            # format to 2 decimal places for formatting consistency
+            query.bindValue(":result", "{:.2f}".format(Decimal(self.ledResult.text())))
+            query.bindValue(":mon", "{:.2f}".format(Decimal(self.ledMonday.text())))
+            query.bindValue(":tue", "{:.2f}".format(Decimal(self.ledTuesday.text())))
+            query.bindValue(":wed", "{:.2f}".format(Decimal(self.ledWednesday.text())))
+            query.bindValue(":thu", "{:.2f}".format(Decimal(self.ledThursday.text())))
+            query.bindValue(":fri", "{:.2f}".format(Decimal(self.ledFriday.text())))
+            query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
+            query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
+            query.bindValue(":com", self.txtComment.toPlainText())
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Result added to the database.")
+                self.close()
+            else:
+                QMessageBox.critical(self, "Error", "Could not save results into the database.")
+
+
 
     def evt_noChanges_clicked(self, chk):
+        """
+        If check box state is True, then will make line edit boxes read-only and populate with previous doses.
+        Will return a message box if no prior entries in the database.
+        """
         if chk:
-
             # set line edit boxes for daily doses to read only
             self.ledMonday.setReadOnly(True)
             self.ledTuesday.setReadOnly(True)
@@ -178,15 +217,48 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         """
         Calculates the total dose of warfarin, and displays in line edit box
         """
-        self.ledTotal.setText(str(
-            float(self.ledMonday.text()) +
-            float(self.ledTuesday.text()) +
-            float(self.ledWednesday.text()) +
-            float(self.ledThursday.text()) +
-            float(self.ledFriday.text()) +
-            float(self.ledSaturday.text()) +
-            float(self.ledSunday.text())
-        ))
+        try:
+            self.ledTotal.setText(str(
+                Decimal(self.ledMonday.text()) +
+                Decimal(self.ledTuesday.text()) +
+                Decimal(self.ledWednesday.text()) +
+                Decimal(self.ledThursday.text()) +
+                Decimal(self.ledFriday.text()) +
+                Decimal(self.ledSaturday.text()) +
+                Decimal(self.ledSunday.text())
+            ))
+        except ValueError:
+            self.ledTotal.setText("")
+
+    def validate_entry(self):
+        """
+        Returns an error message based on validation. Error message will be blank if no errors.
+        """
+        error_message = ""
+        daily_dose = [("Monday", self.ledMonday.text()),
+                      ("Tuesday", self.ledTuesday.text()),
+                      ("Wednesday", self.ledWednesday.text()),
+                      ("Thursday", self.ledThursday.text()),
+                      ("Friday", self.ledFriday.text()),
+                      ("Saturday", self.ledSaturday.text()),
+                      ("Sunday", self.ledSunday.text())]
+
+        format_string = "^[0-9]\d*(\.\d+)?$"  # only positive integers and decimal numbers
+
+        if self.ledResult.text() == "":
+            error_message += "INR result cannot be blank.\n"
+        elif not re.match(format_string, self.ledResult.text()):
+            error_message += "Invalid format for INR result. Please enter a result that is a positive integer " \
+                             "or decimal number.\n"
+
+        for day in daily_dose:
+            if day[1] == "":
+                error_message += f"{day[0]}'s dose cannot be blank. Dose must be at least 0 or higher.\n"
+            elif not re.match(format_string, day[1]):
+                error_message += f"{day[0]}'s dose is not a valid format. Please enter a positive integer or " \
+                                 f"decimal number.\n"
+
+        return error_message
 
 
 if __name__ == "__main__":
