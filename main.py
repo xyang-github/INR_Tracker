@@ -122,13 +122,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledResult.setFocus()
 
         # set default values for doses
-        self.ledMonday.setText("0")
-        self.ledTuesday.setText("0")
-        self.ledWednesday.setText("0")
-        self.ledThursday.setText("0")
-        self.ledFriday.setText("0")
-        self.ledSaturday.setText("0")
-        self.ledSunday.setText("0")
+        self.set_default_values()
 
         # signal for text change in doses
         self.ledMonday.textEdited.connect(self.evt_text_changed)
@@ -178,11 +172,10 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             else:
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
-
-
     def evt_noChanges_clicked(self, chk):
         """
         If check box state is True, then will make line edit boxes read-only and populate with previous doses.
+        If check box state is False, will revert read-only setting and populate line edits with "0".
         Will return a message box if no prior entries in the database.
         """
         if chk:
@@ -202,7 +195,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             if bOk:
                 query.next()
                 if query.isValid():
-                    self.ledMonday.setText(query.value('dose_mon'))
+                    self.ledMonday.setText(query.value('dose_mon'))  # DOES NOT WORK YET
                     self.ledTuesday.setText(query.value('dose_tue'))
                     self.ledWednesday.setText(query.value('dose_wed'))
                     self.ledThursday.setText(query.value('dose_thu'))
@@ -212,6 +205,16 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 else:
                     QMessageBox.critical(self, "Error", "No previous doses detected on record.")
                     self.chkNoChanges.setChecked(False)
+        else:
+            self.ledMonday.setReadOnly(False)
+            self.ledTuesday.setReadOnly(False)
+            self.ledWednesday.setReadOnly(False)
+            self.ledThursday.setReadOnly(False)
+            self.ledFriday.setReadOnly(False)
+            self.ledSaturday.setReadOnly(False)
+            self.ledSunday.setReadOnly(False)
+            self.set_default_values()
+
 
     def evt_text_changed(self):
         """
@@ -229,6 +232,18 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             ))
         except ValueError:
             self.ledTotal.setText("")
+
+    def set_default_values(self):
+        """
+        Sets the line edit box texts to "0"
+        """
+        self.ledMonday.setText("0")
+        self.ledTuesday.setText("0")
+        self.ledWednesday.setText("0")
+        self.ledThursday.setText("0")
+        self.ledFriday.setText("0")
+        self.ledSaturday.setText("0")
+        self.ledSunday.setText("0")
 
     def validate_entry(self):
         """
