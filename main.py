@@ -3,6 +3,7 @@ import re
 from decimal import Decimal
 
 from PyQt5.QtCore import QDate
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
@@ -89,9 +90,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         :param id:  the medical record number for patient
         """
         query = QSqlQuery()
-        bOk = query.exec(
-            "SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p JOIN patient_indication pi ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = {}".format(
-                id))
+        query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
+            "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
+            "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
+        query.bindValue(":id", id)
+        bOk = query.exec()
         if bOk:
             query.next()
             if query.isValid():
@@ -125,8 +128,26 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 row = self.tblResult.rowCount()
                 self.tblResult.insertRow(row)
                 for col in range(5):
-                    tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
-                    self.tblResult.setItem(row, col, tbl_result_col_value)
+                    tbl_row_value = QTableWidgetItem(str(query.value(col)))
+                    self.tblResult.setItem(row, col, tbl_row_value)
+
+                    if col == 1:
+                        tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
+
+                    if col == 2:
+                        tbl_goal_col_value = QTableWidgetItem(str(query.value(col))).text()
+                        inr_low = tbl_goal_col_value.split("-")[0].strip(" ")
+                        inr_high = tbl_goal_col_value.split("-")[1].strip(" ")
+
+                        if tbl_result_col_value.text() > inr_high:
+                            self.tblResult.item(row, 1).setBackground(QColor("#ff3300"))
+                        elif tbl_result_col_value.text() < inr_low:
+                            self.tblResult.item(row, 1).setBackground(QColor("#ffff00"))
+                        else:
+                            self.tblResult.item(row, 1).setBackground(QColor("#00ff80"))
+
+
+
 
     def evt_btn_add_result_clicked(self):
         dlgAddResult = DlgAddResult(self.mrn)
@@ -151,13 +172,13 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.set_default_values()
 
         # signal for text change in doses
-        self.ledMonday.textEdited.connect(self.evt_text_changed)
-        self.ledTuesday.textEdited.connect(self.evt_text_changed)
-        self.ledWednesday.textEdited.connect(self.evt_text_changed)
-        self.ledThursday.textEdited.connect(self.evt_text_changed)
-        self.ledFriday.textEdited.connect(self.evt_text_changed)
-        self.ledSaturday.textEdited.connect(self.evt_text_changed)
-        self.ledSunday.textEdited.connect(self.evt_text_changed)
+        self.ledMonday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledTuesday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledWednesday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledThursday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledFriday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledSaturday.textEdited.connect(self.calculate_weekly_dose)
+        self.ledSunday.textEdited.connect(self.calculate_weekly_dose)
 
         # signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
@@ -223,18 +244,20 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
             # populate line edit boxes for daily doses
             query = QSqlQuery()
-            bOk = query.exec(
-                f"SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = {self.mrn} ORDER BY date DESC LIMIT 1")
+            query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date, inr_id DESC LIMIT 1")
+            query.bindValue(":id", self.mrn)
+            bOk = query.exec()
             if bOk:
                 query.next()
                 if query.isValid():
-                    self.ledMonday.setText(query.value('dose_mon'))  # DOES NOT WORK YET
+                    self.ledMonday.setText(query.value('dose_mon'))
                     self.ledTuesday.setText(query.value('dose_tue'))
                     self.ledWednesday.setText(query.value('dose_wed'))
                     self.ledThursday.setText(query.value('dose_thu'))
                     self.ledFriday.setText(query.value('dose_fri'))
                     self.ledSaturday.setText(query.value('dose_sat'))
                     self.ledSunday.setText(query.value('dose_sun'))
+                    self.calculate_weekly_dose()
                 else:
                     QMessageBox.critical(self, "Error", "No previous doses detected on record.")
                     self.chkNoChanges.setChecked(False)
@@ -248,7 +271,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             self.ledSunday.setReadOnly(False)
             self.set_default_values()
 
-    def evt_text_changed(self):
+    def calculate_weekly_dose(self):
         """
         Calculates the total dose of warfarin, and displays in line edit box
         """
