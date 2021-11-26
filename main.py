@@ -77,21 +77,16 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Populate patient data
         self.mrn = id
-        self.lst_patient_summary_info = self.populate_patient_summary(self.mrn)
-        self.ledFirstName.setText(self.lst_patient_summary_info[0])
-        self.ledLastName.setText(self.lst_patient_summary_info[1])
-        self.ledDOB.setText(self.lst_patient_summary_info[2])
-        self.ledIndications.setText(self.lst_patient_summary_info[6])
-        self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
-        self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+        self.populate_patient_summary(self.mrn)
+        self.populate_result_table()
 
         # Event handlers
-        self.btnAdd.clicked.connect(self.evt_addResult_clicked)
+        self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
 
     def populate_patient_summary(self, id):
         """
+        Populate information in the summary tab in the patient profile
         :param id:  the medical record number for patient
-        :return:  a list of values in the patient table
         """
         query = QSqlQuery()
         bOk = query.exec(
@@ -100,13 +95,44 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         if bOk:
             query.next()
             if query.isValid():
-                return ([query.value('fname'), query.value('lname'), query.value('dob'), query.value('status'),
-                         query.value('inr_goal_from'), query.value('inr_goal_to'), query.value('indication_name')])
+                self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                  query.value('status'), query.value('inr_goal_from'),
+                                                  query.value('inr_goal_to'), query.value('indication_name')])
 
-    def evt_addResult_clicked(self):
+                self.ledFirstName.setText(self.lst_patient_summary_info[0])
+                self.ledLastName.setText(self.lst_patient_summary_info[1])
+                self.ledDOB.setText(self.lst_patient_summary_info[2])
+                self.ledIndications.setText(self.lst_patient_summary_info[6])
+                self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
+                self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+
+    def populate_result_table(self):
+        """
+        Populates the table widget with information from the database
+        """
+        self.tblResult.clearContents()
+        self.tblResult.setRowCount(0)
+
+        query = QSqlQuery()
+        query.prepare("SELECT date, result, (inr_goal_from || '-' || inr_goal_to) AS goal, "
+                      "(dose_mon + dose_tue + dose_wed + dose_thu + dose_fri + dose_sat + dose_sun) AS total_dose, "
+                      "comment FROM inr i JOIN patient p ON  p.patient_id = i.patient_id "
+                      "WHERE p.patient_id = :id ORDER BY date DESC")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            while query.next():
+                row = self.tblResult.rowCount()
+                self.tblResult.insertRow(row)
+                for col in range(5):
+                    tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
+                    self.tblResult.setItem(row, col, tbl_result_col_value)
+
+    def evt_btn_add_result_clicked(self):
         dlgAddResult = DlgAddResult(self.mrn)
         dlgAddResult.show()
         dlgAddResult.exec_()
+        self.populate_result_table()
 
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
@@ -134,10 +160,11 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSunday.textEdited.connect(self.evt_text_changed)
 
         # signal for buttons
-        self.chkNoChanges.clicked.connect(self.evt_no_changes_clicked)
-        self.btnOK.clicked.connect(self.evt_acceptResults_clicked)
+        self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
+        self.btnOK.clicked.connect(self.evt_btn_ok_clicked)
+        self.btnCancel.clicked.connect(self.evt_btn_close_clicked)
 
-    def evt_acceptResults_clicked(self):
+    def evt_btn_ok_clicked(self):
         """
         Insert data into the INR table if no error message is returned
         """
@@ -172,7 +199,13 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             else:
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
-    def evt_no_changes_clicked(self, chk):
+    def evt_btn_close_clicked(self):
+        """
+        Close dialog box for adding/updating results
+        """
+        self.close()
+
+    def evt_chkbox_no_changes_clicked(self, chk):
         """
         If check box state is True, then will make line edit boxes read-only and populate with previous doses.
         If check box state is False, will revert read-only setting and populate line edits with "0".
@@ -229,7 +262,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 Decimal(self.ledSaturday.text()) +
                 Decimal(self.ledSunday.text())
             ))
-        except ValueError:
+        except:
             self.ledTotal.setText("")
 
     def set_default_values(self):
@@ -249,6 +282,16 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         Returns an error message based on validation. Error message will be blank if no errors.
         """
         error_message = ""
+
+        # reset style sheet for line edit boxes
+        self.ledMonday.setStyleSheet("")
+        self.ledTuesday.setStyleSheet("")
+        self.ledWednesday.setStyleSheet("")
+        self.ledThursday.setStyleSheet("")
+        self.ledFriday.setStyleSheet("")
+        self.ledSaturday.setStyleSheet("")
+        self.ledSunday.setStyleSheet("")
+
         daily_dose = [("Monday", self.ledMonday.text()),
                       ("Tuesday", self.ledTuesday.text()),
                       ("Wednesday", self.ledWednesday.text()),
@@ -261,18 +304,39 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
         if self.ledResult.text() == "":
             error_message += "INR result cannot be blank.\n"
+            self.ledResult.setStyleSheet(style_line_edit_error())
         elif not re.match(format_string, self.ledResult.text()):
             error_message += "Invalid format for INR result. Please enter a result that is a positive integer " \
                              "or decimal number.\n"
+            self.ledResult.setStyleSheet(style_line_edit_error())
 
         for day in daily_dose:
             if day[1] == "":
                 error_message += f"{day[0]}'s dose cannot be blank. Dose must be at least 0 or higher.\n"
+                command = f"self.led{day[0]}.setStyleSheet(style_line_edit_error())"
+                eval(command)
+
             elif not re.match(format_string, day[1]):
                 error_message += f"{day[0]}'s dose is not a valid format. Please enter a positive integer or " \
                                  f"decimal number.\n"
+                command = f"self.led{day[0]}.setStyleSheet(style_line_edit_error())"
+                eval(command)
 
         return error_message
+
+
+def style_line_edit_error():
+    """
+    A style sheet used to show line edit boxes with invalid entries
+    :return: style sheet for a line edit box with a red border
+    """
+    sStyle = """
+        QLineEdit {
+            border: 1px solid red;
+        }
+    """
+
+    return sStyle
 
 
 if __name__ == "__main__":
