@@ -1,0 +1,22 @@
+Indication view:
+select * from patient p join patient_indication pi on p.patient_id = pi.patient_id join indication i on pi.indication_id = i.indication_id where p.patient_id = 644
+
+Adding new indication:
+Insert indication into indication table
+Insert  into linking table: patient id and indication id
+
+INR view:
+SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = 644
+
+INR view, most recent: 
+SELECT * FROM patient JOIN inr ON patient.patient_id = inr.patient_id WHERE patient.patient_id = 644 ORDER BY date DESC LIMIT 1
+
+Adding new INR:
+Insert new result into int table:
+insert into inr (patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, dose_sat, dose_sun) VALUES (644, "2021-10-30", 2.1, 5, 5, 5, 5, 5, 5, 5)
+
+Total weekly dose using id and date of result:
+select (dose_mon + dose_tue + dose_wed + dose_thu + dose_fri + dose_sat + dose_sun) as total_dose from inr where patient_id = 644 and date = "2021-11-24"
+
+Populate_table function:
+SELECT date, result, (inr_goal_from || "-" || inr_goal_to) AS goal, (dose_mon + dose_tue + dose_wed + dose_thu + dose_fri + dose_sat + dose_sun) AS total_dose, comment FROM inr i JOIN patient p ON  p.patient_id = i.patient_id WHERE p.patient_id = 644
