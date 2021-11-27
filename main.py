@@ -2,7 +2,7 @@ import sys
 import re
 from decimal import Decimal
 
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, QCalendar
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
@@ -180,7 +180,38 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         if self.current_selection_row == 0:
             QMessageBox.information(self, "Error", "Please select a row from the table to edit.")
         else:
-            self.return_selected_result_row()
+            # retrieves query for the selected row
+            query = self.return_selected_result_row()
+            query.next()
+
+            # gets the QDate object for the original date
+            original_date = query.value('date').split("-")
+            original_year = int(original_date[0])
+            original_month = int(original_date[1])
+            original_day = int(original_date[2])
+            original_date_object = QDate(original_year, original_month, original_day)
+
+            # sets line edit box to the values of the selected row
+            dlgEditResult.dteDate.setDate(original_date_object)
+            dlgEditResult.ledResult.setText(query.value('result'))
+            dlgEditResult.ledMonday.setText(query.value('dose_mon'))
+            dlgEditResult.ledTuesday.setText(query.value('dose_tue'))
+            dlgEditResult.ledWednesday.setText(query.value('dose_wed'))
+            dlgEditResult.ledThursday.setText(query.value('dose_thu'))
+            dlgEditResult.ledFriday.setText(query.value('dose_fri'))
+            dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
+            dlgEditResult.ledSunday.setText(query.value('dose_sun'))
+
+            current_total_weekly_dose = str(Decimal(query.value('dose_mon')) +
+                                         Decimal(query.value('dose_tue')) +
+                                         Decimal(query.value('dose_wed')) +
+                                         Decimal(query.value('dose_thu')) +
+                                         Decimal(query.value('dose_fri')) +
+                                         Decimal(query.value('dose_sat')) +
+                                         Decimal(query.value('dose_sun')))
+
+            dlgEditResult.ledTotal.setText(current_total_weekly_dose)
+            dlgEditResult.txtComment.setPlainText(query.value('comment'))
             dlgEditResult.show()
             dlgEditResult.exec_()
             self.populate_result_table()
@@ -189,13 +220,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         query = QSqlQuery()
         query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
-                      "dose_sat, dose_sun) from inr WHERE inr_id = :id)")
+                      "dose_sat, dose_sun, comment from inr WHERE inr_id = :id")
         query.bindValue(":id", self.current_selection_inr_id)
         bOk = query.exec()
-        print(bOk)  # query is not executing, need to troubleshoot
         if bOk:
-            query.next()
-            print(query.value('inr_id'))
+            return query
 
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
