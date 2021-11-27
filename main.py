@@ -75,6 +75,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
+        self.tblResult.setAlternatingRowColors(True)
+        self.tblResult.setColumnWidth(2, 50)
+        self.tblResult.setColumnWidth(3, 60)
+        self.tblResult.setColumnWidth(4, 80)
 
         # Populate patient data
         self.mrn = id
@@ -83,6 +87,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Event handlers
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
+        self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
 
     def populate_patient_summary(self, id):
         """
@@ -117,43 +122,80 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.setRowCount(0)
 
         query = QSqlQuery()
-        query.prepare("SELECT date, result, (inr_goal_from || '-' || inr_goal_to) AS goal, "
+        query.prepare("SELECT inr_id, date, result, (inr_goal_from || '-' || inr_goal_to) AS goal, "
                       "(dose_mon + dose_tue + dose_wed + dose_thu + dose_fri + dose_sat + dose_sun) AS total_dose, "
                       "comment FROM inr i JOIN patient p ON  p.patient_id = i.patient_id "
-                      "WHERE p.patient_id = :id ORDER BY date DESC")
+                      "WHERE p.patient_id = :id ORDER BY date DESC")  # something to think about: also order by id/time?
         query.bindValue(":id", self.mrn)
         bOk = query.exec()
         if bOk:
             while query.next():
                 row = self.tblResult.rowCount()
                 self.tblResult.insertRow(row)
-                for col in range(5):
+                for col in range(6):
                     tbl_row_value = QTableWidgetItem(str(query.value(col)))
                     self.tblResult.setItem(row, col, tbl_row_value)
 
-                    if col == 1:
+                    if col == 2:
                         tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
 
-                    if col == 2:
+                    if col == 3:
                         tbl_goal_col_value = QTableWidgetItem(str(query.value(col))).text()
                         inr_low = tbl_goal_col_value.split("-")[0].strip(" ")
                         inr_high = tbl_goal_col_value.split("-")[1].strip(" ")
 
+                        # changes color of result field if above, below or within goal
                         if tbl_result_col_value.text() > inr_high:
-                            self.tblResult.item(row, 1).setBackground(QColor("#ff3300"))
+                            self.tblResult.item(row, 2).setBackground(QColor("#ff3300"))
                         elif tbl_result_col_value.text() < inr_low:
-                            self.tblResult.item(row, 1).setBackground(QColor("#ffff00"))
+                            self.tblResult.item(row, 2).setBackground(QColor("#ffff00"))
                         else:
-                            self.tblResult.item(row, 1).setBackground(QColor("#00ff80"))
+                            self.tblResult.item(row, 2).setBackground(QColor("#00ff80"))
 
-
-
+            self.tblResult.setColumnHidden(0, True)  # hide inr_id column from view
 
     def evt_btn_add_result_clicked(self):
+        """
+        Creates a dialog box to add results to the database, and refreshes the result table
+        """
         dlgAddResult = DlgAddResult(self.mrn)
         dlgAddResult.show()
         dlgAddResult.exec_()
         self.populate_result_table()
+
+    def evt_btn_edit_result_clicked(self):
+        """
+        Creates a dialog box to update results to the database.
+        User must have selected a row from the result table for the dialog box to open.
+        """
+        dlgEditResult = DlgAddResult(self.mrn)
+        dlgEditResult.setWindowTitle("Edit Result")
+        dlgEditResult.btnOK.setText("Update")
+
+        self.current_selection_row = self.tblResult.currentRow()
+
+        # Get the inr_id corresponding to the row selected
+        self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+
+        if self.current_selection_row == 0:
+            QMessageBox.information(self, "Error", "Please select a row from the table to edit.")
+        else:
+            self.return_selected_result_row()
+            dlgEditResult.show()
+            dlgEditResult.exec_()
+            self.populate_result_table()
+
+    def return_selected_result_row(self):
+
+        query = QSqlQuery()
+        query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
+                      "dose_sat, dose_sun) from inr WHERE inr_id = :id)")
+        query.bindValue(":id", self.current_selection_inr_id)
+        bOk = query.exec()
+        print(bOk)  # query is not executing, need to troubleshoot
+        if bOk:
+            query.next()
+            print(query.value('inr_id'))
 
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
@@ -299,6 +341,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledFriday.setText("0")
         self.ledSaturday.setText("0")
         self.ledSunday.setText("0")
+        self.ledTotal.setText("")
 
     def validate_entry(self):
         """
