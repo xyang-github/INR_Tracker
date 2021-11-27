@@ -2,7 +2,7 @@ import sys
 import re
 from decimal import Decimal
 
-from PyQt5.QtCore import QDate, QCalendar
+from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
@@ -76,6 +76,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
         self.tblResult.setAlternatingRowColors(True)
+        self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
         self.tblResult.setColumnWidth(2, 50)
         self.tblResult.setColumnWidth(3, 60)
         self.tblResult.setColumnWidth(4, 80)
@@ -88,6 +89,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         # Event handlers
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
+        self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
 
     def populate_patient_summary(self, id):
         """
@@ -209,11 +211,34 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                                          Decimal(query.value('dose_fri')) +
                                          Decimal(query.value('dose_sat')) +
                                          Decimal(query.value('dose_sun')))
-
             dlgEditResult.ledTotal.setText(current_total_weekly_dose)
+
             dlgEditResult.txtComment.setPlainText(query.value('comment'))
             dlgEditResult.show()
             dlgEditResult.exec_()
+            self.populate_result_table()
+
+    def evt_btn_delete_result_clicked(self):
+        """
+        Delete record from the table and database
+        """
+        self.current_selection_row = self.tblResult.currentRow()
+
+        # Get the inr_id corresponding to the row selected
+        self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+
+        if self.current_selection_row == 0:
+            QMessageBox.information(self, "Error", "Please select a row from the table to delete.")
+        else:
+            double_check_msg = QMessageBox.question(self, "Delete Result",
+                                 f"You have selected row {self.current_selection_row + 1} to be deleted.")
+            if double_check_msg == QMessageBox.Yes:
+                query = QSqlQuery()
+                query.prepare("DELETE FROM inr WHERE inr_id = :id")
+                query.bindValue(":id", self.current_selection_inr_id)
+                bOk = query.exec()
+                if bOk:
+                    QMessageBox.information(self, "Success", "Record deleted")
             self.populate_result_table()
 
     def return_selected_result_row(self):
