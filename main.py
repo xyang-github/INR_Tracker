@@ -2,7 +2,7 @@ import sys
 import re
 from decimal import Decimal
 
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, QModelIndex
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
@@ -75,18 +75,27 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
+
+        # result table formatting
         self.tblResult.setAlternatingRowColors(True)
-        self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
         self.tblResult.setColumnWidth(2, 50)
         self.tblResult.setColumnWidth(3, 60)
         self.tblResult.setColumnWidth(4, 80)
+        self.tblResult.setSortingEnabled(True)
+        self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
+        self.tblResult.setSelectionMode(1)  # single selection mode
 
         # Populate patient data
         self.mrn = id
         self.populate_patient_summary(self.mrn)
         self.populate_result_table()
 
+        # sets default selection in table
+        self.first_item = self.tblResult.item(0, 1)
+        self.first_item.setSelected(True)
+
         # Event handlers
+        self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
@@ -179,44 +188,41 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         # Get the inr_id corresponding to the row selected
         self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
 
-        if self.current_selection_row == 0:
-            QMessageBox.information(self, "Error", "Please select a row from the table to edit.")
-        else:
-            # retrieves query for the selected row
-            query = self.return_selected_result_row()
-            query.next()
+        # retrieves query for the selected row
+        query = self.return_selected_result_row()
+        query.next()
 
-            # gets the QDate object for the original date
-            original_date = query.value('date').split("-")
-            original_year = int(original_date[0])
-            original_month = int(original_date[1])
-            original_day = int(original_date[2])
-            original_date_object = QDate(original_year, original_month, original_day)
+        # gets the QDate object for the original date
+        original_date = query.value('date').split("-")
+        original_year = int(original_date[0])
+        original_month = int(original_date[1])
+        original_day = int(original_date[2])
+        original_date_object = QDate(original_year, original_month, original_day)
 
-            # sets line edit box to the values of the selected row
-            dlgEditResult.dteDate.setDate(original_date_object)
-            dlgEditResult.ledResult.setText(query.value('result'))
-            dlgEditResult.ledMonday.setText(query.value('dose_mon'))
-            dlgEditResult.ledTuesday.setText(query.value('dose_tue'))
-            dlgEditResult.ledWednesday.setText(query.value('dose_wed'))
-            dlgEditResult.ledThursday.setText(query.value('dose_thu'))
-            dlgEditResult.ledFriday.setText(query.value('dose_fri'))
-            dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
-            dlgEditResult.ledSunday.setText(query.value('dose_sun'))
+        # sets line edit box to the values of the selected row
+        dlgEditResult.dteDate.setDate(original_date_object)
+        dlgEditResult.ledResult.setText(query.value('result'))
+        dlgEditResult.ledMonday.setText(query.value('dose_mon'))
+        dlgEditResult.ledTuesday.setText(query.value('dose_tue'))
+        dlgEditResult.ledWednesday.setText(query.value('dose_wed'))
+        dlgEditResult.ledThursday.setText(query.value('dose_thu'))
+        dlgEditResult.ledFriday.setText(query.value('dose_fri'))
+        dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
+        dlgEditResult.ledSunday.setText(query.value('dose_sun'))
 
-            current_total_weekly_dose = str(Decimal(query.value('dose_mon')) +
-                                         Decimal(query.value('dose_tue')) +
-                                         Decimal(query.value('dose_wed')) +
-                                         Decimal(query.value('dose_thu')) +
-                                         Decimal(query.value('dose_fri')) +
-                                         Decimal(query.value('dose_sat')) +
-                                         Decimal(query.value('dose_sun')))
-            dlgEditResult.ledTotal.setText(current_total_weekly_dose)
+        current_total_weekly_dose = str(Decimal(query.value('dose_mon')) +
+                                     Decimal(query.value('dose_tue')) +
+                                     Decimal(query.value('dose_wed')) +
+                                     Decimal(query.value('dose_thu')) +
+                                     Decimal(query.value('dose_fri')) +
+                                     Decimal(query.value('dose_sat')) +
+                                     Decimal(query.value('dose_sun')))
+        dlgEditResult.ledTotal.setText(current_total_weekly_dose)
 
-            dlgEditResult.txtComment.setPlainText(query.value('comment'))
-            dlgEditResult.show()
-            dlgEditResult.exec_()
-            self.populate_result_table()
+        dlgEditResult.txtComment.setPlainText(query.value('comment'))
+        dlgEditResult.show()
+        dlgEditResult.exec_()
+        self.populate_result_table()
 
     def evt_btn_delete_result_clicked(self):
         """
