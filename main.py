@@ -90,10 +90,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.populate_patient_summary(self.mrn)
         self.populate_result_table()
 
-        # sets default selection in table
-        self.first_item = self.tblResult.item(0, 1)
-        self.first_item.setSelected(True)
-
         # Event handlers
         self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
@@ -165,6 +161,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
             self.tblResult.setColumnHidden(0, True)  # hide inr_id column from view
 
+            # set default selection
+            self.tblResult.setCurrentCell(0, 1)
+
     def evt_btn_add_result_clicked(self):
         """
         Creates a dialog box to add results to the database, and refreshes the result table
@@ -179,14 +178,14 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Creates a dialog box to update results to the database.
         User must have selected a row from the result table for the dialog box to open.
         """
-        dlgEditResult = DlgAddResult(self.mrn)
-        dlgEditResult.setWindowTitle("Edit Result")
-        dlgEditResult.btnOK.setText("Update")
-
-        self.current_selection_row = self.tblResult.currentRow()
 
         # Get the inr_id corresponding to the row selected
+        self.current_selection_row = self.tblResult.currentRow()
         self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+
+        dlgEditResult = DlgAddResult(self.mrn, self.current_selection_inr_id)
+        dlgEditResult.setWindowTitle("Edit Result")
+        dlgEditResult.btnOK.setText("Update")
 
         # retrieves query for the selected row
         query = self.return_selected_result_row()
@@ -220,6 +219,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditResult.ledTotal.setText(current_total_weekly_dose)
 
         dlgEditResult.txtComment.setPlainText(query.value('comment'))
+
+        dlgEditResult.btnOK.clicked.connect(dlgEditResult.evt_btn_update_result_clicked)
         dlgEditResult.show()
         dlgEditResult.exec_()
         self.populate_result_table()
@@ -228,24 +229,21 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """
         Delete record from the table and database
         """
-        self.current_selection_row = self.tblResult.currentRow()
 
         # Get the inr_id corresponding to the row selected
+        self.current_selection_row = self.tblResult.currentRow()
         self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
 
-        if self.current_selection_row == 0:
-            QMessageBox.information(self, "Error", "Please select a row from the table to delete.")
-        else:
-            double_check_msg = QMessageBox.question(self, "Delete Result",
-                                 f"You have selected row {self.current_selection_row + 1} to be deleted.")
-            if double_check_msg == QMessageBox.Yes:
-                query = QSqlQuery()
-                query.prepare("DELETE FROM inr WHERE inr_id = :id")
-                query.bindValue(":id", self.current_selection_inr_id)
-                bOk = query.exec()
-                if bOk:
-                    QMessageBox.information(self, "Success", "Record deleted")
-            self.populate_result_table()
+        double_check_msg = QMessageBox.question(self, "Delete Result",
+                             f"You have selected row {self.current_selection_row + 1} to be deleted.")
+        if double_check_msg == QMessageBox.Yes:
+            query = QSqlQuery()
+            query.prepare("DELETE FROM inr WHERE inr_id = :id")
+            query.bindValue(":id", self.current_selection_inr_id)
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Record deleted")
+        self.populate_result_table()
 
     def return_selected_result_row(self):
 
@@ -263,10 +261,11 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
     Dialog box for adding INR result to database
     """
 
-    def __init__(self, id):
+    def __init__(self, patient_id, inr_id=None):
         super(DlgAddResult, self).__init__()
         self.setupUi(self)
-        self.mrn = id  # patient MRN for use in query
+        self.mrn = patient_id  # patient MRN for use in query
+        self.inr_id = inr_id  # inr_id for the selected result
         self.dteDate.setDate(QDate.currentDate())
         self.ledResult.setFocus()
 
@@ -285,7 +284,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         # signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
         self.btnOK.clicked.connect(self.evt_btn_ok_clicked)
-        self.btnCancel.clicked.connect(self.evt_btn_close_clicked)
+        self.btnCancel.clicked.connect(self.close)
 
     def evt_btn_ok_clicked(self):
         """
@@ -300,21 +299,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             INSERT INTO inr (patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, dose_sat, 
             dose_sun, comment) VALUES (:id, :date, :result, :mon, :tue, :wed, :thu, :fri, :sat, :sun, :com)
             """
-            query = QSqlQuery()
-            query.prepare(sql_command)
-            query.bindValue(":id", self.mrn)
-            query.bindValue(":date", self.dteDate.date().toString("yyyy-MM-dd"))
-
-            # format to 2 decimal places for formatting consistency
-            query.bindValue(":result", "{:.2f}".format(Decimal(self.ledResult.text())))
-            query.bindValue(":mon", "{:.2f}".format(Decimal(self.ledMonday.text())))
-            query.bindValue(":tue", "{:.2f}".format(Decimal(self.ledTuesday.text())))
-            query.bindValue(":wed", "{:.2f}".format(Decimal(self.ledWednesday.text())))
-            query.bindValue(":thu", "{:.2f}".format(Decimal(self.ledThursday.text())))
-            query.bindValue(":fri", "{:.2f}".format(Decimal(self.ledFriday.text())))
-            query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
-            query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
-            query.bindValue(":com", self.txtComment.toPlainText())
+            query = self.inr_table_prepare_bind_query(sql_command)
             bOk = query.exec()
             if bOk:
                 QMessageBox.information(self, "Success", "Result added to the database.")
@@ -322,11 +307,27 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             else:
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
-    def evt_btn_close_clicked(self):
+    def evt_btn_update_result_clicked(self):
         """
-        Close dialog box for adding/updating results
+        Update result entry based on the selected table row
         """
-        self.close()
+        error_message = self.validate_entry()
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+        else:
+            sql_command = """
+            UPDATE inr SET patient_id = :id, date = :date, result = :result, dose_mon = :mon, dose_tue = :tue, 
+            dose_wed = :wed, dose_thu = :thu, dose_fri = :fri, dose_sat = :sat, dose_sun = :sun, comment = :com 
+            WHERE inr_id = :inr_id
+            """
+            query = self.inr_table_prepare_bind_query(sql_command)
+            query.bindValue(":inr_id", int(self.inr_id))
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Record updated.")
+                self.close()
+            else:
+                QMessageBox.critical(self, "Error", "Not able to update record.")
 
     def evt_chkbox_no_changes_clicked(self, chk):
         """
@@ -449,6 +450,23 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 eval(command)
 
         return error_message
+
+    def inr_table_prepare_bind_query(self, sql_command):
+        query = QSqlQuery()
+        query.prepare(sql_command)
+        query.bindValue(":id", self.mrn)
+        query.bindValue(":date", self.dteDate.date().toString("yyyy-MM-dd"))
+        # format to 2 decimal places for formatting consistency
+        query.bindValue(":result", "{:.2f}".format(Decimal(self.ledResult.text())))
+        query.bindValue(":mon", "{:.2f}".format(Decimal(self.ledMonday.text())))
+        query.bindValue(":tue", "{:.2f}".format(Decimal(self.ledTuesday.text())))
+        query.bindValue(":wed", "{:.2f}".format(Decimal(self.ledWednesday.text())))
+        query.bindValue(":thu", "{:.2f}".format(Decimal(self.ledThursday.text())))
+        query.bindValue(":fri", "{:.2f}".format(Decimal(self.ledFriday.text())))
+        query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
+        query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
+        query.bindValue(":com", self.txtComment.toPlainText())
+        return query
 
 
 def style_line_edit_error():
