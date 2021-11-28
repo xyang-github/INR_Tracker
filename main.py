@@ -81,9 +81,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.setColumnWidth(2, 50)
         self.tblResult.setColumnWidth(3, 60)
         self.tblResult.setColumnWidth(4, 80)
+        self.tblResult.horizontalHeader().setStretchLastSection(True)
         self.tblResult.setSortingEnabled(True)
         self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblResult.setSelectionMode(1)  # single selection mode
+        self.tblResult.selectionModel().selectionChanged.connect(self.display_comment_column)
 
         # Populate patient data
         self.mrn = id
@@ -169,6 +171,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Creates a dialog box to add results to the database, and refreshes the result table
         """
         dlgAddResult = DlgAddResult(self.mrn)
+        dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_ok_clicked)
         dlgAddResult.show()
         dlgAddResult.exec_()
         self.populate_result_table()
@@ -208,19 +211,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditResult.ledFriday.setText(query.value('dose_fri'))
         dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
         dlgEditResult.ledSunday.setText(query.value('dose_sun'))
-
-        current_total_weekly_dose = str(Decimal(query.value('dose_mon')) +
-                                     Decimal(query.value('dose_tue')) +
-                                     Decimal(query.value('dose_wed')) +
-                                     Decimal(query.value('dose_thu')) +
-                                     Decimal(query.value('dose_fri')) +
-                                     Decimal(query.value('dose_sat')) +
-                                     Decimal(query.value('dose_sun')))
-        dlgEditResult.ledTotal.setText(current_total_weekly_dose)
-
+        dlgEditResult.calculate_weekly_dose()
         dlgEditResult.txtComment.setPlainText(query.value('comment'))
 
         dlgEditResult.btnOK.clicked.connect(dlgEditResult.evt_btn_update_result_clicked)
+
         dlgEditResult.show()
         dlgEditResult.exec_()
         self.populate_result_table()
@@ -246,7 +241,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.populate_result_table()
 
     def return_selected_result_row(self):
-
+        """
+        Returns the database query for the selected table
+        """
         query = QSqlQuery()
         query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
                       "dose_sat, dose_sun, comment from inr WHERE inr_id = :id")
@@ -255,6 +252,16 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         if bOk:
             return query
 
+    def display_comment_column(self, selected):
+        """
+        Display a message box containing any filled comment column selected
+        """
+        self.current_selection_row = self.tblResult.currentRow()
+        self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
+
+        for i in selected.indexes():
+            if i.column() == 5 and self.current_selection_comment:
+                QMessageBox.information(self, "Comment", self.current_selection_comment)
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
     """
@@ -283,7 +290,6 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
         # signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
-        self.btnOK.clicked.connect(self.evt_btn_ok_clicked)
         self.btnCancel.clicked.connect(self.close)
 
     def evt_btn_ok_clicked(self):
