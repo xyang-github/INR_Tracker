@@ -15,3 +15,9 @@ Edit result
 INR
 Date
 Goal
+
+//////////Add//////////
+Date   text
+Result real
+At Goal text
+Dose real
