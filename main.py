@@ -3,7 +3,7 @@ import re
 from decimal import Decimal
 
 from PyQt5.QtCore import QDate, QModelIndex
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
@@ -161,6 +161,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                         else:
                             self.tblResult.item(row, 2).setBackground(QColor("#00ff80"))
 
+            # call a function here to change text color of weekly dose if changed
+            self.weekly_dose_change_format()
+
             self.tblResult.setColumnHidden(0, True)  # hide inr_id column from view
 
             # set default selection
@@ -262,6 +265,19 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
                 QMessageBox.information(self, "Comment", self.current_selection_comment)
+
+    def weekly_dose_change_format(self):
+        """Bold the weekly dose column when there are changes from the previous row"""
+        self.total_rows = self.tblResult.rowCount()
+        for row in range(self.total_rows - 1):
+            self.current_weekly_dose = self.tblResult.item(row, 4)
+            self.next_weekly_dose = self.tblResult.item(row+1, 4)
+
+            if self.current_weekly_dose.text() != self.next_weekly_dose.text():
+                font = QtGui.QFont()
+                font.setBold(True)
+                self.current_weekly_dose.setFont(font)
+
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
     """
