@@ -272,7 +272,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     dlgEditPatient.ledFirstName.setText(self.lst_patient_summary_info[0])
                     dlgEditPatient.ledLastName.setText(self.lst_patient_summary_info[1])
                     dlgEditPatient.ledDOB.setText(self.lst_patient_summary_info[2])
-                    # dlgEditPatient.ledStatus.setText(self.lst_patient_summary_info[0])
                     dlgEditPatient.ledGoalFrom.setText(str(self.lst_patient_summary_info[4]))
                     dlgEditPatient.ledGoalTo.setText(str(self.lst_patient_summary_info[5]))
 
