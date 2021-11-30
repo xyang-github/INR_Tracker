@@ -2,13 +2,14 @@ import sys
 import re
 from decimal import Decimal
 
-from PyQt5.QtCore import QDate, QModelIndex
-from PyQt5.QtGui import QColor, QFont
+from PyQt5.QtCore import QDate
+from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from gui.main_ui import *
 from gui.patientprofile import *
 from gui.add_update_result import *
+from gui.newpatient import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -97,31 +98,39 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
+        self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
 
     def populate_patient_summary(self, id):
         """
         Populate information in the summary tab in the patient profile
         :param id:  the medical record number for patient
         """
+        self.indications = []
+        bOk, query = self.query_patient_summary(id)
+        if bOk:
+            while query.next():
+                if query.isValid():
+                    self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                      query.value('status'), query.value('inr_goal_from'),
+                                                      query.value('inr_goal_to'), query.value('indication_name'),
+                                                      query.value('status')])
+
+                    self.ledFirstName.setText(self.lst_patient_summary_info[0])
+                    self.ledLastName.setText(self.lst_patient_summary_info[1])
+                    self.ledDOB.setText(self.lst_patient_summary_info[2])
+                    self.indications.append(self.lst_patient_summary_info[6])  # create a list if multiple indications
+                    self.ledIndications.setText(', '.join(self.indications))
+                    self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
+                    self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+
+    def query_patient_summary(self, id):
         query = QSqlQuery()
         query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
-            "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
-            "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
+                      "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
+                      "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
         query.bindValue(":id", id)
         bOk = query.exec()
-        if bOk:
-            query.next()
-            if query.isValid():
-                self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
-                                                  query.value('status'), query.value('inr_goal_from'),
-                                                  query.value('inr_goal_to'), query.value('indication_name')])
-
-                self.ledFirstName.setText(self.lst_patient_summary_info[0])
-                self.ledLastName.setText(self.lst_patient_summary_info[1])
-                self.ledDOB.setText(self.lst_patient_summary_info[2])
-                self.ledIndications.setText(self.lst_patient_summary_info[6])
-                self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
-                self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+        return bOk, query
 
     def populate_result_table(self):
         """
@@ -243,6 +252,34 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 QMessageBox.information(self, "Success", "Record deleted")
         self.populate_result_table()
 
+    def evt_btn_edit_patient_clicked(self):
+        """
+        Opens a dialog box to edit patient information
+        """
+        dlgEditPatient = DlgNewPatient()
+        dlgEditPatient.setWindowTitle("Edit Patient Information")
+        dlgEditPatient.lblHeader.setText("Update Information")
+        bOk, query = self.query_patient_summary(self.mrn)
+        if bOk:
+            while query.next():
+                if query.isValid():
+                    self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                      query.value('status'), query.value('inr_goal_from'),
+                                                      query.value('inr_goal_to'), query.value('indication_name'),
+                                                      query.value('status')])
+
+                    dlgEditPatient.ledMRN.setText(self.mrn)
+                    dlgEditPatient.ledFirstName.setText(self.lst_patient_summary_info[0])
+                    dlgEditPatient.ledLastName.setText(self.lst_patient_summary_info[1])
+                    dlgEditPatient.ledDOB.setText(self.lst_patient_summary_info[2])
+                    # dlgEditPatient.ledStatus.setText(self.lst_patient_summary_info[0])
+                    dlgEditPatient.ledGoalFrom.setText(str(self.lst_patient_summary_info[4]))
+                    dlgEditPatient.ledGoalTo.setText(str(self.lst_patient_summary_info[5]))
+
+        dlgEditPatient.show()
+        dlgEditPatient.exec_()
+        self.populate_patient_summary(id) # need to pass an argument for patient_id
+
     def return_selected_result_row(self):
         """
         Returns the database query for the selected table
@@ -277,6 +314,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 font = QtGui.QFont()
                 font.setBold(True)
                 self.current_weekly_dose.setFont(font)
+                self.current_weekly_dose.setForeground(QBrush(QColor("blue")))
 
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
@@ -489,6 +527,17 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
         query.bindValue(":com", self.txtComment.toPlainText())
         return query
+
+
+class DlgNewPatient(QDialog, Ui_DlgNewPatient):
+    """
+    Dialog box for adding new patients
+    """
+
+    def __init__(self):
+        super(DlgNewPatient, self).__init__()
+        self.setupUi(self)
+
 
 
 def style_line_edit_error():
