@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>Ui_DlgNewPatient</class>
+ <widget class="QDialog" name="Ui_DlgNewPatient">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
-    <height>341</height>
+    <width>630</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="palette">
@@ -81,9 +81,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>0</y>
-     <width>491</width>
-     <height>331</height>
+     <y>10</y>
+     <width>607</width>
+     <height>514</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="lytMain">
@@ -227,62 +227,129 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="lblIndications">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Indication(s)</string>
-        </property>
-       </widget>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line_indication_top">
+      <property name="lineWidth">
+       <number>3</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblIndications">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Indication(s)</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytIndicationMain">
+      <item>
+       <layout class="QVBoxLayout" name="lytIndicationLeft">
+        <item>
+         <layout class="QHBoxLayout" name="lytIndicationAdd">
+          <item>
+           <widget class="QLineEdit" name="ledNewIndication">
+            <property name="placeholderText">
+             <string>Type new indication here</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnNewIndication">
+            <property name="toolTip">
+             <string>Add new indication to list of indications in the database</string>
+            </property>
+            <property name="text">
+             <string>Add</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="lstExistingIndications"/>
+        </item>
+       </layout>
       </item>
-      <item row="6" column="1">
-       <widget class="QComboBox" name="cmbIndication">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>15</number>
-        </property>
-        <property name="placeholderText">
-         <string/>
-        </property>
-        <property name="duplicatesEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
+      <item>
+       <layout class="QVBoxLayout" name="lytButton">
+        <item>
+         <spacer name="spcButtonTop">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ledAddIndication">
+          <property name="toolTip">
+           <string>Add indication to patient's profile</string>
+          </property>
+          <property name="text">
+           <string>--&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRemove">
+          <property name="toolTip">
+           <string>Remove indication from patient's profile</string>
+          </property>
+          <property name="text">
+           <string>&lt;--</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spcButtonBottom">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
-      <item row="7" column="1">
-       <widget class="QTextEdit" name="txtIndication">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="documentTitle">
-         <string/>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="placeholderText">
-         <string>Will display selected indication(s) for anticoagulation</string>
-        </property>
-       </widget>
+      <item>
+       <widget class="QListWidget" name="lstPatientIndications"/>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line_indication_bottom">
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="lineWidth">
+       <number>3</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="lytBottom">
@@ -308,6 +375,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="placeholderText">
+         <string>Enter lower end of INR goal</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -325,7 +395,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="ledGoalTo"/>
+       <widget class="QLineEdit" name="ledGoalTo">
+        <property name="placeholderText">
+         <string>Enter higher end of INR goal</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
