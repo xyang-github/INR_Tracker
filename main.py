@@ -349,6 +349,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         # signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
         self.btnCancel.clicked.connect(self.close)
+        self.rbtnGoal_New.clicked.connect(self.evt_rbtn_new_goal_clicked)
+        self.rbtn_Goal_Default.clicked.connect(self.evt_rbt_default_goal_clicked)
 
     def evt_btn_ok_clicked(self):
         """Insert data into the INR table if no error message is returned"""
@@ -562,6 +564,16 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":goal_to", self.new_inr_goal_to)
         query.bindValue(":com", self.txtComment.toPlainText())
         return query
+
+    def evt_rbtn_new_goal_clicked(self):
+        """Reveals the groupbox for new INR goal entry when the 'new goal' radio button is clicked"""
+        self.gbxNewGoal.setHidden(False)
+
+    def evt_rbt_default_goal_clicked(self):
+        """Hides the groupbox for new INR goal entry when the 'default' radio button is clicked"""
+        self.gbxNewGoal.setHidden(True)
+        self.ledNewGoalFrom.setText("")
+        self.ledNewGoalTo.setText("")
 
 
 class DlgNewPatient(QDialog, Ui_DlgNewPatient):
