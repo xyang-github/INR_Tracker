@@ -72,6 +72,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
+        self.indications = []
 
         # Result table formatting
         self.tblResult.setAlternatingRowColors(True)
@@ -101,7 +102,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Populate information in the summary tab in the patient profile
         :param id:  the medical record number for patient
         """
-        self.indications = []
         bOk, query = self.query_patient_summary(id)
         if bOk:
             while query.next():
@@ -636,14 +636,50 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.lstExistingIndications.sortItems()
 
         # Signals
-        self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication)
-        #self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication)
+        self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
+        self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
+        self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
 
-    def evt_btn_add_patient_indication(self):
+    def evt_btn_add_patient_indication_clicked(self):
+        """Move list item from indication list widget to patient indication list widget"""
         selected_row = self.lstExistingIndications.row(self.lstExistingIndications.currentItem())
         selected_item = self.lstExistingIndications.takeItem(selected_row)
         self.lstPatientIndications.addItem(selected_item)
         self.lstPatientIndications.sortItems()
+
+    def evt_btn_remove_patient_indication_clicked(self):
+        """Move list item from patient indication list widget to indication list widget"""
+        selected_row = self.lstPatientIndications.row(self.lstPatientIndications.currentItem())
+        selected_item = self.lstPatientIndications.takeItem(selected_row)
+        self.lstExistingIndications.addItem(selected_item)
+        self.lstExistingIndications.sortItems()
+
+    def evt_btn_new_indication_clicked(self):
+
+        self.new_indication = self.ledNewIndication.text()
+        error_message = self.validate_new_indication()
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+            self.ledNewIndication.setStyleSheet(style_line_edit_error())
+        else:
+            pass
+
+    def validate_new_indication(self):
+        """Validates text input into the line edit box for new indication"""
+        string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
+        error_message = ""
+
+        if not re.match(string_format, self.new_indication):
+            error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
+            print(error_message)  # this does not register
+        elif len(self.new_indication) <= 2:
+            error_message += "Indication name must contain more than two characters.\n"
+        else:
+            if self.new_indication in self.indications:
+                error_message += "This indication already exists.\n"
+
+        return error_message
+
 
 def style_line_edit_error():
     """
