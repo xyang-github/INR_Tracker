@@ -118,6 +118,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             self.ledIndications.setText(', '.join(self.indications))
             self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
             self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
+            if self.lst_patient_summary_info[7] == "A":
+                self.ledStatus.setText("Active")
+            else:
+                self.ledStatus.setText("Inactive")
 
     def query_patient_summary(self, id):
         """
@@ -213,9 +217,17 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         original_day = int(original_date[2])
         original_date_object = QDate(original_year, original_month, original_day)
 
-        # Gets the INR goal for the specific result
-        inr_goal = query.value('inr_goal_from') + "-" + query.value('inr_goal_to')
-        dlgEditResult.rbtn_Goal_Default.setText(f"Default Goal: {inr_goal}")
+        # Gets the INR goals specified for the patient, and for the specific INR result
+        inr_goal_from = query.value('inr_goal_from')
+        inr_goal_to = query.value('inr_goal_to')
+        patient_inr_goal_from, patient_inr_goal_to = dlgEditResult.query_get_patient_inr_goal()
+
+        # Toggles INR goal radio buttons based on the INR goal retrieved
+        if patient_inr_goal_from != query.value('inr_goal_from') and patient_inr_goal_to != query.value('inr_goal_to'):
+            dlgEditResult.rbtnGoal_New.setChecked(True)
+            dlgEditResult.evt_rbtn_new_goal_clicked()
+            dlgEditResult.ledNewGoalFrom.setText(inr_goal_from)
+            dlgEditResult.ledNewGoalTo.setText(inr_goal_to)
 
         # Sets line edit box to the values of the selected row
         dlgEditResult.dteDate.setDate(original_date_object)
@@ -263,7 +275,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_edit_patient_clicked(self):
         """Opens a dialog box to edit patient information"""
-        dlgEditPatient = DlgNewPatient()
+        dlgEditPatient = DlgNewPatient(self.mrn, self.indications)
         dlgEditPatient.setWindowTitle("Edit Patient Information")
         dlgEditPatient.lblHeader.setText("Update Information")
         bOk, query = self.query_patient_summary(self.mrn)
@@ -284,7 +296,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         dlgEditPatient.show()
         dlgEditPatient.exec_()
-        self.populate_patient_summary(id) # need to pass an argument for patient_id
+        self.populate_patient_summary(id)  # need to pass an argument for patient_id
 
     def return_selected_result_row(self):
         """Returns the database query for the selected table"""
@@ -353,7 +365,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
         self.btnCancel.clicked.connect(self.close)
         self.rbtnGoal_New.clicked.connect(self.evt_rbtn_new_goal_clicked)
-        self.rbtn_Goal_Default.clicked.connect(self.evt_rbt_default_goal_clicked)
+        self.rbtn_Goal_Default.clicked.connect(self.evt_rbtn_default_goal_clicked)
 
     def evt_btn_ok_clicked(self):
         """Insert data into the INR table if no error message is returned"""
@@ -497,7 +509,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                       ("Saturday", self.ledSaturday.text()),
                       ("Sunday", self.ledSunday.text())]
 
-        format_string = "^[0-9]\d*(\.\d+)?$"  # only positive integers and decimal numbers
+        format_string ="^[0-9]\d*(\.\d+)?$"  # only positive integers and decimal numbers
 
         if self.ledResult.text() == "":
             error_message += "INR result cannot be blank.\n"
@@ -534,6 +546,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
                                  "or decimal number.\n"
                 self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+            elif Decimal(self.ledNewGoalFrom.text()) >= Decimal(self.ledNewGoalTo.text()):
+                error_message += "The INR range is not valid.\n"
             else:
                 self.new_inr_goal_from = "{:.1f}".format(Decimal(self.ledNewGoalFrom.text()))
                 self.new_inr_goal_to = "{:.1f}".format(Decimal(self.ledNewGoalTo.text()))
@@ -594,21 +608,42 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         """Reveals the groupbox for new INR goal entry when the 'new goal' radio button is clicked"""
         self.gbxNewGoal.setHidden(False)
 
-    def evt_rbt_default_goal_clicked(self):
+    def evt_rbtn_default_goal_clicked(self):
         """Hides the groupbox for new INR goal entry when the 'default' radio button is clicked"""
         self.gbxNewGoal.setHidden(True)
-        self.ledNewGoalFrom.setText("")
-        self.ledNewGoalTo.setText("")
 
 
 class DlgNewPatient(QDialog, Ui_DlgNewPatient):
     """Dialog box for adding new patients"""
-
-    def __init__(self):
+    def __init__(self, id, patient_indications):
         super(DlgNewPatient, self).__init__()
         self.setupUi(self)
+        self.mrn = id
+        self.indications = patient_indications
+        self.ledMRN.setReadOnly(True)
 
+        # Populate the patient indication list box from patient table
+        self.lstPatientIndications.addItems(self.indications)
+        self.lstPatientIndications.sortItems()
 
+        # Populate the indication list box from the indication table
+        query = QSqlQuery()
+        bOk = query.exec("SELECT indication_name FROM indication")
+        if bOk:
+            while query.next():
+                if query.value('indication_name') not in self.indications:
+                    self.lstExistingIndications.addItem(query.value('indication_name'))
+        self.lstExistingIndications.sortItems()
+
+        # Signals
+        self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication)
+        #self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication)
+
+    def evt_btn_add_patient_indication(self):
+        selected_row = self.lstExistingIndications.row(self.lstExistingIndications.currentItem())
+        selected_item = self.lstExistingIndications.takeItem(selected_row)
+        self.lstPatientIndications.addItem(selected_item)
+        self.lstPatientIndications.sortItems()
 
 def style_line_edit_error():
     """
