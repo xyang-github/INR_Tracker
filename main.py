@@ -334,7 +334,10 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledResult.setFocus()
         self.gbxNewGoal.setHidden(True)
 
-        # set default values for doses
+        self.patient_inr_goal_from, self.patient_inr_goal_to = self.query_get_patient_inr_goal()
+        self.rbtn_Goal_Default.setText(f"Default: {self.patient_inr_goal_from} - {self.patient_inr_goal_to}")
+
+        # set default values for line edit boxes
         self.set_default_values()
 
         # signal for text change in doses
@@ -354,7 +357,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
     def evt_btn_ok_clicked(self):
         """Insert data into the INR table if no error message is returned"""
-        error_message = self.validate_entry()
+        error_message = self.validate_entry_format()
 
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
@@ -374,7 +377,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
     def evt_btn_update_result_clicked(self):
         """Update result entry based on the selected table row"""
-        error_message = self.validate_entry()
+        error_message = self.validate_entry_format()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
@@ -428,15 +431,20 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 else:
                     QMessageBox.critical(self, "Error", "No previous doses detected on record.")
                     self.chkNoChanges.setChecked(False)
+                    self.set_read_only_false()
         else:
-            self.ledMonday.setReadOnly(False)
-            self.ledTuesday.setReadOnly(False)
-            self.ledWednesday.setReadOnly(False)
-            self.ledThursday.setReadOnly(False)
-            self.ledFriday.setReadOnly(False)
-            self.ledSaturday.setReadOnly(False)
-            self.ledSunday.setReadOnly(False)
+            self.set_read_only_false()
             self.set_default_values()
+
+    def set_read_only_false(self):
+        """Set line edit boxes for daily doses to editable"""
+        self.ledMonday.setReadOnly(False)
+        self.ledTuesday.setReadOnly(False)
+        self.ledWednesday.setReadOnly(False)
+        self.ledThursday.setReadOnly(False)
+        self.ledFriday.setReadOnly(False)
+        self.ledSaturday.setReadOnly(False)
+        self.ledSunday.setReadOnly(False)
 
     def calculate_weekly_dose(self):
         """Calculates the total dose of warfarin, and displays in line edit box"""
@@ -463,8 +471,10 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSaturday.setText("0")
         self.ledSunday.setText("0")
         self.ledTotal.setText("")
+        self.ledNewGoalTo.setText("0")
+        self.ledNewGoalFrom.setText("0")
 
-    def validate_entry(self):
+    def validate_entry_format(self):
         """Returns an error message based on validation. Error message will be blank if no errors."""
         error_message = ""
 
@@ -477,7 +487,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSaturday.setStyleSheet("")
         self.ledSunday.setStyleSheet("")
         self.ledNewGoalFrom.setStyleSheet("")
-        self.ledNewGoalTo.setStylesheet("")
+        self.ledNewGoalTo.setStyleSheet("")
 
         daily_dose = [("Monday", self.ledMonday.text()),
                       ("Tuesday", self.ledTuesday.text()),
@@ -509,37 +519,46 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 command = f"self.led{day[0]}.setStyleSheet(style_line_edit_error())"
                 eval(command)
 
-        if self.rbtnGoal_New.isChecked() and self.ledNewGoalFrom.text() == "":
-            error_message += "New INR goal cannot be blank.\n"
-            self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
-        elif not re.match(format_string, self.ledNewGoalFrom.text()):
-            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
-                             "or decimal number.\n"
-            self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+        if self.rbtnGoal_New.isChecked():
+            if self.ledNewGoalFrom.text() == "" or self.ledNewGoalFrom.text() == "0":
+                error_message += "New INR goal cannot be blank or 0.\n"
+                self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+            elif not re.match(format_string, self.ledNewGoalFrom.text()):
+                error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                                 "or decimal number.\n"
+                self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+            elif self.ledNewGoalTo.text() == "" or self.ledNewGoalTo.text() == "0":
+                error_message += "New INR goal cannot be blank or 0.\n"
+                self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+            elif not re.match(format_string, self.ledNewGoalTo.text()):
+                error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                                 "or decimal number.\n"
+                self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+            else:
+                self.new_inr_goal_from = "{:.1f}".format(Decimal(self.ledNewGoalFrom.text()))
+                self.new_inr_goal_to = "{:.1f}".format(Decimal(self.ledNewGoalTo.text()))
 
-        if self.rbtnGoal_New.isChecked() and self.ledNewGoalTo.text() == "":
-            error_message += "New INR goal cannot be blank.\n"
-            self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
-        elif not re.match(format_string, self.ledNewGoalTo.text()):
-            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
-                             "or decimal number.\n"
-            self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+                patient_inr_goal_from, patient_inr_goal_to = self.query_get_patient_inr_goal()
 
-        query = QSqlQuery()
-        query.prepare("SELECT inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
-        bOk = query.exec()
-        if bOk:
-            patient_inr_goal_from = query.value('inr_goal_from')
-            patient_inr_goal_to = query.value('inr_goal_to')
-
-            self.new_inr_goal_from = "{:.2f}".format(Decimal(self.ledGoalFrom.text()))
-            self.new_inr_goal_to = "{:.2f}".format(Decimal(self.ledGoalTo.text()))
-
-        if self.rbtnGoal_New.isChecked() and (self.new_inr_goal_from == patient_inr_goal_from
-                                              and self.new_inr_goal_to == patient_inr_goal_to):
-            error_message += "The new INR goal matches the current INR goal for the patient."
+                if self.new_inr_goal_from == str(patient_inr_goal_from) and self.new_inr_goal_to == str(patient_inr_goal_to):
+                    error_message += "The new INR goal matches the current INR goal for the patient.\n"
+                    self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+                    self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
 
         return error_message
+
+    def query_get_patient_inr_goal(self):
+        """Return the patient's inr goal from the patient table"""
+        query = QSqlQuery()
+        query.prepare("SELECT inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            query.next()
+            patient_inr_goal_from = query.value('inr_goal_from')
+            print(patient_inr_goal_from)
+            patient_inr_goal_to = query.value('inr_goal_to')
+        return patient_inr_goal_from, patient_inr_goal_to
 
     def inr_table_prepare_bind_query(self, sql_command):
         """
@@ -560,8 +579,14 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":fri", "{:.2f}".format(Decimal(self.ledFriday.text())))
         query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
         query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
-        query.bindValue(":goal_from", self.new_inr_goal_from)
-        query.bindValue(":goal_to", self.new_inr_goal_to)
+
+        if self.rbtnGoal_New.isChecked():
+            query.bindValue(":goal_from", self.new_inr_goal_from)
+            query.bindValue(":goal_to", self.new_inr_goal_to)
+        if self.rbtn_Goal_Default.isChecked():
+            query.bindValue(":goal_from", self.patient_inr_goal_from)
+            query.bindValue(":goal_to", self.patient_inr_goal_to)
+
         query.bindValue(":com", self.txtComment.toPlainText())
         return query
 
