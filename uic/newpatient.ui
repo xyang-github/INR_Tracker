@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Ui_DlgNewPatient</class>
- <widget class="QDialog" name="Ui_DlgNewPatient">
+ <class>DlgNewPatient</class>
+ <widget class="QDialog" name="DlgNewPatient">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -299,7 +299,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="ledAddIndication">
+         <widget class="QPushButton" name="btnAddIndication">
           <property name="toolTip">
            <string>Add indication to patient's profile</string>
           </property>
@@ -309,7 +309,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnRemove">
+         <widget class="QPushButton" name="btnRemoveIndication">
           <property name="toolTip">
            <string>Remove indication from patient's profile</string>
           </property>
