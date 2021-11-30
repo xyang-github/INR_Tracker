@@ -68,9 +68,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
-    """
-    Dialog box for patient profile
-    """
+    """Dialog box for patient profile"""
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
@@ -112,11 +110,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                                                       query.value('status'), query.value('inr_goal_from'),
                                                       query.value('inr_goal_to'), query.value('indication_name'),
                                                       query.value('status')])
+                    self.indications.append(self.lst_patient_summary_info[6])  # create a list if multiple indications
 
             self.ledFirstName.setText(self.lst_patient_summary_info[0])
             self.ledLastName.setText(self.lst_patient_summary_info[1])
             self.ledDOB.setText(self.lst_patient_summary_info[2])
-            self.indications.append(self.lst_patient_summary_info[6])  # create a list if multiple indications
             self.ledIndications.setText(', '.join(self.indications))
             self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
             self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
@@ -136,14 +134,12 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         return bOk, query
 
     def populate_result_table(self):
-        """
-        Populates the result table widget with information from the database
-        """
+        """Populates the result table widget with information from the database"""
         self.tblResult.clearContents()  # clears the table content of old information before populating with newer data
         self.tblResult.setRowCount(0)  # resets row count
 
         query = QSqlQuery()
-        query.prepare("SELECT inr_id, date, result, (inr_goal_from || '-' || inr_goal_to) AS goal, "
+        query.prepare("SELECT inr_id, date, result, (i.inr_goal_from || '-' || i.inr_goal_to) AS goal, "
                       "(dose_mon + dose_tue + dose_wed + dose_thu + dose_fri + dose_sat + dose_sun) AS total_dose, "
                       "comment FROM inr i JOIN patient p ON  p.patient_id = i.patient_id "
                       "WHERE p.patient_id = :id ORDER BY date DESC")
@@ -196,7 +192,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_edit_result_clicked(self):
         """Creates a dialog box to update results to the database."""
-        self.get_current_row_and_inr_id()
+        try:
+            self.get_current_row_and_inr_id()
+        except AttributeError:
+            QMessageBox.critical(self, "Error", "No entries to edit.")
+            return
 
         dlgEditResult = DlgAddResult(self.mrn, self.current_selection_inr_id)
         dlgEditResult.setWindowTitle("Edit Result")
@@ -212,6 +212,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         original_month = int(original_date[1])
         original_day = int(original_date[2])
         original_date_object = QDate(original_year, original_month, original_day)
+
+        # Gets the INR goal for the specific result
+        inr_goal = query.value('inr_goal_from') + "-" + query.value('inr_goal_to')
+        dlgEditResult.rbtn_Goal_Default.setText(f"Default Goal: {inr_goal}")
 
         # Sets line edit box to the values of the selected row
         dlgEditResult.dteDate.setDate(original_date_object)
@@ -240,7 +244,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_delete_result_clicked(self):
         """Delete record from the table and database"""
-        self.get_current_row_and_inr_id()
+        try:
+            self.get_current_row_and_inr_id()
+        except AttributeError:
+            QMessageBox.critical(self, "Error", "No entries to delete.")
+            return
 
         double_check_msg = QMessageBox.question(self, "Delete Result",
                              f"You have selected row {self.current_selection_row + 1} to be deleted.")
@@ -282,7 +290,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Returns the database query for the selected table"""
         query = QSqlQuery()
         query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
-                      "dose_sat, dose_sun, comment from inr WHERE inr_id = :id")
+                      "dose_sat, dose_sun, comment, inr_goal_from, inr_goal_to from inr WHERE inr_id = :id")
         query.bindValue(":id", self.current_selection_inr_id)
         bOk = query.exec()
         if bOk:
@@ -324,6 +332,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.inr_id = inr_id  # inr_id for the selected result
         self.dteDate.setDate(QDate.currentDate())
         self.ledResult.setFocus()
+        self.gbxNewGoal.setHidden(True)
 
         # set default values for doses
         self.set_default_values()
@@ -350,7 +359,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         else:
             sql_command = """
             INSERT INTO inr (patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, dose_sat, 
-            dose_sun, comment) VALUES (:id, :date, :result, :mon, :tue, :wed, :thu, :fri, :sat, :sun, :com)
+            dose_sun, comment, inr_goal_from, inr_goal_to) 
+            VALUES (:id, :date, :result, :mon, :tue, :wed, :thu, :fri, :sat, :sun, :com, :goal_from, :goal_to)
             """
             query = self.inr_table_prepare_bind_query(sql_command)
             bOk = query.exec()
@@ -368,8 +378,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         else:
             sql_command = """
             UPDATE inr SET patient_id = :id, date = :date, result = :result, dose_mon = :mon, dose_tue = :tue, 
-            dose_wed = :wed, dose_thu = :thu, dose_fri = :fri, dose_sat = :sat, dose_sun = :sun, comment = :com 
-            WHERE inr_id = :inr_id
+            dose_wed = :wed, dose_thu = :thu, dose_fri = :fri, dose_sat = :sat, dose_sun = :sun, comment = :com,
+            inr_goal_from = :goal_from, inr_goal_to = :goal_to WHERE inr_id = :inr_id
             """
             query = self.inr_table_prepare_bind_query(sql_command)
             query.bindValue(":inr_id", int(self.inr_id))
@@ -464,6 +474,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledFriday.setStyleSheet("")
         self.ledSaturday.setStyleSheet("")
         self.ledSunday.setStyleSheet("")
+        self.ledNewGoalFrom.setStyleSheet("")
+        self.ledNewGoalTo.setStylesheet("")
 
         daily_dose = [("Monday", self.ledMonday.text()),
                       ("Tuesday", self.ledTuesday.text()),
@@ -495,6 +507,36 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 command = f"self.led{day[0]}.setStyleSheet(style_line_edit_error())"
                 eval(command)
 
+        if self.rbtnGoal_New.isChecked() and self.ledNewGoalFrom.text() == "":
+            error_message += "New INR goal cannot be blank.\n"
+            self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string, self.ledNewGoalFrom.text()):
+            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                             "or decimal number.\n"
+            self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
+
+        if self.rbtnGoal_New.isChecked() and self.ledNewGoalTo.text() == "":
+            error_message += "New INR goal cannot be blank.\n"
+            self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string, self.ledNewGoalTo.text()):
+            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                             "or decimal number.\n"
+            self.ledNewGoalTo.setStyleSheet(style_line_edit_error())
+
+        query = QSqlQuery()
+        query.prepare("SELECT inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
+        bOk = query.exec()
+        if bOk:
+            patient_inr_goal_from = query.value('inr_goal_from')
+            patient_inr_goal_to = query.value('inr_goal_to')
+
+            self.new_inr_goal_from = "{:.2f}".format(Decimal(self.ledGoalFrom.text()))
+            self.new_inr_goal_to = "{:.2f}".format(Decimal(self.ledGoalTo.text()))
+
+        if self.rbtnGoal_New.isChecked() and (self.new_inr_goal_from == patient_inr_goal_from
+                                              and self.new_inr_goal_to == patient_inr_goal_to):
+            error_message += "The new INR goal matches the current INR goal for the patient."
+
         return error_message
 
     def inr_table_prepare_bind_query(self, sql_command):
@@ -516,6 +558,8 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":fri", "{:.2f}".format(Decimal(self.ledFriday.text())))
         query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
         query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
+        query.bindValue(":goal_from", self.new_inr_goal_from)
+        query.bindValue(":goal_to", self.new_inr_goal_to)
         query.bindValue(":com", self.txtComment.toPlainText())
         return query
 
