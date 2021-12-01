@@ -73,7 +73,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
-        self.indications = []
 
         # Result table formatting
         self.tblResult.setAlternatingRowColors(True)
@@ -103,28 +102,29 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Populate information in the summary tab in the patient profile
         :param id:  the medical record number for patient
         """
-        bOk, query = self.query_patient_summary(id)
+        self.list_patient_indications = []
+        bOk, query = self.query_get_patient_summary_info(id)
         if bOk:
             while query.next():
                 if query.isValid():
-                    self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
-                                                      query.value('status'), query.value('inr_goal_from'),
-                                                      query.value('inr_goal_to'), query.value('indication_name'),
-                                                      query.value('status')])
-                    self.indications.append(self.lst_patient_summary_info[6])  # create a list if multiple indications
+                    self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                       query.value('status'), query.value('inr_goal_from'),
+                                                       query.value('inr_goal_to'), query.value('indication_name'),
+                                                       query.value('status')])
+                    self.list_patient_indications.append(self.list_patient_summary_info[6])  # create a list if multiple indications
 
-            self.ledFirstName.setText(self.lst_patient_summary_info[0])
-            self.ledLastName.setText(self.lst_patient_summary_info[1])
-            self.ledDOB.setText(self.lst_patient_summary_info[2])
-            self.ledIndications.setText(', '.join(self.indications))
-            self.ledGoal.setText(f"{self.lst_patient_summary_info[4]} - {self.lst_patient_summary_info[5]}")
-            self.lblName.setText(f"{self.lst_patient_summary_info[1]}, {self.lst_patient_summary_info[0]}")
-            if self.lst_patient_summary_info[7] == "A":
+            self.ledFirstName.setText(self.list_patient_summary_info[0])
+            self.ledLastName.setText(self.list_patient_summary_info[1])
+            self.ledDOB.setText(self.list_patient_summary_info[2])
+            self.ledIndications.setText(', '.join(self.list_patient_indications))
+            self.ledGoal.setText(f"{self.list_patient_summary_info[4]} - {self.list_patient_summary_info[5]}")
+            self.lblName.setText(f"{self.list_patient_summary_info[1]}, {self.list_patient_summary_info[0]}")
+            if self.list_patient_summary_info[7] == "A":
                 self.ledStatus.setText("Active")
             else:
                 self.ledStatus.setText("Inactive")
 
-    def query_patient_summary(self, id):
+    def query_get_patient_summary_info(self, id):
         """
         Prepares and executes a query search for patient information joining of multiple tables
         :param id: patient_id from patient database
@@ -278,7 +278,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Opens a dialog box to edit patient information"""
 
         # Updates list of indications to pass to edit patient dialog box
-        self.indications = []
+        self.list_patient_indications = []
         query = QSqlQuery()
         query.prepare("SELECT indication_name FROM patient p JOIN patient_indication pi "
                       "ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id "
@@ -287,31 +287,31 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         bOk = query.exec()
         if bOk:
             while query.next():
-                self.indications.append(query.value('indication_name'))
+                self.list_patient_indications.append(query.value('indication_name'))
 
-        dlgEditPatient = DlgNewPatient(self.mrn, self.indications)
+        dlgEditPatient = DlgNewPatient(self.mrn, self.list_patient_indications)
         dlgEditPatient.setWindowTitle("Edit Patient Information")
         dlgEditPatient.lblHeader.setText("Update Information")
         dlgEditPatient.populate_indication_list()
-        bOk, query = self.query_patient_summary(self.mrn)
+        bOk, query = self.query_get_patient_summary_info(self.mrn)
         if bOk:
             while query.next():
                 if query.isValid():
-                    self.lst_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
-                                                      query.value('status'), query.value('inr_goal_from'),
-                                                      query.value('inr_goal_to'), query.value('indication_name'),
-                                                      query.value('status')])
+                    self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                       query.value('status'), query.value('inr_goal_from'),
+                                                       query.value('inr_goal_to'), query.value('indication_name'),
+                                                       query.value('status')])
 
                     dlgEditPatient.ledMRN.setText(self.mrn)
-                    dlgEditPatient.ledFirstName.setText(self.lst_patient_summary_info[0])
-                    dlgEditPatient.ledLastName.setText(self.lst_patient_summary_info[1])
-                    dlgEditPatient.ledDOB.setText(self.lst_patient_summary_info[2])
-                    dlgEditPatient.ledGoalFrom.setText(str(self.lst_patient_summary_info[4]))
-                    dlgEditPatient.ledGoalTo.setText(str(self.lst_patient_summary_info[5]))
+                    dlgEditPatient.ledFirstName.setText(self.list_patient_summary_info[0])
+                    dlgEditPatient.ledLastName.setText(self.list_patient_summary_info[1])
+                    dlgEditPatient.ledDOB.setText(self.list_patient_summary_info[2])
+                    dlgEditPatient.ledGoalFrom.setText(str(self.list_patient_summary_info[4]))
+                    dlgEditPatient.ledGoalTo.setText(str(self.list_patient_summary_info[5]))
 
         dlgEditPatient.show()
         dlgEditPatient.exec_()
-        self.populate_patient_summary(id)  # need to pass an argument for patient_id
+        self.populate_patient_summary(self.mrn)
 
     def return_selected_result_row(self):
         """Returns the database query for the selected table"""
@@ -746,7 +746,8 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
 
             for id in patient_indication_id:
                 query = QSqlQuery()
-                query.prepare("INSERT INTO patient_indication (indication_id, patient_id) VALUES (:indication_id, :patient_id)")
+                query.prepare("INSERT INTO patient_indication (indication_id, patient_id) "
+                              "VALUES (:indication_id, :patient_id)")
                 query.bindValue(":indication_id", id)
                 query.bindValue(":patient_id", self.mrn)
                 query.exec()
