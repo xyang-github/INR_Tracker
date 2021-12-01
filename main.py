@@ -627,8 +627,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.lstPatientIndications.sortItems()
 
         # Populate the indication list box from the indication table
-        query = QSqlQuery()
-        bOk = query.exec("SELECT indication_name FROM indication")
+        bOk, query = self.query_get_all_indications()
         if bOk:
             while query.next():
                 if query.value('indication_name') not in self.indications:
@@ -639,6 +638,12 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
         self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
         self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
+
+    def query_get_all_indications(self):
+        """Retrieves all indication ids and names from the indication table"""
+        query = QSqlQuery()
+        bOk = query.exec("SELECT indication_id, indication_name FROM indication")
+        return bOk, query
 
     def evt_btn_add_patient_indication_clicked(self):
         """Move list item from indication list widget to patient indication list widget"""
@@ -665,18 +670,29 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             pass
 
     def validate_new_indication(self):
-        """Validates text input into the line edit box for new indication"""
+        """Validates line edit box for new indication"""
         string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
         error_message = ""
 
         if not re.match(string_format, self.new_indication):
             error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
-            print(error_message)  # this does not register
-        elif len(self.new_indication) <= 2:
+            self.ledNewIndication.setStyleSheet(style_line_edit_error())
+
+        if len(self.new_indication) <= 2:
             error_message += "Indication name must contain more than two characters.\n"
-        else:
-            if self.new_indication in self.indications:
-                error_message += "This indication already exists.\n"
+            self.ledNewIndication.setStyleSheet(style_line_edit_error())
+
+        # Create a list of tuples of indication ids and names
+        bOk, query = self.query_get_all_indications()
+        if bOk:
+            all_indications = []
+            while query.next():
+                all_indications.append((query.value('indication_id'), query.value('indication_name')))
+
+            for indication in all_indications:
+                if self.new_indication == indication[1]:
+                    error_message += "This indication already exists.\n"
+                    self.ledNewIndication.setStyleSheet(style_line_edit_error())
 
         return error_message
 
