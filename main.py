@@ -1,6 +1,7 @@
 import sys
 import re
 from decimal import Decimal
+import datetime
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtWidgets import *
@@ -627,6 +628,8 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
         self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
         self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
+        self.buttonBox.accepted.connect(self.evt_btn_ok_clicked)
+        self.buttonBox.rejected.connect(self.close)
 
     def populate_indication_list(self):
         """Populate list widgets for patient indications and database indications"""
@@ -681,6 +684,82 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
                 QMessageBox.information(self, "Success", "Indication added to the database.")
             self.populate_indication_list()
             self.ledNewIndication.setText("")
+
+    def evt_btn_ok_clicked(self):
+        error_message = self.validate_patient_information()
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+
+    def validate_patient_information(self):
+        error_message = ""
+        format_string_name = "[\w+\-]+$"
+        format_string_birthdate = "\d{4}-\d{2}-\d{2}"
+        format_string_inr_goal = "^[0-9]\d*(\.\d+)?$"
+
+        self.ledFirstName.setStyleSheet("")
+        self.ledLastName.setStyleSheet("")
+        self.ledDOB.setStyleSheet("")
+        self.ledGoalFrom.setStyleSheet("")
+        self.ledGoalTo.setStyleSheet("")
+
+        # Test first name
+        if self.ledFirstName.text() == "":
+            error_message += "First name cannot be blank.\n"
+            self.ledFirstName.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string_name, self.ledFirstName.text()):
+            error_message += "First name can only contain letters and hyphens.\n"
+            self.ledFirstName.setStyleSheet(style_line_edit_error())
+
+        # Test last name
+        if self.ledLastName.text() == "":
+            error_message += "Last name cannot be blank.\n"
+            self.ledLastName.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string_name, self.ledLastName.text()):
+            error_message += "Last name can only contain letters and hyphens.\n"
+            self.ledLastName.setStyleSheet(style_line_edit_error())
+
+        # Test date of birth
+        if self.ledDOB.text() == "":
+            error_message += "Date of birth cannot be blank.\n"
+            self.ledDOB.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string_birthdate, self.ledDOB.text()):
+            error_message += "Date of birth must be in the format of YYYY-MM-DD.\n"
+            self.ledDOB.setStyleSheet(style_line_edit_error())
+        else:
+            birthdate = list(map(int, self.ledDOB.text().split("-")))
+            try:
+                test_birthdate = datetime.datetime(birthdate[0], birthdate[1], birthdate[2])
+            except ValueError:
+                error_message += "Invalid birthdate.\n"
+                self.ledDOB.setStyleSheet(style_line_edit_error())
+
+        # Test indication
+        if self.lstPatientIndications.count() == 0:
+            error_message += "Patient must have at least one indication.\n"
+
+        # Test INR goal
+        if self.ledGoalFrom.text() == "" or self.ledGoalFrom.text() == "0":
+            error_message += "INR goal cannot be blank or 0.\n"
+            self.ledGoalFrom.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string_inr_goal, self.ledGoalFrom.text()):
+            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                             "or decimal number.\n"
+            self.ledGoalFrom.setStyleSheet(style_line_edit_error())
+
+        if self.ledGoalTo.text() == "" or self.ledGoalTo.text() == "0":
+            error_message += "New INR goal cannot be blank or 0.\n"
+            self.ledGoalTo.setStyleSheet(style_line_edit_error())
+        elif not re.match(format_string_inr_goal, self.ledGoalTo.text()):
+            error_message += "Invalid format for INR goal. Please enter a result that is a positive integer " \
+                             "or decimal number.\n"
+            self.ledGoalTo.setStyleSheet(style_line_edit_error())
+        else:
+            if Decimal(self.ledGoalFrom.text()) >= Decimal(self.ledGoalTo.text()):
+                error_message += "The INR range is not valid.\n"
+                self.ledGoalFrom.setStyleSheet(style_line_edit_error())
+                self.ledGoalTo.setStyleSheet(style_line_edit_error())
+
+        return error_message
 
     def validate_new_indication(self):
         """Validates line edit box for new indication"""
