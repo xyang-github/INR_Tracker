@@ -621,11 +621,22 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.mrn = id
         self.indications = patient_indications
         self.ledMRN.setReadOnly(True)
+        self.populate_indication_list()
+
+        # Signals
+        self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
+        self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
+        self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
+
+    def populate_indication_list(self):
+        """Populate list widgets for patient indications and database indications"""
+
+        self.lstPatientIndications.clear()
+        self.lstExistingIndications.clear()
 
         # Populate the patient indication list box from patient table
         self.lstPatientIndications.addItems(self.indications)
         self.lstPatientIndications.sortItems()
-
         # Populate the indication list box from the indication table
         bOk, query = self.query_get_all_indications()
         if bOk:
@@ -633,11 +644,6 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
                 if query.value('indication_name') not in self.indications:
                     self.lstExistingIndications.addItem(query.value('indication_name'))
         self.lstExistingIndications.sortItems()
-
-        # Signals
-        self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
-        self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
-        self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
 
     def query_get_all_indications(self):
         """Retrieves all indication ids and names from the indication table"""
@@ -660,14 +666,21 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.lstExistingIndications.sortItems()
 
     def evt_btn_new_indication_clicked(self):
-
+        """Add new indication to database"""
         self.new_indication = self.ledNewIndication.text()
         error_message = self.validate_new_indication()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
         else:
-            pass
+            query = QSqlQuery()
+            query.prepare("INSERT INTO indication ('indication_name') VALUES (:ind)")
+            query.bindValue(":ind", self.new_indication.lower().strip(" "))
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Indication added to the database.")
+            self.populate_indication_list()
+            self.ledNewIndication.setText("")
 
     def validate_new_indication(self):
         """Validates line edit box for new indication"""
@@ -676,11 +689,9 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
 
         if not re.match(string_format, self.new_indication):
             error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
-            self.ledNewIndication.setStyleSheet(style_line_edit_error())
 
         if len(self.new_indication) <= 2:
             error_message += "Indication name must contain more than two characters.\n"
-            self.ledNewIndication.setStyleSheet(style_line_edit_error())
 
         # Create a list of tuples of indication ids and names
         bOk, query = self.query_get_all_indications()
@@ -692,7 +703,6 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             for indication in all_indications:
                 if self.new_indication == indication[1]:
                     error_message += "This indication already exists.\n"
-                    self.ledNewIndication.setStyleSheet(style_line_edit_error())
 
         return error_message
 
