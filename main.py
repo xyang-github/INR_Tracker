@@ -276,9 +276,23 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_edit_patient_clicked(self):
         """Opens a dialog box to edit patient information"""
+
+        # Updates list of indications to pass to edit patient dialog box
+        self.indications = []
+        query = QSqlQuery()
+        query.prepare("SELECT indication_name FROM patient p JOIN patient_indication pi "
+                      "ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id "
+                      "WHERE p.patient_id = :id")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            while query.next():
+                self.indications.append(query.value('indication_name'))
+
         dlgEditPatient = DlgNewPatient(self.mrn, self.indications)
         dlgEditPatient.setWindowTitle("Edit Patient Information")
         dlgEditPatient.lblHeader.setText("Update Information")
+        dlgEditPatient.populate_indication_list()
         bOk, query = self.query_patient_summary(self.mrn)
         if bOk:
             while query.next():
@@ -571,7 +585,6 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         if bOk:
             query.next()
             patient_inr_goal_from = query.value('inr_goal_from')
-            print(patient_inr_goal_from)
             patient_inr_goal_to = query.value('inr_goal_to')
         return patient_inr_goal_from, patient_inr_goal_to
 
@@ -616,7 +629,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
 class DlgNewPatient(QDialog, Ui_DlgNewPatient):
     """Dialog box for adding new patients"""
-    def __init__(self, id, patient_indications):
+    def __init__(self, id, patient_indications):  # each new instance, the indication list reverts back to the original
         super(DlgNewPatient, self).__init__()
         self.setupUi(self)
         self.mrn = id
@@ -639,6 +652,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
 
         # Populate the patient indication list box from patient table
         self.lstPatientIndications.addItems(self.indications)
+
         self.lstPatientIndications.sortItems()
         # Populate the indication list box from the indication table
         bOk, query = self.query_get_all_indications()
@@ -686,9 +700,59 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             self.ledNewIndication.setText("")
 
     def evt_btn_ok_clicked(self):
+        """Update patient and patient_indication tables"""
         error_message = self.validate_patient_information()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
+        else:
+            query = QSqlQuery()
+            query.prepare("UPDATE patient SET fname = :fname, lname = :lname, status = :status, "
+                          "inr_goal_from = :inr_goal_from, inr_goal_to = :inr_goal_to, dob = :dob "
+                          "WHERE patient_id = :id")
+
+            query.bindValue(":fname", self.ledFirstName.text().title())
+            query.bindValue(":lname", self.ledLastName.text().title())
+            query.bindValue(":dob", self.ledDOB.text())
+            if self.rbtnStatusActive.isChecked():
+                query.bindValue(":status", "A")
+            else:
+                query.bindValue(":status", "I")
+            query.bindValue(":inr_goal_from", self.ledGoalFrom.text())
+            query.bindValue(":inr_goal_to", self.ledGoalTo.text())
+            query.bindValue(":id", self.mrn)
+            query.exec()
+
+            # List of patient indication names
+            num_of_patient_indications = self.lstPatientIndications.count()
+
+            self.indications = []
+            for row in range(num_of_patient_indications):
+                list_widget_item = self.lstPatientIndications.item(row)
+                self.indications.append(list_widget_item.text())
+
+            # List of patient indication ids
+            patient_indication_id = []
+            bOk, query = self.query_get_all_indications()
+            if bOk:
+                while query.next():
+                    if query.value('indication_name') in self.indications:
+                        patient_indication_id.append(query.value('indication_id'))
+
+            # Clear all rows from patient_indication corresponding to patient_id
+            query = QSqlQuery()
+            query.prepare("DELETE FROM patient_indication WHERE patient_id = :id")
+            query.bindValue(":id", self.mrn)
+            query.exec()
+
+            for id in patient_indication_id:
+                query = QSqlQuery()
+                query.prepare("INSERT INTO patient_indication (indication_id, patient_id) VALUES (:indication_id, :patient_id)")
+                query.bindValue(":indication_id", id)
+                query.bindValue(":patient_id", self.mrn)
+                query.exec()
+
+            QMessageBox.information(self, "Success", "Patient profile has been updated.")
+            self.close()
 
     def validate_patient_information(self):
         error_message = ""
@@ -772,7 +836,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         if len(self.new_indication) <= 2:
             error_message += "Indication name must contain more than two characters.\n"
 
-        # Create a list of tuples of indication ids and names
+        # Create a list of tuples of indication ids and names from the indication table
         bOk, query = self.query_get_all_indications()
         if bOk:
             all_indications = []
