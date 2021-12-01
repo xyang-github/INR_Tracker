@@ -717,8 +717,9 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
                 query.bindValue(":status", "A")
             else:
                 query.bindValue(":status", "I")
-            query.bindValue(":inr_goal_from", self.ledGoalFrom.text())
-            query.bindValue(":inr_goal_to", self.ledGoalTo.text())
+
+            query.bindValue(":inr_goal_from", "{:.1f}".format(Decimal(self.ledGoalFrom.text())))
+            query.bindValue(":inr_goal_to", "{:.1f}".format(Decimal(self.ledGoalTo.text())))
             query.bindValue(":id", self.mrn)
             query.exec()
 
