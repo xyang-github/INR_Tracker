@@ -13,10 +13,7 @@ from gui.newpatient import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
-    """
-    Main window for application
-    """
-
+    """Main window for application"""
     def __init__(self):
         super(DlgMain, self).__init__()
         self.setupUi(self)
@@ -26,9 +23,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
 
     def evt_btn_search_clicked(self):
-        """
-        Creates database connection when the search button is clicked
-        """
+        """Creates database connection when the search button is clicked"""
         self.database = QSqlDatabase.addDatabase("QSQLITE")
         self.database.setDatabaseName("database.db")
         if self.database.open():
@@ -36,10 +31,14 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         else:
             QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
 
+    def evt_action_exit_triggered(self):
+        """
+        Exit the program when user clicks on File > Exit
+        """
+        sys.exit(app.exec_())
+
     def search_patient(self):
-        """
-        Find a match in the database with the provided MRN. Will show message boxes for errors.
-        """
+        """Find a match in the database with the provided MRN. Will show message boxes for errors."""
         self.mrn = self.ledMRN.text()
         if self.ledMRN.text() == "":
             QMessageBox.critical(self, "No MRN Entered", "Please enter a medical record number.")
@@ -61,18 +60,13 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         self.ledMRN.clear()  # clear text box after searching
 
-    def evt_action_exit_triggered(self):
-        """
-        Exit the program when user clicks on File > Exit
-        """
-        sys.exit(app.exec_())
-
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
     """Dialog box for patient profile"""
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
+        self.mrn = id
 
         # Result table formatting
         self.tblResult.setAlternatingRowColors(True)
@@ -86,8 +80,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.selectionModel().selectionChanged.connect(self.display_comment_column)
 
         # Populate patient data
-        self.mrn = id
-        self.populate_patient_summary(self.mrn)
+        self.populate_patient_summary()
         self.populate_result_table()
 
         # Event handlers
@@ -97,49 +90,169 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
         self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
 
-    def populate_patient_summary(self, id):
+    def evt_btn_add_result_clicked(self):
+        """Slot: creates a dialog box to add new INR results"""
+        dlgAddResult = DlgAddResult(self.mrn)
+        dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_ok_clicked)
+        dlgAddResult.show()
+        dlgAddResult.exec_()
+        self.populate_result_table()  # update the result table widget after adding a new value into the database
+
+    def evt_btn_edit_result_clicked(self):
         """
-        Populate information in the summary tab in the patient profile
-        :param id:  the medical record number for patient
+        Creates a dialog box to update results to the database.
+        1. Retrieve the row value and INR id of the selected row in the table widget
+        2. Send a query using the row id and row value to retrieve information from patient table
+        3. From the query, create a date object and patient-set INR goal
+        4. Populate line edit widgets with values directly from the query, date object and patient-set INR
         """
-        self.list_patient_indications = []
-        bOk, query = self.query_get_patient_summary_info(id)
+        try:
+            self.get_current_row_and_inr_id()
+        except AttributeError:
+            QMessageBox.critical(self, "Error", "No entries to edit.")
+            return
+
+        dlgEditResult = DlgAddResult(self.mrn, self.current_selection_inr_id)
+        dlgEditResult.setWindowTitle("Edit Result")
+        dlgEditResult.btnOK.setText("Update")
+
+        query = self.query_get_inr_information()
+        query.next()
+
+        # Get the QDate object for date associated with the result
+        original_date = query.value('date').split("-")
+        original_year = int(original_date[0])
+        original_month = int(original_date[1])
+        original_day = int(original_date[2])
+        original_date_object = QDate(original_year, original_month, original_day)
+
+        # Get the patient-set INR goal and the result-set INR goal
+        inr_goal_from = query.value('inr_goal_from')
+        inr_goal_to = query.value('inr_goal_to')
+        patient_inr_goal_from, patient_inr_goal_to = dlgEditResult.query_get_patient_inr_goal()
+
+        # Toggles radio buttons for default or new INR goal
+        if patient_inr_goal_from != query.value('inr_goal_from') and patient_inr_goal_to != query.value('inr_goal_to'):
+            dlgEditResult.rbtnGoal_New.setChecked(True)
+            dlgEditResult.evt_rbtn_new_goal_clicked()
+            dlgEditResult.ledNewGoalFrom.setText(inr_goal_from)
+            dlgEditResult.ledNewGoalTo.setText(inr_goal_to)
+
+        # Sets the text for the line edit widgets
+        dlgEditResult.dteDate.setDate(original_date_object)
+        dlgEditResult.ledResult.setText(query.value('result'))
+        dlgEditResult.ledMonday.setText(query.value('dose_mon'))
+        dlgEditResult.ledTuesday.setText(query.value('dose_tue'))
+        dlgEditResult.ledWednesday.setText(query.value('dose_wed'))
+        dlgEditResult.ledThursday.setText(query.value('dose_thu'))
+        dlgEditResult.ledFriday.setText(query.value('dose_fri'))
+        dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
+        dlgEditResult.ledSunday.setText(query.value('dose_sun'))
+        dlgEditResult.calculate_weekly_dose()
+        dlgEditResult.txtComment.setPlainText(query.value('comment'))
+
+        # Event handler
+        dlgEditResult.btnOK.clicked.connect(dlgEditResult.evt_btn_update_result_clicked)
+
+        dlgEditResult.show()
+        dlgEditResult.exec_()
+        self.populate_result_table()
+
+    def evt_btn_delete_result_clicked(self):
+        """
+        Delete record from the table and database
+        1. Get row index and inr id of the selected row in the result table widget
+        2. Verifies user's choice using a message box
+        3. Send a query to delete all fields with the corresponding inr_id in the inr table
+        4. Refresh result table widget
+        """
+        try:
+            self.get_current_row_and_inr_id()
+        except AttributeError:
+            QMessageBox.critical(self, "Error", "No entries to delete.")
+            return
+
+        double_check_msg = QMessageBox.question(self, "Delete Result",
+                             f"You have selected row {self.current_selection_row + 1} to be deleted.")
+        if double_check_msg == QMessageBox.Yes:
+            query = QSqlQuery()
+            query.prepare("DELETE FROM inr WHERE inr_id = :id")
+            query.bindValue(":id", self.current_selection_inr_id)
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Record deleted")
+        self.populate_result_table()
+
+    def evt_btn_edit_patient_clicked(self):
+        """
+        Opens a dialog box to edit patient information
+        1. Create/update a list of patient specific indication(s); this will be passed to the DlgNewPatient class to
+            later prevent displaying of duplicate indications
+        2. Create a dialog box to update patient information via the DlgNewPatient class
+        3. Send a query to retrieve information from the patient table
+        4. Store query information in a patient summary information list
+        5. Populate update dialog box's line edit widgets with information from the patient summary information list
+        6. Refresh patient summary tab with updated information
+        """
+
+        # Updates list of indications to pass to edit patient dialog box
+        self.list_patient_indication_name = []
+        query = QSqlQuery()
+        query.prepare("SELECT indication_name FROM patient p JOIN patient_indication pi "
+                      "ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id "
+                      "WHERE p.patient_id = :id")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
         if bOk:
             while query.next():
-                if query.isValid():
-                    self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
-                                                       query.value('status'), query.value('inr_goal_from'),
-                                                       query.value('inr_goal_to'), query.value('indication_name'),
-                                                       query.value('status')])
-                    self.list_patient_indications.append(self.list_patient_summary_info[6])  # create a list if multiple indications
+                self.list_patient_indication_name.append(query.value('indication_name'))
 
-            self.ledFirstName.setText(self.list_patient_summary_info[0])
-            self.ledLastName.setText(self.list_patient_summary_info[1])
-            self.ledDOB.setText(self.list_patient_summary_info[2])
-            self.ledIndications.setText(', '.join(self.list_patient_indications))
-            self.ledGoal.setText(f"{self.list_patient_summary_info[4]} - {self.list_patient_summary_info[5]}")
-            self.lblName.setText(f"{self.list_patient_summary_info[1]}, {self.list_patient_summary_info[0]}")
-            if self.list_patient_summary_info[7] == "A":
-                self.ledStatus.setText("Active")
-            else:
-                self.ledStatus.setText("Inactive")
+        dlgEditPatient = DlgNewPatient(self.mrn, self.list_patient_indication_name)
+        dlgEditPatient.setWindowTitle("Edit Patient Information")
+        dlgEditPatient.lblHeader.setText("Update Information")
+        dlgEditPatient.populate_indication_list()
 
-    def query_get_patient_summary_info(self, id):
+        # Populate line edit widgets
+        self.list_patient_summary_info, self.list_patient_indication_name = self.query_get_patient_summary_info()
+        dlgEditPatient.ledMRN.setText(self.mrn)
+        dlgEditPatient.ledFirstName.setText(self.list_patient_summary_info[0])
+        dlgEditPatient.ledLastName.setText(self.list_patient_summary_info[1])
+        dlgEditPatient.ledDOB.setText(self.list_patient_summary_info[2])
+        dlgEditPatient.ledGoalFrom.setText(str(self.list_patient_summary_info[4]))
+        dlgEditPatient.ledGoalTo.setText(str(self.list_patient_summary_info[5]))
+
+        dlgEditPatient.show()
+        dlgEditPatient.exec_()
+        self.populate_patient_summary()
+
+    def populate_patient_summary(self):
         """
-        Prepares and executes a query search for patient information joining of multiple tables
-        :param id: patient_id from patient database
-        :return bOk, query: True or False if the query executed correctly, and the query itself
+        Populate information in the summary tab in the patient profile
+        1. Send a query to retrieve information from patient table
+        2. Populate line edit widgets of the patient summary tab
         """
-        query = QSqlQuery()
-        query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
-                      "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
-                      "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
-        query.bindValue(":id", id)
-        bOk = query.exec()
-        return bOk, query
+        self.list_patient_summary_info, self.list_patient_indication_name = self.query_get_patient_summary_info()
+        self.ledFirstName.setText(self.list_patient_summary_info[0])
+        self.ledLastName.setText(self.list_patient_summary_info[1])
+        self.ledDOB.setText(self.list_patient_summary_info[2])
+        self.ledIndications.setText(', '.join(self.list_patient_indication_name))
+        self.ledGoal.setText(f"{self.list_patient_summary_info[4]} - {self.list_patient_summary_info[5]}")
+        self.lblName.setText(f"{self.list_patient_summary_info[1]}, {self.list_patient_summary_info[0]}")
+        if self.list_patient_summary_info[7] == "A":
+            self.ledStatus.setText("Active")
+        else:
+            self.ledStatus.setText("Inactive")
 
     def populate_result_table(self):
-        """Populates the result table widget with information from the database"""
+        """
+        Populates the result table widget with information from the database
+        1. Clear the result table widget and set row count to 0 to prevent duplicate entries after the database has been
+            updated
+        2. Send a query to the database to get information specific to table widget columns
+        3. Populate the result table widget with information from the query
+        4. Format the background color of the result column of the table widget
+        5. Hide column 0, which contains the inr_id. Creates a default selection on the table widget.
+        """
         self.tblResult.clearContents()  # clears the table content of old information before populating with newer data
         self.tblResult.setRowCount(0)  # resets row count
 
@@ -166,19 +279,16 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                         inr_low = tbl_goal_col_value.split("-")[0].strip(" ")
                         inr_high = tbl_goal_col_value.split("-")[1].strip(" ")
 
-                self.format_weekly_dose_col(inr_high, inr_low, row, tbl_result_col_value)
+                self.format_result_col(row, tbl_result_col_value, inr_low, inr_high)
+            self.format_weekly_dose()
 
         self.tblResult.setColumnHidden(0, True)  # hide inr_id column from view
         self.tblResult.setCurrentCell(0, 1)  # set default selection
 
-    def format_weekly_dose_col(self, inr_high, inr_low, row, tbl_result_col_value):
+    def format_result_col(self, row, tbl_result_col_value, inr_low, inr_high):
         """
         Will provide formatting of the table widget item's background color based on the result: red for
         supratherapeutic, yellow for subtherapeutic and green for therapeutic
-        :param inr_high: the upper limit of INR goal
-        :param inr_low: the lower limit of INR goal
-        :param row: current row count
-        :param tbl_result_col_value: the result value
         """
         if tbl_result_col_value.text() > inr_high:
             self.tblResult.item(row, 2).setBackground(QColor("#ff3300"))
@@ -187,153 +297,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         else:
             self.tblResult.item(row, 2).setBackground(QColor("#00ff80"))
 
-    def evt_btn_add_result_clicked(self):
-        """Creates a dialog box to add results to the database, and refreshes the result table"""
-        dlgAddResult = DlgAddResult(self.mrn)
-        dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_ok_clicked)
-        dlgAddResult.show()
-        dlgAddResult.exec_()
-        self.populate_result_table()
-
-    def evt_btn_edit_result_clicked(self):
-        """Creates a dialog box to update results to the database."""
-        try:
-            self.get_current_row_and_inr_id()
-        except AttributeError:
-            QMessageBox.critical(self, "Error", "No entries to edit.")
-            return
-
-        dlgEditResult = DlgAddResult(self.mrn, self.current_selection_inr_id)
-        dlgEditResult.setWindowTitle("Edit Result")
-        dlgEditResult.btnOK.setText("Update")
-
-        # Retrieves query for the selected row
-        query = self.return_selected_result_row()
-        query.next()
-
-        # Gets the QDate object for the original date
-        original_date = query.value('date').split("-")
-        original_year = int(original_date[0])
-        original_month = int(original_date[1])
-        original_day = int(original_date[2])
-        original_date_object = QDate(original_year, original_month, original_day)
-
-        # Gets the INR goals specified for the patient, and for the specific INR result
-        inr_goal_from = query.value('inr_goal_from')
-        inr_goal_to = query.value('inr_goal_to')
-        patient_inr_goal_from, patient_inr_goal_to = dlgEditResult.query_get_patient_inr_goal()
-
-        # Toggles INR goal radio buttons based on the INR goal retrieved
-        if patient_inr_goal_from != query.value('inr_goal_from') and patient_inr_goal_to != query.value('inr_goal_to'):
-            dlgEditResult.rbtnGoal_New.setChecked(True)
-            dlgEditResult.evt_rbtn_new_goal_clicked()
-            dlgEditResult.ledNewGoalFrom.setText(inr_goal_from)
-            dlgEditResult.ledNewGoalTo.setText(inr_goal_to)
-
-        # Sets line edit box to the values of the selected row
-        dlgEditResult.dteDate.setDate(original_date_object)
-        dlgEditResult.ledResult.setText(query.value('result'))
-        dlgEditResult.ledMonday.setText(query.value('dose_mon'))
-        dlgEditResult.ledTuesday.setText(query.value('dose_tue'))
-        dlgEditResult.ledWednesday.setText(query.value('dose_wed'))
-        dlgEditResult.ledThursday.setText(query.value('dose_thu'))
-        dlgEditResult.ledFriday.setText(query.value('dose_fri'))
-        dlgEditResult.ledSaturday.setText(query.value('dose_sat'))
-        dlgEditResult.ledSunday.setText(query.value('dose_sun'))
-        dlgEditResult.calculate_weekly_dose()
-        dlgEditResult.txtComment.setPlainText(query.value('comment'))
-
-        # Event handler
-        dlgEditResult.btnOK.clicked.connect(dlgEditResult.evt_btn_update_result_clicked)
-
-        dlgEditResult.show()
-        dlgEditResult.exec_()
-        self.populate_result_table()
-
-    def get_current_row_and_inr_id(self):
-        """Stores the current row index and the inr_id of the current selection"""
-        self.current_selection_row = self.tblResult.currentRow()
-        self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
-
-    def evt_btn_delete_result_clicked(self):
-        """Delete record from the table and database"""
-        try:
-            self.get_current_row_and_inr_id()
-        except AttributeError:
-            QMessageBox.critical(self, "Error", "No entries to delete.")
-            return
-
-        double_check_msg = QMessageBox.question(self, "Delete Result",
-                             f"You have selected row {self.current_selection_row + 1} to be deleted.")
-        if double_check_msg == QMessageBox.Yes:
-            query = QSqlQuery()
-            query.prepare("DELETE FROM inr WHERE inr_id = :id")
-            query.bindValue(":id", self.current_selection_inr_id)
-            bOk = query.exec()
-            if bOk:
-                QMessageBox.information(self, "Success", "Record deleted")
-        self.populate_result_table()
-
-    def evt_btn_edit_patient_clicked(self):
-        """Opens a dialog box to edit patient information"""
-
-        # Updates list of indications to pass to edit patient dialog box
-        self.list_patient_indications = []
-        query = QSqlQuery()
-        query.prepare("SELECT indication_name FROM patient p JOIN patient_indication pi "
-                      "ON p.patient_id = pi.patient_id JOIN indication i ON pi.indication_id = i.indication_id "
-                      "WHERE p.patient_id = :id")
-        query.bindValue(":id", self.mrn)
-        bOk = query.exec()
-        if bOk:
-            while query.next():
-                self.list_patient_indications.append(query.value('indication_name'))
-
-        dlgEditPatient = DlgNewPatient(self.mrn, self.list_patient_indications)
-        dlgEditPatient.setWindowTitle("Edit Patient Information")
-        dlgEditPatient.lblHeader.setText("Update Information")
-        dlgEditPatient.populate_indication_list()
-        bOk, query = self.query_get_patient_summary_info(self.mrn)
-        if bOk:
-            while query.next():
-                if query.isValid():
-                    self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
-                                                       query.value('status'), query.value('inr_goal_from'),
-                                                       query.value('inr_goal_to'), query.value('indication_name'),
-                                                       query.value('status')])
-
-                    dlgEditPatient.ledMRN.setText(self.mrn)
-                    dlgEditPatient.ledFirstName.setText(self.list_patient_summary_info[0])
-                    dlgEditPatient.ledLastName.setText(self.list_patient_summary_info[1])
-                    dlgEditPatient.ledDOB.setText(self.list_patient_summary_info[2])
-                    dlgEditPatient.ledGoalFrom.setText(str(self.list_patient_summary_info[4]))
-                    dlgEditPatient.ledGoalTo.setText(str(self.list_patient_summary_info[5]))
-
-        dlgEditPatient.show()
-        dlgEditPatient.exec_()
-        self.populate_patient_summary(self.mrn)
-
-    def return_selected_result_row(self):
-        """Returns the database query for the selected table"""
-        query = QSqlQuery()
-        query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
-                      "dose_sat, dose_sun, comment, inr_goal_from, inr_goal_to from inr WHERE inr_id = :id")
-        query.bindValue(":id", self.current_selection_inr_id)
-        bOk = query.exec()
-        if bOk:
-            return query
-
-    def display_comment_column(self, selected):
-        """Display a message box containing any filled comment column selected"""
-        self.current_selection_row = self.tblResult.currentRow()
-        self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
-
-        for i in selected.indexes():
-            if i.column() == 5 and self.current_selection_comment:
-                QMessageBox.information(self, "Comment", self.current_selection_comment)
-
-    def weekly_dose_change_format(self):
-        """Bold the weekly dose column when there are changes from the previous row"""
+    def format_weekly_dose(self):
+        """Bold and set color to the weekly dose column when there are changes from the previous row"""
         self.total_rows = self.tblResult.rowCount()
         for row in range(self.total_rows - 1):
             self.current_weekly_dose = self.tblResult.item(row, 4)
@@ -344,6 +309,56 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 font.setBold(True)
                 self.current_weekly_dose.setFont(font)
                 self.current_weekly_dose.setForeground(QBrush(QColor("blue")))
+
+    def get_current_row_and_inr_id(self):
+        """Create variables that contain the row value and inr_id of the current selection in the result table widget"""
+        self.current_selection_row = self.tblResult.currentRow()
+        self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+
+    def display_comment_column(self, selected):
+        """Display a message box containing any filled comment column selected"""
+        self.current_selection_row = self.tblResult.currentRow()
+        self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
+
+        for i in selected.indexes():
+            if i.column() == 5 and self.current_selection_comment:
+                QMessageBox.information(self, "Comment", self.current_selection_comment)
+
+    def query_get_patient_summary_info(self):
+        """
+        Prepares and executes a query search for patient information joining of multiple tables
+        :param id: patient_id from patient database
+        :return bOk, query: True or False if the query executed correctly, and the query itself
+        """
+        self.list_patient_summary_info = []
+        self.list_patient_indication_name = []
+
+        query = QSqlQuery()
+        query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
+                      "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
+                      "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            while query.next():
+                if query.isValid():
+                    self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                       query.value('status'), query.value('inr_goal_from'),
+                                                       query.value('inr_goal_to'), query.value('indication_name'),
+                                                       query.value('status')])
+                    self.list_patient_indication_name.append(self.list_patient_summary_info[6])
+
+            return self.list_patient_summary_info, self.list_patient_indication_name
+
+    def query_get_inr_information(self):
+        """Sends a query to retrieve information from patient table"""
+        query = QSqlQuery()
+        query.prepare("SELECT inr_id, patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, "
+                      "dose_sat, dose_sun, comment, inr_goal_from, inr_goal_to from inr WHERE inr_id = :id")
+        query.bindValue(":id", self.current_selection_inr_id)
+        bOk = query.exec()
+        if bOk:
+            return query
 
 
 class DlgAddResult(QDialog, Ui_DlgAddResult):
