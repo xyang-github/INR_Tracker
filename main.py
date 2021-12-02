@@ -92,7 +92,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_add_result_clicked(self):
         """Slot: creates a dialog box to add new INR results"""
-        dlgAddResult = DlgAddResult(self.mrn)
+        dlgAddResult = DlgAddUpdateResult(self.mrn)
         dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_ok_clicked)
         dlgAddResult.show()
         dlgAddResult.exec_()
@@ -112,7 +112,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             QMessageBox.critical(self, "Error", "No entries to edit.")
             return
 
-        dlgEditResult = DlgAddResult(self.mrn, self.current_selection_inr_id)
+        dlgEditResult = DlgAddUpdateResult(self.mrn, self.current_selection_inr_id)
         dlgEditResult.setWindowTitle("Edit Result")
         dlgEditResult.btnOK.setText("Update")
 
@@ -207,7 +207,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             while query.next():
                 self.list_patient_indication_name.append(query.value('indication_name'))
 
-        dlgEditPatient = DlgNewPatient(self.mrn, self.list_patient_indication_name)
+        dlgEditPatient = DlgNewUpdatePatient(self.mrn, self.list_patient_indication_name)
         dlgEditPatient.setWindowTitle("Edit Patient Information")
         dlgEditPatient.lblHeader.setText("Update Information")
         dlgEditPatient.populate_indication_list()
@@ -361,28 +361,29 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             return query
 
 
-class DlgAddResult(QDialog, Ui_DlgAddResult):
+class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
     """Dialog box for adding INR result to database"""
     def __init__(self, patient_id, inr_id=None):
         """
         :param patient_id: patient_id of current patient
         :param inr_id: inr_id of currently selected row
         """
-        super(DlgAddResult, self).__init__()
+        super(DlgAddUpdateResult, self).__init__()
         self.setupUi(self)
-        self.mrn = patient_id  # patient MRN for use in query
+        self.mrn = patient_id  # Patient MRN for use in query
         self.inr_id = inr_id  # inr_id for the selected result
-        self.dteDate.setDate(QDate.currentDate())
+        self.dteDate.setDate(QDate.currentDate())  # Set current date as the default for the date object
         self.ledResult.setFocus()
         self.gbxNewGoal.setHidden(True)
 
+        # Set the text for the radio button for default INR goal
         self.patient_inr_goal_from, self.patient_inr_goal_to = self.query_get_patient_inr_goal()
         self.rbtn_Goal_Default.setText(f"Default: {self.patient_inr_goal_from} - {self.patient_inr_goal_to}")
 
         # set default values for line edit boxes
-        self.set_default_values()
+        self.set_daily_doses_to_zero()
 
-        # signal for text change in doses
+        # signal for text changes in line edit widgets for doses; calculate weekly dose
         self.ledMonday.textEdited.connect(self.calculate_weekly_dose)
         self.ledTuesday.textEdited.connect(self.calculate_weekly_dose)
         self.ledWednesday.textEdited.connect(self.calculate_weekly_dose)
@@ -398,8 +399,12 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.rbtn_Goal_Default.clicked.connect(self.evt_rbtn_default_goal_clicked)
 
     def evt_btn_ok_clicked(self):
-        """Insert data into the INR table if no error message is returned"""
-        error_message = self.validate_entry_format()
+        """
+        Insert data into the INR table if no error message is returned
+        1. Retrieve an error message from calling a validation function
+        2. If error message is blank (passed validation), then send a query to insert information into the inr table
+        """
+        error_message = self.validate_entry()
 
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
@@ -409,7 +414,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             dose_sun, comment, inr_goal_from, inr_goal_to) 
             VALUES (:id, :date, :result, :mon, :tue, :wed, :thu, :fri, :sat, :sun, :com, :goal_from, :goal_to)
             """
-            query = self.inr_table_prepare_bind_query(sql_command)
+            query = self.query_inr_table_prepare_and_bind_query(sql_command)
             bOk = query.exec()
             if bOk:
                 QMessageBox.information(self, "Success", "Result added to the database.")
@@ -418,8 +423,13 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
     def evt_btn_update_result_clicked(self):
-        """Update result entry based on the selected table row"""
-        error_message = self.validate_entry_format()
+        """
+        Update the result table
+        1. Retrieve an error message from calling a validation function
+        2. If error message is blank (passed validation), will send a query to update inr table
+        """
+
+        error_message = self.validate_entry()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
@@ -428,7 +438,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             dose_wed = :wed, dose_thu = :thu, dose_fri = :fri, dose_sat = :sat, dose_sun = :sun, comment = :com,
             inr_goal_from = :goal_from, inr_goal_to = :goal_to WHERE inr_id = :inr_id
             """
-            query = self.inr_table_prepare_bind_query(sql_command)
+            query = self.query_inr_table_prepare_and_bind_query(sql_command)
             query.bindValue(":inr_id", int(self.inr_id))
             bOk = query.exec()
             if bOk:
@@ -439,13 +449,15 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
     def evt_chkbox_no_changes_clicked(self, chk):
         """
-        If check box state is True, then will make line edit boxes read-only and populate with previous doses.
-        If check box state is False, will revert read-only setting and populate line edits with "0".
-        Will return a message box if no prior entries in the database.
-        :param chk: True or False if the checkbox for "No Changes" is selected or not
+        Affects the line edit widgets for the doses
+        1. If the No Changes checkbox is checked, the line edit widgets for the doses will be changed to read-only, and
+            be populated with the most recent doses in the inr table.
+        2. If False, the read-only state will be changed to False, and the line edit widget text will be set to 0.
+        3. Will return a message box if no prior entries in the database.
+        :param chk: True if checkbox is checked; False if checkbox is not checked
         """
         if chk:
-            # set line edit boxes for daily doses to read only
+            # Set line edit boxes for daily doses to read only
             self.ledMonday.setReadOnly(True)
             self.ledTuesday.setReadOnly(True)
             self.ledWednesday.setReadOnly(True)
@@ -454,7 +466,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             self.ledSaturday.setReadOnly(True)
             self.ledSunday.setReadOnly(True)
 
-            # populate line edit boxes for daily doses
+            # Populate line edit boxes for daily doses
             query = QSqlQuery()
             query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date, inr_id DESC LIMIT 1")
             query.bindValue(":id", self.mrn)
@@ -476,10 +488,18 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                     self.set_read_only_false()
         else:
             self.set_read_only_false()
-            self.set_default_values()
+            self.set_daily_doses_to_zero()
+
+    def evt_rbtn_new_goal_clicked(self):
+        """Reveal widgets for entering a new INR goal when the associated radio button is selected."""
+        self.gbxNewGoal.setHidden(False)
+
+    def evt_rbtn_default_goal_clicked(self):
+        """Hide widgets for entering a new INR goal when the default radio button is selected"""
+        self.gbxNewGoal.setHidden(True)
 
     def set_read_only_false(self):
-        """Set line edit boxes for daily doses to editable"""
+        """Set the read-only line edit boxes for doses to False"""
         self.ledMonday.setReadOnly(False)
         self.ledTuesday.setReadOnly(False)
         self.ledWednesday.setReadOnly(False)
@@ -489,7 +509,10 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledSunday.setReadOnly(False)
 
     def calculate_weekly_dose(self):
-        """Calculates the total dose of warfarin, and displays in line edit box"""
+        """
+        Calculates the total dose of warfarin, and displays in line edit box. Uses the Decimal module to prevent
+        floating point error during calculations.
+        """
         try:
             self.ledTotal.setText(str(
                 Decimal(self.ledMonday.text()) +
@@ -503,7 +526,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         except:
             self.ledTotal.setText("")
 
-    def set_default_values(self):
+    def set_daily_doses_to_zero(self):
         """Sets the line edit box texts to '0'"""
         self.ledMonday.setText("0")
         self.ledTuesday.setText("0")
@@ -516,11 +539,18 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledNewGoalTo.setText("0")
         self.ledNewGoalFrom.setText("0")
 
-    def validate_entry_format(self):
-        """Returns an error message based on validation. Error message will be blank if no errors."""
+    def validate_entry(self):
+        """
+        Returns an error message based on validation. Error message will be blank if no errors.
+        1. Reset style sheet for line edit widgets prior to validation
+        2. Set validation for the line edit widget for the result
+        3. Set validation for the line edit widgets for the daily doses
+        4. Set validation for new INR goal entered
+        """
         error_message = ""
+        format_string ="^[0-9]\d*(\.\d+)?$"  # only positive integers and decimal numbers
 
-        # reset style sheet for line edit boxes
+        # Reset style sheet for line edit boxes
         self.ledMonday.setStyleSheet("")
         self.ledTuesday.setStyleSheet("")
         self.ledWednesday.setStyleSheet("")
@@ -531,16 +561,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         self.ledNewGoalFrom.setStyleSheet("")
         self.ledNewGoalTo.setStyleSheet("")
 
-        daily_dose = [("Monday", self.ledMonday.text()),
-                      ("Tuesday", self.ledTuesday.text()),
-                      ("Wednesday", self.ledWednesday.text()),
-                      ("Thursday", self.ledThursday.text()),
-                      ("Friday", self.ledFriday.text()),
-                      ("Saturday", self.ledSaturday.text()),
-                      ("Sunday", self.ledSunday.text())]
-
-        format_string ="^[0-9]\d*(\.\d+)?$"  # only positive integers and decimal numbers
-
+        # Validate line edit widget for result
         if self.ledResult.text() == "":
             error_message += "INR result cannot be blank.\n"
             self.ledResult.setStyleSheet(style_line_edit_error())
@@ -548,6 +569,15 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
             error_message += "Invalid format for INR result. Please enter a result that is a positive integer " \
                              "or decimal number.\n"
             self.ledResult.setStyleSheet(style_line_edit_error())
+
+        # Validate line edit widgets for daily doses
+        daily_dose = [("Monday", self.ledMonday.text()),
+                      ("Tuesday", self.ledTuesday.text()),
+                      ("Wednesday", self.ledWednesday.text()),
+                      ("Thursday", self.ledThursday.text()),
+                      ("Friday", self.ledFriday.text()),
+                      ("Saturday", self.ledSaturday.text()),
+                      ("Sunday", self.ledSunday.text())]
 
         for day in daily_dose:
             if day[1] == "":
@@ -561,6 +591,7 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
                 command = f"self.led{day[0]}.setStyleSheet(style_line_edit_error())"
                 eval(command)
 
+        # Validate new INR goal
         if self.rbtnGoal_New.isChecked():
             if self.ledNewGoalFrom.text() == "" or self.ledNewGoalFrom.text() == "0":
                 error_message += "New INR goal cannot be blank or 0.\n"
@@ -591,21 +622,9 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
 
         return error_message
 
-    def query_get_patient_inr_goal(self):
-        """Return the patient's inr goal from the patient table"""
-        query = QSqlQuery()
-        query.prepare("SELECT inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
-        query.bindValue(":id", self.mrn)
-        bOk = query.exec()
-        if bOk:
-            query.next()
-            patient_inr_goal_from = query.value('inr_goal_from')
-            patient_inr_goal_to = query.value('inr_goal_to')
-        return patient_inr_goal_from, patient_inr_goal_to
-
-    def inr_table_prepare_bind_query(self, sql_command):
+    def query_inr_table_prepare_and_bind_query(self, sql_command):
         """
-        Returns the executed query to insert data into the inr table
+        Prepares and bind values to a query associated with the inr table
         :param sql_command: sql statement to be executed
         :return: the executed query
         """
@@ -633,23 +652,28 @@ class DlgAddResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":com", self.txtComment.toPlainText())
         return query
 
-    def evt_rbtn_new_goal_clicked(self):
-        """Reveals the groupbox for new INR goal entry when the 'new goal' radio button is clicked"""
-        self.gbxNewGoal.setHidden(False)
+    def query_get_patient_inr_goal(self):
+        """Return the patient-set INR goal from the patient table"""
+        query = QSqlQuery()
+        query.prepare("SELECT inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            query.next()
+            patient_inr_goal_from = query.value('inr_goal_from')
+            patient_inr_goal_to = query.value('inr_goal_to')
 
-    def evt_rbtn_default_goal_clicked(self):
-        """Hides the groupbox for new INR goal entry when the 'default' radio button is clicked"""
-        self.gbxNewGoal.setHidden(True)
+        return patient_inr_goal_from, patient_inr_goal_to
 
 
-class DlgNewPatient(QDialog, Ui_DlgNewPatient):
+class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
     """Dialog box for adding new patients"""
-    def __init__(self, id, patient_indications):  # each new instance, the indication list reverts back to the original
-        super(DlgNewPatient, self).__init__()
+    def __init__(self, id, patient_indications):
+        super(DlgNewUpdatePatient, self).__init__()
         self.setupUi(self)
         self.mrn = id
-        self.indications = patient_indications
-        self.ledMRN.setReadOnly(True)
+        self.list_of_patient_indications = patient_indications
+        self.ledMRN.setReadOnly(True)  # This is a primary key; should not be allowed to edit
         self.populate_indication_list()
 
         # Signals
@@ -659,46 +683,28 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.buttonBox.accepted.connect(self.evt_btn_ok_clicked)
         self.buttonBox.rejected.connect(self.close)
 
-    def populate_indication_list(self):
-        """Populate list widgets for patient indications and database indications"""
-
-        self.lstPatientIndications.clear()
-        self.lstExistingIndications.clear()
-
-        # Populate the patient indication list box from patient table
-        self.lstPatientIndications.addItems(self.indications)
-
-        self.lstPatientIndications.sortItems()
-        # Populate the indication list box from the indication table
-        bOk, query = self.query_get_all_indications()
-        if bOk:
-            while query.next():
-                if query.value('indication_name') not in self.indications:
-                    self.lstExistingIndications.addItem(query.value('indication_name'))
-        self.lstExistingIndications.sortItems()
-
-    def query_get_all_indications(self):
-        """Retrieves all indication ids and names from the indication table"""
-        query = QSqlQuery()
-        bOk = query.exec("SELECT indication_id, indication_name FROM indication")
-        return bOk, query
-
     def evt_btn_add_patient_indication_clicked(self):
-        """Move list item from indication list widget to patient indication list widget"""
+        """Move list widget item to patient-set indication list widget"""
         selected_row = self.lstExistingIndications.row(self.lstExistingIndications.currentItem())
         selected_item = self.lstExistingIndications.takeItem(selected_row)
         self.lstPatientIndications.addItem(selected_item)
         self.lstPatientIndications.sortItems()
 
     def evt_btn_remove_patient_indication_clicked(self):
-        """Move list item from patient indication list widget to indication list widget"""
+        """Move list item widget to non-patient indication list widget"""
         selected_row = self.lstPatientIndications.row(self.lstPatientIndications.currentItem())
         selected_item = self.lstPatientIndications.takeItem(selected_row)
         self.lstExistingIndications.addItem(selected_item)
         self.lstExistingIndications.sortItems()
 
     def evt_btn_new_indication_clicked(self):
-        """Add new indication to database"""
+        """
+        Add new indication to database
+        1. Takes the text from the line edit widget for new indication, and passes it to a validation function
+        2. If error message is blank (passes validation), a query will be sent to insert data into the indication table
+        3. Repopulate indication list widget after database has been updated
+        4. Clears the line edit widget for new indication
+        """
         self.new_indication = self.ledNewIndication.text()
         error_message = self.validate_new_indication()
         if error_message:
@@ -715,11 +721,19 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             self.ledNewIndication.setText("")
 
     def evt_btn_ok_clicked(self):
-        """Update patient and patient_indication tables"""
+        """
+        Update patient and patient_indication tables
+        1. If error_message is blank (passes validation), perform various queries
+        2. Query to update the patient table
+        3. Delete all records from the patient_indication table associated with the patient
+        4. Insert indication id and patient id in the patient_indication table
+        """
         error_message = self.validate_patient_information()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
+
+            # Update patient table
             query = QSqlQuery()
             query.prepare("UPDATE patient SET fname = :fname, lname = :lname, status = :status, "
                           "inr_goal_from = :inr_goal_from, inr_goal_to = :inr_goal_to, dob = :dob "
@@ -738,20 +752,19 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             query.bindValue(":id", self.mrn)
             query.exec()
 
-            # List of patient indication names
+            # List of patient-set indication names
             num_of_patient_indications = self.lstPatientIndications.count()
-
-            self.indications = []
+            self.list_of_patient_indications = []
             for row in range(num_of_patient_indications):
                 list_widget_item = self.lstPatientIndications.item(row)
-                self.indications.append(list_widget_item.text())
+                self.list_of_patient_indications.append(list_widget_item.text())
 
-            # List of patient indication ids
+            # Use the list of patient-set indication names to get a list of associated indication ids
             patient_indication_id = []
-            bOk, query = self.query_get_all_indications()
+            bOk, query = self.query_get_indication_names_and_ids()
             if bOk:
                 while query.next():
-                    if query.value('indication_name') in self.indications:
+                    if query.value('indication_name') in self.list_of_patient_indications:
                         patient_indication_id.append(query.value('indication_id'))
 
             # Clear all rows from patient_indication corresponding to patient_id
@@ -760,6 +773,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             query.bindValue(":id", self.mrn)
             query.exec()
 
+            # Insert new indications into the patient_indication table
             for id in patient_indication_id:
                 query = QSqlQuery()
                 query.prepare("INSERT INTO patient_indication (indication_id, patient_id) "
@@ -771,7 +785,37 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             QMessageBox.information(self, "Success", "Patient profile has been updated.")
             self.close()
 
+    def populate_indication_list(self):
+        """Populate list widgets for both patient and non-patient indications"""
+
+        self.lstPatientIndications.clear()
+        self.lstExistingIndications.clear()
+
+        # Populate the patient indication list box from patient table
+        self.lstPatientIndications.addItems(self.list_of_patient_indications)
+        self.lstPatientIndications.sortItems()
+
+        # Populate the non-patient indication list box from the indication table
+        bOk, query = self.query_get_indication_names_and_ids()
+        if bOk:
+            while query.next():
+                if query.value('indication_name') not in self.list_of_patient_indications:
+                    self.lstExistingIndications.addItem(query.value('indication_name'))
+
+        self.lstExistingIndications.sortItems()
+
+    def query_get_indication_names_and_ids(self):
+        """Retrieves all indication ids and names from the indication table"""
+        query = QSqlQuery()
+        bOk = query.exec("SELECT indication_id, indication_name FROM indication")
+        return bOk, query
+
     def validate_patient_information(self):
+        """
+        Sets validation for line edit widgets
+        1. Reset stylesheet for line edit widgets prior to validation
+        2. Validate line edit widget for first name, last name, date of birth, list widget item count, INR goal
+        """
         error_message = ""
         format_string_name = "[\w+\-]+$"
         format_string_birthdate = "\d{4}-\d{2}-\d{2}"
@@ -783,7 +827,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         self.ledGoalFrom.setStyleSheet("")
         self.ledGoalTo.setStyleSheet("")
 
-        # Test first name
+        # Validate first name
         if self.ledFirstName.text() == "":
             error_message += "First name cannot be blank.\n"
             self.ledFirstName.setStyleSheet(style_line_edit_error())
@@ -791,7 +835,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             error_message += "First name can only contain letters and hyphens.\n"
             self.ledFirstName.setStyleSheet(style_line_edit_error())
 
-        # Test last name
+        # Validate last name
         if self.ledLastName.text() == "":
             error_message += "Last name cannot be blank.\n"
             self.ledLastName.setStyleSheet(style_line_edit_error())
@@ -799,7 +843,7 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
             error_message += "Last name can only contain letters and hyphens.\n"
             self.ledLastName.setStyleSheet(style_line_edit_error())
 
-        # Test date of birth
+        # Validate date of birth
         if self.ledDOB.text() == "":
             error_message += "Date of birth cannot be blank.\n"
             self.ledDOB.setStyleSheet(style_line_edit_error())
@@ -814,11 +858,11 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
                 error_message += "Invalid birthdate.\n"
                 self.ledDOB.setStyleSheet(style_line_edit_error())
 
-        # Test indication
+        # Validate indication
         if self.lstPatientIndications.count() == 0:
             error_message += "Patient must have at least one indication.\n"
 
-        # Test INR goal
+        # Validate INR goal
         if self.ledGoalFrom.text() == "" or self.ledGoalFrom.text() == "0":
             error_message += "INR goal cannot be blank or 0.\n"
             self.ledGoalFrom.setStyleSheet(style_line_edit_error())
@@ -843,18 +887,19 @@ class DlgNewPatient(QDialog, Ui_DlgNewPatient):
         return error_message
 
     def validate_new_indication(self):
-        """Validates line edit box for new indication"""
+        """Validates line edit widget for new indication and duplicate entries"""
         string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
         error_message = ""
 
+        # Validate line edit widget
         if not re.match(string_format, self.new_indication):
             error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
 
         if len(self.new_indication) <= 2:
             error_message += "Indication name must contain more than two characters.\n"
 
-        # Create a list of tuples of indication ids and names from the indication table
-        bOk, query = self.query_get_all_indications()
+        # Validate duplicate entries
+        bOk, query = self.query_get_indication_names_and_ids()
         if bOk:
             all_indications = []
             while query.next():
