@@ -787,7 +787,6 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
     def populate_indication_list(self):
         """Populate list widgets for both patient and non-patient indications"""
-
         self.lstPatientIndications.clear()
         self.lstExistingIndications.clear()
 
