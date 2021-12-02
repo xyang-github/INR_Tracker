@@ -18,28 +18,21 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         super(DlgMain, self).__init__()
         self.setupUi(self)
 
+        # Establish a connection to the database
+        self.database = QSqlDatabase.addDatabase("QSQLITE")
+        self.database.setDatabaseName("database.db")
+        if self.database.open():
+            pass
+        else:
+            QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
+
         # event handlers
         self.actionExit.triggered.connect(self.evt_action_exit_triggered)
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
         self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
 
     def evt_btn_search_clicked(self):
-        """Creates database connection when the search button is clicked"""
-        self.database = QSqlDatabase.addDatabase("QSQLITE")
-        self.database.setDatabaseName("database.db")
-        if self.database.open():
-            self.search_patient()
-        else:
-            QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
-
-    def evt_action_exit_triggered(self):
-        """
-        Exit the program when user clicks on File > Exit
-        """
-        sys.exit(app.exec_())
-
-    def search_patient(self):
-        """Find a match in the database with the provided MRN. Will show message boxes for errors."""
+        """Searches for a matching patient_id in the patient table"""
         self.mrn = self.ledMRN.text()
         if self.ledMRN.text() == "":
             QMessageBox.critical(self, "No MRN Entered", "Please enter a medical record number.")
@@ -61,11 +54,18 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         self.ledMRN.clear()  # clear text box after searching
 
+    def evt_action_exit_triggered(self):
+        """
+        Exit the program when user clicks on File > Exit
+        """
+        sys.exit(app.exec_())
+
     def evt_btn_new_patient_clicked(self):
 
         dlgNewPatient = DlgNewUpdatePatient()
         dlgNewPatient.show()
         dlgNewPatient.exec_()
+        dlgNewPatient.populate_indication_list()
 
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
@@ -696,7 +696,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         self.list_of_patient_indications = patient_indications
         if self.mrn:
             self.ledMRN.setReadOnly(True)  # This is a primary key; should not be allowed to edit
-            self.populate_indication_list()
+        self.populate_indication_list()
 
         # Signals
         self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
@@ -813,14 +813,19 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         self.lstExistingIndications.clear()
 
         # Populate the patient indication list box from patient table
-        self.lstPatientIndications.addItems(self.list_of_patient_indications)
-        self.lstPatientIndications.sortItems()
+        if self.mrn:
+            self.lstPatientIndications.addItems(self.list_of_patient_indications)
+            self.lstPatientIndications.sortItems()
 
         # Populate the non-patient indication list box from the indication table
         bOk, query = self.query_get_indication_names_and_ids()
+        print(bOk)
         if bOk:
             while query.next():
-                if query.value('indication_name') not in self.list_of_patient_indications:
+                try:
+                    if query.value('indication_name') not in self.list_of_patient_indications:
+                        self.lstExistingIndications.addItem(query.value('indication_name'))
+                except:
                     self.lstExistingIndications.addItem(query.value('indication_name'))
 
         self.lstExistingIndications.sortItems()
