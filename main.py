@@ -21,6 +21,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         # event handlers
         self.actionExit.triggered.connect(self.evt_action_exit_triggered)
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
+        self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
 
     def evt_btn_search_clicked(self):
         """Creates database connection when the search button is clicked"""
@@ -59,6 +60,12 @@ class DlgMain(QMainWindow, Ui_dlgMain):
                                                              "box does not match an existing record in the database.")
 
         self.ledMRN.clear()  # clear text box after searching
+
+    def evt_btn_new_patient_clicked(self):
+
+        dlgNewPatient = DlgNewUpdatePatient()
+        dlgNewPatient.show()
+        dlgNewPatient.exec_()
 
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
@@ -682,13 +689,14 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
 
 class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
     """Dialog box for adding new patients"""
-    def __init__(self, id, patient_indications):
+    def __init__(self, id=None, patient_indications=None):
         super(DlgNewUpdatePatient, self).__init__()
         self.setupUi(self)
         self.mrn = id
         self.list_of_patient_indications = patient_indications
-        self.ledMRN.setReadOnly(True)  # This is a primary key; should not be allowed to edit
-        self.populate_indication_list()
+        if self.mrn:
+            self.ledMRN.setReadOnly(True)  # This is a primary key; should not be allowed to edit
+            self.populate_indication_list()
 
         # Signals
         self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
