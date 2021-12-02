@@ -20,9 +20,16 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         # Establish a connection to the database
         self.database = QSqlDatabase.addDatabase("QSQLITE")
-        self.database.setDatabaseName("database.db")
+        self.database.setDatabaseName("data/inr_tracker.db")
         if self.database.open():
-            pass
+            if "indication" not in self.database.tables():
+                self.create_indication_table()
+            if "inr" not in self.database.tables():
+                self.create_inr_table()
+            if "patient" not in self.database.tables():
+                self.create_patient_table()
+            if "patient_indication" not in self.database.tables():
+                self.create_patient_indication_table()
         else:
             QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
 
@@ -68,6 +75,70 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         dlgNewPatient.exec_()
         dlgNewPatient.populate_indication_list()
 
+    def create_indication_table(self):
+        """Create a table named 'indication' if not already in the database"""
+        command = """
+            CREATE TABLE IF NOT EXISTS "indication" (
+                "indication_id"	INTEGER NOT NULL,
+                "indication_name"	TEXT NOT NULL,
+                PRIMARY KEY("indication_id")
+            )
+        """
+        query = QSqlQuery()
+        query.exec_(command)
+
+    def create_inr_table(self):
+        """Create a table named 'inr' if not already in the database"""
+        command = """
+            CREATE TABLE IF NOT EXISTS "inr" (
+                "inr_id"	INTEGER NOT NULL,
+                "patient_id"	INTEGER NOT NULL,
+                "date"	TEXT,
+                "result"	TEXT,
+                "dose_mon"	TEXT,
+                "dose_tue"	TEXT,
+                "dose_wed"	TEXT,
+                "dose_thu"	TEXT,
+                "dose_fri"	TEXT,
+                "dose_sat"	TEXT,
+                "dose_sun"	TEXT,
+                "comment"	TEXT,
+                "inr_goal_from"	TEXT,
+                "inr_goal_to"	TEXT,
+                FOREIGN KEY("patient_id") REFERENCES "patient"("patient_id") on delete cascade,
+                PRIMARY KEY("inr_id" AUTOINCREMENT))
+        """
+        query = QSqlQuery()
+        query.exec_(command)
+
+    def create_patient_table(self):
+        """Create a table named 'patient' if not already in the database"""
+        command = """
+            CREATE TABLE IF NOT EXISTS "patient" (
+                "patient_id"	INTEGER NOT NULL,
+                "fname"	TEXT NOT NULL,
+                "lname"	TEXT NOT NULL,
+                "dob"	TEXT NOT NULL,
+                "status"	TEXT NOT NULL,
+                "inr_goal_from"	TEXT NOT NULL,
+                "inr_goal_to"	TEXT NOT NULL,
+                PRIMARY KEY("patient_id")
+            )
+        """
+        query = QSqlQuery()
+        query.exec_(command)
+
+    def create_patient_indication_table(self):
+        """Create a table named 'patient_indication' if not already in the database"""
+        command = """
+            CREATE TABLE IF NOT EXISTS "patient_indication" (
+                "indication_id"	INTEGER NOT NULL,
+                "patient_id"	INTEGER NOT NULL,
+                FOREIGN KEY("patient_id") REFERENCES "patient"("patient_id") on delete cascade
+            )
+        """
+        query = QSqlQuery()
+        query.exec_(command)
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
     """Dialog box for patient profile"""
@@ -442,6 +513,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
                 QMessageBox.information(self, "Success", "Result added to the database.")
                 self.close()
             else:
+                print(query.lastError().text())
                 QMessageBox.critical(self, "Error", "Could not save results into the database.")
 
     def evt_btn_update_result_clicked(self):
@@ -854,7 +926,6 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
         # Populate the non-patient indication list box from the indication table
         bOk, query = self.query_get_indication_names_and_ids()
-        print(bOk)
         if bOk:
             while query.next():
                 try:
