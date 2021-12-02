@@ -281,6 +281,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
                 self.format_result_col(row, tbl_result_col_value, inr_low, inr_high)
             self.format_weekly_dose()
+            self.format_goal()
 
         self.tblResult.setColumnHidden(0, True)  # hide inr_id column from view
         self.tblResult.setCurrentCell(0, 1)  # set default selection
@@ -309,6 +310,19 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 font.setBold(True)
                 self.current_weekly_dose.setFont(font)
                 self.current_weekly_dose.setForeground(QBrush(QColor("blue")))
+
+    def format_goal(self):
+        """Bold and set color to the INR goal column when there are changes from the previous row"""
+        self.total_rows = self.tblResult.rowCount()
+        for row in range(self.total_rows - 1):
+            self.current_inr_goal = self.tblResult.item(row, 3)
+            self.next_inr_goal = self.tblResult.item(row+1, 3)
+
+            if self.current_inr_goal.text() != self.next_inr_goal.text():
+                font = QtGui.QFont()
+                font.setBold(True)
+                self.current_inr_goal.setFont(font)
+                self.current_inr_goal.setForeground(QBrush(QColor("darkMagenta")))
 
     def get_current_row_and_inr_id(self):
         """Create variables that contain the row value and inr_id of the current selection in the result table widget"""
