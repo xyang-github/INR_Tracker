@@ -63,6 +63,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
     def evt_btn_new_patient_clicked(self):
 
         dlgNewPatient = DlgNewUpdatePatient()
+        dlgNewPatient.rbtnStatusInactive.setEnabled(False)
         dlgNewPatient.show()
         dlgNewPatient.exec_()
         dlgNewPatient.populate_indication_list()
@@ -744,68 +745,102 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
     def evt_btn_ok_clicked(self):
         """
-        Update patient and patient_indication tables
+        Add or update patient and patient_indication tables
         1. If error_message is blank (passes validation), perform various queries
-        2. Query to update the patient table
-        3. Delete all records from the patient_indication table associated with the patient
+        2. Query to update or insert data into the patient table
+        3. If updating a patient, delete all records from the patient_indication table associated with the patient prior
+            to inserting. If new patient, skip this step.
         4. Insert indication id and patient id in the patient_indication table
         """
         error_message = self.validate_patient_information()
+        action = ""
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
-
-            # Update patient table
-            query = QSqlQuery()
-            query.prepare("UPDATE patient SET fname = :fname, lname = :lname, status = :status, "
-                          "inr_goal_from = :inr_goal_from, inr_goal_to = :inr_goal_to, dob = :dob "
-                          "WHERE patient_id = :id")
-
-            query.bindValue(":fname", self.ledFirstName.text().title())
-            query.bindValue(":lname", self.ledLastName.text().title())
-            query.bindValue(":dob", self.ledDOB.text())
-            if self.rbtnStatusActive.isChecked():
-                query.bindValue(":status", "A")
+            if self.lblHeader.text() != "New Patient":
+                self.query_update_patient_table()
+                action = "updated"
             else:
-                query.bindValue(":status", "I")
+                self.query_insert_patient_table()
+                action = "added"
 
-            query.bindValue(":inr_goal_from", "{:.1f}".format(Decimal(self.ledGoalFrom.text())))
-            query.bindValue(":inr_goal_to", "{:.1f}".format(Decimal(self.ledGoalTo.text())))
-            query.bindValue(":id", self.mrn)
-            query.exec()
+            patient_indication_id = self.query_get_patient_indication_ids()
+            self.query_update_patientindication_table(patient_indication_id)
 
-            # List of patient-set indication names
-            num_of_patient_indications = self.lstPatientIndications.count()
-            self.list_of_patient_indications = []
-            for row in range(num_of_patient_indications):
-                list_widget_item = self.lstPatientIndications.item(row)
-                self.list_of_patient_indications.append(list_widget_item.text())
+            QMessageBox.information(self, "Success", f"Patient profile has been {action}.")
+            self.close()
 
-            # Use the list of patient-set indication names to get a list of associated indication ids
-            patient_indication_id = []
-            bOk, query = self.query_get_indication_names_and_ids()
-            if bOk:
-                while query.next():
-                    if query.value('indication_name') in self.list_of_patient_indications:
-                        patient_indication_id.append(query.value('indication_id'))
+    def query_insert_patient_table(self):
+        """For new patient, send a query to insert data to patient table"""
+        query = QSqlQuery()
+        query.prepare("INSERT INTO patient (patient_id, fname, lname, dob, status, inr_goal_from, inr_goal_to) "
+                      "VALUES (:id, :fname, :lname, :dob, :status, :inr_goal_from, :inr_goal_to)")
+        query.bindValue(":id", self.ledMRN.text())
+        query.bindValue(":fname", self.ledFirstName.text().title())
+        query.bindValue(":lname", self.ledLastName.text().title())
+        query.bindValue(":dob", self.ledDOB.text())
+        query.bindValue(":status", "A")
+        query.bindValue(":inr_goal_from", "{:.1f}".format(Decimal(self.ledGoalFrom.text())))
+        query.bindValue(":inr_goal_to", "{:.1f}".format(Decimal(self.ledGoalTo.text())))
+        query.exec()
 
-            # Clear all rows from patient_indication corresponding to patient_id
+    def query_update_patientindication_table(self, patient_indication_id):
+        """Updates the patient_indication table based on if new or updating profile"""
+
+        # If updating patient, clear all rows from patient_indication corresponding to patient_id
+        if self.lblHeader.text() != "New Patient":
             query = QSqlQuery()
             query.prepare("DELETE FROM patient_indication WHERE patient_id = :id")
             query.bindValue(":id", self.mrn)
             query.exec()
 
-            # Insert new indications into the patient_indication table
-            for id in patient_indication_id:
-                query = QSqlQuery()
-                query.prepare("INSERT INTO patient_indication (indication_id, patient_id) "
-                              "VALUES (:indication_id, :patient_id)")
-                query.bindValue(":indication_id", id)
-                query.bindValue(":patient_id", self.mrn)
-                query.exec()
+        # Insert new indications into the patient_indication table
+        for id in patient_indication_id:
+            query = QSqlQuery()
+            query.prepare("INSERT INTO patient_indication (indication_id, patient_id) "
+                          "VALUES (:indication_id, :patient_id)")
+            query.bindValue(":indication_id", id)
+            query.bindValue(":patient_id", self.ledMRN.text())
+            query.exec()
 
-            QMessageBox.information(self, "Success", "Patient profile has been updated.")
-            self.close()
+    def query_get_patient_indication_ids(self):
+        """
+        Perform a series of steps to create a list of indication ids
+        :return: a list of indication_ids associated with the patient
+        """
+
+        # List of patient-set indication names
+        num_of_patient_indications = self.lstPatientIndications.count()
+        self.list_of_patient_indications = []
+        for row in range(num_of_patient_indications):
+            list_widget_item = self.lstPatientIndications.item(row)
+            self.list_of_patient_indications.append(list_widget_item.text())
+        # Use the list of patient-set indication names to get a list of associated indication ids
+        patient_indication_id = []
+        bOk, query = self.query_get_indication_names_and_ids()
+        if bOk:
+            while query.next():
+                if query.value('indication_name') in self.list_of_patient_indications:
+                    patient_indication_id.append(query.value('indication_id'))
+        return patient_indication_id
+
+    def query_update_patient_table(self):
+        """Send a query to update the patient table"""
+        query = QSqlQuery()
+        query.prepare("UPDATE patient SET fname = :fname, lname = :lname, status = :status, "
+                      "inr_goal_from = :inr_goal_from, inr_goal_to = :inr_goal_to, dob = :dob "
+                      "WHERE patient_id = :id")
+        query.bindValue(":fname", self.ledFirstName.text().title())
+        query.bindValue(":lname", self.ledLastName.text().title())
+        query.bindValue(":dob", self.ledDOB.text())
+        if self.rbtnStatusActive.isChecked():
+            query.bindValue(":status", "A")
+        else:
+            query.bindValue(":status", "I")
+        query.bindValue(":inr_goal_from", "{:.1f}".format(Decimal(self.ledGoalFrom.text())))
+        query.bindValue(":inr_goal_to", "{:.1f}".format(Decimal(self.ledGoalTo.text())))
+        query.bindValue(":id", self.mrn)
+        query.exec()
 
     def populate_indication_list(self):
         """Populate list widgets for both patient and non-patient indications"""
@@ -841,17 +876,33 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         Sets validation for line edit widgets
         1. Reset stylesheet for line edit widgets prior to validation
         2. Validate line edit widget for first name, last name, date of birth, list widget item count, INR goal
+        3. Validate MRN if new patient
         """
         error_message = ""
         format_string_name = "[\w+\-]+$"
         format_string_birthdate = "\d{4}-\d{2}-\d{2}"
         format_string_inr_goal = "^[0-9]\d*(\.\d+)?$"
 
+        self.ledMRN.setStyleSheet("")
         self.ledFirstName.setStyleSheet("")
         self.ledLastName.setStyleSheet("")
         self.ledDOB.setStyleSheet("")
         self.ledGoalFrom.setStyleSheet("")
         self.ledGoalTo.setStyleSheet("")
+
+        # Validate MRN if new patient
+        if self.lblHeader.text() == "New Patient":
+            if self.ledMRN.text() == "":
+                error_message += "Medical record number cannot be blank.\n"
+                self.ledMRN.setStyleSheet(style_line_edit_error())
+            elif not self.ledMRN.text().isnumeric():
+                error_message += "Medical record number must be numeric.\n"
+                self.ledMRN.setStyleSheet(style_line_edit_error())
+            else:
+                if self.is_duplicate(self.ledMRN.text()):
+                    error_message += "Duplicate medical record number already on file.\n"
+                    self.ledMRN.setStyleSheet(style_line_edit_error())
+
 
         # Validate first name
         if self.ledFirstName.text() == "":
@@ -936,6 +987,20 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
                     error_message += "This indication already exists.\n"
 
         return error_message
+
+    def is_duplicate(self, id):
+        """Determines if there is a duplicate patient_id in the patient table"""
+        list_of_patient_ids = []
+        query = QSqlQuery()
+        bOk = query.exec("SELECT patient_id FROM patient")
+        if bOk:
+            while query.next():
+                list_of_patient_ids.append(query.value('patient_id'))
+        if int(id) in list_of_patient_ids:
+            return True
+
+        return False
+
 
 
 def style_line_edit_error():
