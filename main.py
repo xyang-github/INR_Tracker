@@ -1,10 +1,8 @@
-import math
 import sys
 import re
 from decimal import Decimal
 import datetime
-
-from PyQt5 import QtChart
+import csv
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor, QBrush, QPainter
 from PyQt5.QtWidgets import *
@@ -175,6 +173,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
         self.btnExit.clicked.connect(self.close)
         self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
+        self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
 
     def evt_btn_add_result_clicked(self):
         """Slot: creates a dialog box to add new INR results"""
@@ -312,8 +311,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.populate_patient_summary()
 
     def evt_btn_analytics_clicked(self):
-
-        ############## TTR ###############################
+        """Calculates the TTR and opens a dialog box to display the results"""
         self.total_rows = self.tblResult.rowCount()
         self.total_days_in_ttr = 0
         self.total_days = 0
@@ -371,18 +369,29 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         percent_ttr = self.total_days_in_ttr / self.total_days
 
-        # self.create_chart(percent_ttr)
         dlgAnalytics = DlgAnalytics(percent_ttr, self.total_days_in_ttr, self.total_days,
                                     self.total_rows, self.number_of_results_in_range)
         dlgAnalytics.show()
         dlgAnalytics.exec_()
 
-        # print("total days in range:", total_days_in_ttr)
-        # print("total days:", total_days)
-        #
-        # print("total number of tests:", total_num_of_tests)
-        # print("total number of tests in range:", self.number_of_results_in_range)
-        # print("percentage of tests in range:", (self.number_of_results_in_range / total_num_of_tests) * 100)
+    def evt_btn_csv_clicked(self):
+        """Write data from the result table widget to a csv file"""
+        column_header = []
+        for col in range(1, self.tblResult.columnCount()):
+            column_header.append(self.tblResult.horizontalHeaderItem(col).text())
+
+        print(self.tblResult.horizontalHeaderItem(1).text())
+        path = QFileDialog.getSaveFileName(self, 'Save File', '', 'CSV(*.csv)')
+        if path[0] != "":
+            with open(path[0], 'w') as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(column_header)
+                for row in range(self.tblResult.rowCount()):
+                    data = []
+                    for col in range(1, self.tblResult.columnCount()):
+                        item = self.tblResult.item(row, col).text()
+                        data.append(item)
+                    writer.writerow(data)
 
     def populate_patient_summary(self):
         """
