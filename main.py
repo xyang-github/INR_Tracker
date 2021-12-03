@@ -3,6 +3,8 @@ import sys
 import re
 from decimal import Decimal
 import datetime
+
+from PyQt5 import QtChart
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor, QBrush, QPainter
 from PyQt5.QtWidgets import *
@@ -312,12 +314,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def evt_btn_analytics_clicked(self):
 
         ############## TTR ###############################
-        total_rows = self.tblResult.rowCount()
-        total_num_of_tests = total_rows
-        total_days_in_ttr = 0
-        total_days = 0
+        self.total_rows = self.tblResult.rowCount()
+        self.total_days_in_ttr = 0
+        self.total_days = 0
 
-        for i in range(total_rows - 1):
+        for i in range(self.total_rows - 1):
             ttr = 0
             shift_in_ttr = 0
             calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
@@ -365,13 +366,14 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 else:
                     ttr = days_between_results
 
-            total_days_in_ttr += ttr
-            total_days += days_between_results
+            self.total_days_in_ttr += ttr
+            self.total_days += days_between_results
 
-        percent_ttr = round((total_days_in_ttr / total_days) * 100)
+        percent_ttr = self.total_days_in_ttr / self.total_days
 
         # self.create_chart(percent_ttr)
-        dlgAnalytics = DlgAnalytics(percent_ttr)
+        dlgAnalytics = DlgAnalytics(percent_ttr, self.total_days_in_ttr, self.total_days,
+                                    self.total_rows, self.number_of_results_in_range)
         dlgAnalytics.show()
         dlgAnalytics.exec_()
 
@@ -1153,35 +1155,69 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
 
 class DlgAnalytics(QDialog):
-    def __init__(self, percent_ttr):
+    """Dialog box to display analytics"""
+    def __init__(self, percent_ttr, total_days_in_ttr, total_days, total_tests, number_of_results_in_range):
         super(DlgAnalytics, self).__init__()
-        self.resize(500, 500)
+        self.resize(700, 600)
+        self.setWindowTitle("Analytics")
         self.lytMain = QVBoxLayout()
-        print(percent_ttr)
 
+        # Create Pie Chart
         self.pie_ttr = QPieSeries()
         self.pie_ttr.append("% Days In Range", percent_ttr)
-        self.pie_ttr.append("% Days Out Of Range ", 100 - percent_ttr)
-        self.pie_slice = QPieSlice()
-        self.pie_slice = self.pie_ttr.slices()[0]
-        self.pie_slice.setExploded(True)
-        self.pie_slice.setLabelVisible(True)
-
-        self.pie_slice.hovered.connect(self.change_slice_label)
+        self.pie_ttr.append("% Days Out Of Range ", 1 - percent_ttr)
+        self.pie_slice_ttr = QPieSlice()
+        self.pie_slice_ttr = self.pie_ttr.slices()[0]
+        self.pie_slice_not_ttr = self.pie_ttr.slices()[1]
 
         chart = QChart()
         chart.addSeries(self.pie_ttr)
         chart.setTitle("<h1>Time Within Therapeutic Range</h1>")
         chart.setTheme(QChart.ChartThemeBlueNcs)
+        chart.legend().hide()
+
+        self.pie_ttr.setLabelsVisible()
+
+        self.pie_slice_ttr.setLabel(str(int(self.pie_slice_ttr.percentage() * 100)) + f"% TTR: {round(total_days_in_ttr)} days")
+        self.pie_slice_ttr.setLabelColor(QColor("green"))
+
+        self.pie_slice_not_ttr.setLabel(str(int(self.pie_slice_not_ttr.percentage() * 100)) + f"% Out of range: {round(total_days - total_days_in_ttr)} days")
+        self.pie_slice_not_ttr.setLabelColor(QColor("red"))
+
+        for slice in self.pie_ttr.slices():
+            font = QtGui.QFont()
+            font.setBold(True)
+            font.setPixelSize(12)
+            slice.setLabelFont(font)
 
         chart_view = QChartView(chart)
         chart_view.setRenderHint(QPainter.Antialiasing)
 
-        self.lytMain.addWidget(chart_view)
-        self.setLayout(self.lytMain)
+        # Create text edit box for summary data
+        description = f"""
+        <h2>Summary</h2>
+        <ul style="font-size: 14px">
+            <li><strong>Total Days On Record: </strong> <span style="color: blue">{round(total_days)}</span></li>
+            <li><strong>Days Within Range: </strong> <span style="color: blue">{round(total_days_in_ttr)}</span></li>
+            <li><strong>Percent of Days Within Range: </strong> <span style="color: blue">{round((total_days_in_ttr / total_days) * 100)}%</span><br></li>
+            <li><strong>Total Number of Tests:</strong> <span style="color: blue">{total_tests}</span></li>
+            <li><strong>Number of Tests in Range: </strong> <span style="color: blue">{number_of_results_in_range}</span></li>
+            <li><strong>Percent of Test in Range: </strong> <span style="color: blue">{round((number_of_results_in_range / total_tests) * 100)}%</span></li>
+        </ul>
+        
+        <div style = "font-size: 14px">
+        <em>TTR was calculated using the Rosendaal linear interpolation method, which assumes a linear change between INR 
+        measurements over time. Clinical judgement should be used when evaluating the significance of TTR in clinical
+        decision making.</em>
+        </div>
+        """
 
-    def change_slice_label(self):
-        self.pie_slice.setLabel("Test")
+        text_edit = QTextEdit(description)
+        text_edit.setReadOnly(True)
+
+        self.lytMain.addWidget(chart_view)
+        self.lytMain.addWidget(text_edit)
+        self.setLayout(self.lytMain)
 
 
 def style_line_edit_error():
