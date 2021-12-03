@@ -1,11 +1,13 @@
+import math
 import sys
 import re
 from decimal import Decimal
 import datetime
 from PyQt5.QtCore import QDate
-from PyQt5.QtGui import QColor, QBrush
+from PyQt5.QtGui import QColor, QBrush, QPainter
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
+from PyQt5.QtChart import QChart, QChartView, QPieSeries, QPieSlice
 from gui.main_ui import *
 from gui.patientprofile import *
 from gui.add_update_result import *
@@ -144,6 +146,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     """Dialog box for patient profile"""
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
+        self.number_of_results_in_range = 0
         self.setupUi(self)
         self.mrn = id
 
@@ -307,10 +310,18 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.populate_patient_summary()
 
     def evt_btn_analytics_clicked(self):
+
+        ############## TTR ###############################
         total_rows = self.tblResult.rowCount()
-        total_num_of_tests = total_rows + 1
+        total_num_of_tests = total_rows
+        total_days_in_ttr = 0
+        total_days = 0
 
         for i in range(total_rows - 1):
+            ttr = 0
+            shift_in_ttr = 0
+            calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
+
             date1 = self.tblResult.item(i+1, 1).text().split("-")  # older date
             date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
 
@@ -320,12 +331,56 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
             result1 = Decimal(self.tblResult.item(i+1, 2).text())  # older result
             result2 = Decimal(self.tblResult.item(i, 2).text())  # newer result
-            result_total_difference = abs(result2 - result1)
+            total_shift = abs(result2 - result1)
 
             inr_goal = self.tblResult.item(i, 3).text().split("-")
             inr_goal_lower_limit = Decimal(inr_goal[0])
             inr_goal_upper_limit = Decimal(inr_goal[1])
 
+            if result1 < inr_goal_lower_limit:
+                if result2 < inr_goal_lower_limit:
+                    ttr = 0
+                elif result2 > inr_goal_upper_limit:
+                    shift_in_ttr = (inr_goal_upper_limit - inr_goal_lower_limit)
+                    ttr = eval(calculate_ttr)
+                else:
+                    shift_in_ttr = result2 - inr_goal_lower_limit
+                    ttr = eval(calculate_ttr)
+            elif result1 > inr_goal_upper_limit:
+                if result2 < inr_goal_lower_limit:
+                    shift_in_ttr = inr_goal_upper_limit - inr_goal_lower_limit
+                    ttr = eval(calculate_ttr)
+                elif result2 > inr_goal_upper_limit:
+                    ttr = 0
+                else:
+                    shift_in_ttr = inr_goal_upper_limit - result2
+                    ttr = eval(calculate_ttr)
+            else:
+                if result2 < inr_goal_lower_limit:
+                    shift_in_ttr = result1 - inr_goal_lower_limit
+                    ttr = eval(calculate_ttr)
+                elif result2 > inr_goal_upper_limit:
+                    shift_in_ttr = inr_goal_upper_limit - result1
+                    ttr = eval(calculate_ttr)
+                else:
+                    ttr = days_between_results
+
+            total_days_in_ttr += ttr
+            total_days += days_between_results
+
+        percent_ttr = round((total_days_in_ttr / total_days) * 100)
+
+        # self.create_chart(percent_ttr)
+        dlgAnalytics = DlgAnalytics(percent_ttr)
+        dlgAnalytics.show()
+        dlgAnalytics.exec_()
+
+        # print("total days in range:", total_days_in_ttr)
+        # print("total days:", total_days)
+        #
+        # print("total number of tests:", total_num_of_tests)
+        # print("total number of tests in range:", self.number_of_results_in_range)
+        # print("percentage of tests in range:", (self.number_of_results_in_range / total_num_of_tests) * 100)
 
     def populate_patient_summary(self):
         """
@@ -399,6 +454,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             self.tblResult.item(row, 2).setBackground(QColor("#ffff00"))
         else:
             self.tblResult.item(row, 2).setBackground(QColor("#00ff80"))
+            self.number_of_results_in_range += 1
 
     def format_weekly_dose(self):
         """Bold and set color to the weekly dose column when there are changes from the previous row"""
@@ -1095,6 +1151,37 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
         return False
 
+
+class DlgAnalytics(QDialog):
+    def __init__(self, percent_ttr):
+        super(DlgAnalytics, self).__init__()
+        self.resize(500, 500)
+        self.lytMain = QVBoxLayout()
+        print(percent_ttr)
+
+        self.pie_ttr = QPieSeries()
+        self.pie_ttr.append("% Days In Range", percent_ttr)
+        self.pie_ttr.append("% Days Out Of Range ", 100 - percent_ttr)
+        self.pie_slice = QPieSlice()
+        self.pie_slice = self.pie_ttr.slices()[0]
+        self.pie_slice.setExploded(True)
+        self.pie_slice.setLabelVisible(True)
+
+        self.pie_slice.hovered.connect(self.change_slice_label)
+
+        chart = QChart()
+        chart.addSeries(self.pie_ttr)
+        chart.setTitle("<h1>Time Within Therapeutic Range</h1>")
+        chart.setTheme(QChart.ChartThemeBlueNcs)
+
+        chart_view = QChartView(chart)
+        chart_view.setRenderHint(QPainter.Antialiasing)
+
+        self.lytMain.addWidget(chart_view)
+        self.setLayout(self.lytMain)
+
+    def change_slice_label(self):
+        self.pie_slice.setLabel("Test")
 
 
 def style_line_edit_error():
