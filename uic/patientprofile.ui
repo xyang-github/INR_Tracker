@@ -148,7 +148,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Summary">
       <property name="focusPolicy">
@@ -157,141 +157,184 @@
       <attribute name="title">
        <string>Summary</string>
       </attribute>
-      <widget class="QWidget" name="formLayoutWidget">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>421</width>
-         <height>178</height>
+         <width>461</width>
+         <height>154</height>
         </rect>
        </property>
-       <layout class="QFormLayout" name="lytSummary">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblFirstName">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>First Name</string>
-          </property>
-         </widget>
+       <layout class="QHBoxLayout" name="lytSummaryMain">
+        <item>
+         <layout class="QFormLayout" name="lytSummary">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblFirstName">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>First Name</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="ledFirstName">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblLastName">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Last Name</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="ledLastName">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblDOB">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Date of Birth</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="ledDOB">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="lblIndications">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Indication(s)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="ledIndications">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblGoal">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>INR Goal</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="ledGoal">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="lblStatus">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Status</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="ledStatus">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="ledFirstName">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="lblLastName">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Last Name</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="ledLastName">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="lblDOB">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Date of Birth</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="ledDOB">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="lblIndications">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Indication(s)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="ledIndications">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="lblGoal">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>INR Goal</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="ledGoal">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="lblTTR">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>TTR</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="ledTTR">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
+        <item>
+         <layout class="QVBoxLayout" name="lytButtons">
+          <item>
+           <widget class="QPushButton" name="btnEditPatient">
+            <property name="text">
+             <string>Edit Patient</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnCSV">
+            <property name="text">
+             <string>Export to CSV</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnPDF">
+            <property name="text">
+             <string>Export to PDF</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnAnalytics">
+            <property name="text">
+             <string>Analytics</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnExit">
+            <property name="text">
+             <string>Exit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -457,15 +500,28 @@
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="Reports">
-      <attribute name="title">
-       <string>Reports</string>
-      </attribute>
-     </widget>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btnEditPatient</tabstop>
+  <tabstop>btnCSV</tabstop>
+  <tabstop>btnPDF</tabstop>
+  <tabstop>btnAnalytics</tabstop>
+  <tabstop>btnExit</tabstop>
+  <tabstop>tabProfile</tabstop>
+  <tabstop>btnEdit</tabstop>
+  <tabstop>ledFirstName</tabstop>
+  <tabstop>ledLastName</tabstop>
+  <tabstop>ledDOB</tabstop>
+  <tabstop>ledIndications</tabstop>
+  <tabstop>ledGoal</tabstop>
+  <tabstop>ledStatus</tabstop>
+  <tabstop>tblResult</tabstop>
+  <tabstop>btnAdd</tabstop>
+  <tabstop>btnDelete</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
