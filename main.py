@@ -168,6 +168,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
         self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
+        self.btnExit.clicked.connect(self.close)
+        self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
 
     def evt_btn_add_result_clicked(self):
         """Slot: creates a dialog box to add new INR results"""
@@ -303,6 +305,27 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditPatient.show()
         dlgEditPatient.exec_()
         self.populate_patient_summary()
+
+    def evt_btn_analytics_clicked(self):
+        total_rows = self.tblResult.rowCount()
+        total_num_of_tests = total_rows + 1
+
+        for i in range(total_rows - 1):
+            date1 = self.tblResult.item(i+1, 1).text().split("-")  # older date
+            date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
+
+            date2 = self.tblResult.item(i, 1).text().split("-")  # newer date
+            date2 = datetime.date(int(date2[0]), int(date2[1]), int(date2[2]))
+            days_between_results = abs((date2 - date1).days)
+
+            result1 = Decimal(self.tblResult.item(i+1, 2).text())  # older result
+            result2 = Decimal(self.tblResult.item(i, 2).text())  # newer result
+            result_total_difference = abs(result2 - result1)
+
+            inr_goal = self.tblResult.item(i, 3).text().split("-")
+            inr_goal_lower_limit = Decimal(inr_goal[0])
+            inr_goal_upper_limit = Decimal(inr_goal[1])
+
 
     def populate_patient_summary(self):
         """
