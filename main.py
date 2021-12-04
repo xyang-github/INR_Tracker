@@ -3,8 +3,11 @@ import re
 from decimal import Decimal
 import datetime
 import csv
+
+from PyQt5 import QtPrintSupport
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor, QBrush, QPainter
+from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
 from PyQt5.QtChart import QChart, QChartView, QPieSeries, QPieSlice
@@ -174,6 +177,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnExit.clicked.connect(self.close)
         self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
         self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
+        self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
 
     def evt_btn_add_result_clicked(self):
         """Slot: creates a dialog box to add new INR results"""
@@ -392,6 +396,37 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                         item = self.tblResult.item(row, col).text()
                         data.append(item)
                     writer.writerow(data)
+
+    def evt_btn_pdf_clicked(self):
+        # dialog = QtPrintSupport.QPrintDialog()
+        # if dialog.exec_() == QtWidgets.QDialog.Accepted:
+        #     self.handlePaintRequest(dialog.printer())
+
+        dialog = QtPrintSupport.QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec_()
+
+    def handlePaintRequest(self, printer):
+        document = QtGui.QTextDocument()
+        cursor = QtGui.QTextCursor(document)
+        header = cursor.insertHtml("<h1>Anticoagulation Summary</h1>")
+        patient_name = cursor.insertHtml("<h2>Last Name, First Name</h2>")
+        patient_dob = cursor.insertText("DOB")
+        table = cursor.insertTable(self.tblResult.rowCount()+1, self.tblResult.columnCount()-1)
+
+        column_header = []
+        for col in range(1, self.tblResult.columnCount()):
+            column_header.append(self.tblResult.horizontalHeaderItem(col).text())
+
+        for row in range(table.rows()):
+            for col in range(table.columns()):
+                if row == 0:
+                    cursor.insertText(column_header[col])
+                    cursor.movePosition(QtGui.QTextCursor.NextCell)
+                else:
+                    cursor.insertText(self.tblResult.item(row-1, col+1).text())
+                    cursor.movePosition(QtGui.QTextCursor.NextCell)
+        document.print_(printer)
 
     def populate_patient_summary(self):
         """
