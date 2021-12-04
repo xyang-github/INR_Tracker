@@ -399,19 +399,19 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     writer.writerow(data)
 
     def evt_btn_pdf_clicked(self):
-        path = QFileDialog.getSaveFileName(self, 'Save File', '', 'PDF(*.pdf)')
-        if path[0] != "":
-            html = self.create_html()
-            document = QTextDocument()
-            document.setHtml(html)
+        # path = QFileDialog.getSaveFileName(self, 'Save File', '', 'PDF(*.pdf)')
+        # if path[0] != "":
+        html = self.create_html()
+        document = QTextDocument()
+        document.setHtml(html)
 
-            printer = QPrinter()
-            document.print_(printer)
+        printer = QPrinter()
+        document.print_(printer)
 
     def create_html(self):
         html = f"""
         <div style="font-family: arial; text-align: center">
-            <h1 style="align-self: center">Patient Summary Report</h1>
+            <h1 style="align-self: center">Patient Anticoagulation Summary Report</h1>
             Medical Facility<br>
             Address<br>
             Phone Number | Fax Number
@@ -451,7 +451,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         &nbsp;<br>
         <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
             <h3 style = "margin-bottom: 0px">Most Recent Regimen</h3>
-            <em>-Dose is in milligrams(mg)-</em>
+            <em>-Warfarin dose is in milligrams (mg)-</em>
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
                 <tr>
                     <th style="background-color: #04AA6D; color: white; text-align: center">Monday</th>
@@ -486,7 +486,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                         <th style="background-color: #04AA6D; color: white; text-align: center">INR</th>
                         <th style="background-color: #04AA6D; color: white; text-align: center">Goal</th>
                         <th style="background-color: #04AA6D; color: white; text-align: center">Total Dose</th>
-                        <th style="background-color: #04AA6D; color: white; text-align: center">Comment</th>
+                        <th style="background-color: #04AA6D; color: white; text-align: left">Comment</th>
                     </tr>
             """
 
@@ -522,8 +522,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         </table>
         </div>
         """
-
-        return html  ### result is not sorted by date for some reason
+        return html
 
     def populate_patient_summary(self):
         """
