@@ -4,9 +4,10 @@ from decimal import Decimal
 import datetime
 import csv
 
-from PyQt5 import QtPrintSupport
+import dateutil
+from dateutil.relativedelta import relativedelta
 from PyQt5.QtCore import QDate
-from PyQt5.QtGui import QColor, QBrush, QPainter
+from PyQt5.QtGui import QColor, QBrush, QPainter, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtWidgets import *
 from PyQt5.QtSql import *
@@ -398,35 +399,131 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     writer.writerow(data)
 
     def evt_btn_pdf_clicked(self):
-        # dialog = QtPrintSupport.QPrintDialog()
-        # if dialog.exec_() == QtWidgets.QDialog.Accepted:
-        #     self.handlePaintRequest(dialog.printer())
+        path = QFileDialog.getSaveFileName(self, 'Save File', '', 'PDF(*.pdf)')
+        if path[0] != "":
+            html = self.create_html()
+            document = QTextDocument()
+            document.setHtml(html)
 
-        dialog = QtPrintSupport.QPrintPreviewDialog()
-        dialog.paintRequested.connect(self.handlePaintRequest)
-        dialog.exec_()
+            printer = QPrinter()
+            document.print_(printer)
 
-    def handlePaintRequest(self, printer):
-        document = QtGui.QTextDocument()
-        cursor = QtGui.QTextCursor(document)
-        header = cursor.insertHtml("<h1>Anticoagulation Summary</h1>")
-        patient_name = cursor.insertHtml("<h2>Last Name, First Name</h2>")
-        patient_dob = cursor.insertText("DOB")
-        table = cursor.insertTable(self.tblResult.rowCount()+1, self.tblResult.columnCount()-1)
+    def create_html(self):
+        html = f"""
+        <div style="font-family: arial; text-align: center">
+            <h1 style="align-self: center">Patient Summary Report</h1>
+            Medical Facility<br>
+            Address<br>
+            Phone Number | Fax Number
+        </div>
 
-        column_header = []
-        for col in range(1, self.tblResult.columnCount()):
-            column_header.append(self.tblResult.horizontalHeaderItem(col).text())
+        <hr>
+        
+        <div style="font-family: arial">
+            <table style="border-style: solid; border-radius: 15px; width: 100%; padding: 10px; border-color: gray">
+                <tr>
+                    <td style="width: 100px"><strong>Patient Name:</strong></td>
+                    <td>{self.list_patient_summary_info[1]}, {self.list_patient_summary_info[0]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date of Birth:</strong></td>
+                    <td>{self.list_patient_summary_info[2]}</td>
+                </tr>
+                <tr>
+                    <td><strong>Indication(s):</strong></td>
+                    <td>{', '.join(self.list_patient_indication_name)}</td>
+                </tr>
+                <tr>
+                    <td><strong>INR Goal:</strong></td>
+                    <td>{self.list_patient_summary_info[4]} - {self.list_patient_summary_info[5]}</td>
+                </tr>
+            </table>
+        </div>
+        """
+        query = QSqlQuery()
+        query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date DESC LIMIT 1")
+        query.bindValue(":id", self.mrn)
+        bOk = query.exec()
+        if bOk:
+            query.next()
+            if query.isValid():
+                html += f"""
+        &nbsp;<br>
+        <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
+            <h3 style = "margin-bottom: 0px">Most Recent Regimen</h3>
+            <em>-Dose is in milligrams(mg)-</em>
+            <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                <tr>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Monday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Tuesday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Wednesday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Thursday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Friday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Saturday</th>
+                    <th style="background-color: #04AA6D; color: white; text-align: center">Sunday</th>
+                </tr>
+                <tr>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_mon')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_tue')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_wed')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_thu')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_fri')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_sat')}</td>
+                    <td style="background-color: gray; color: white; text-align: center">{query.value('dose_sun')}</td>
+                </tr>
+                </table>
+            </div>
 
-        for row in range(table.rows()):
-            for col in range(table.columns()):
-                if row == 0:
-                    cursor.insertText(column_header[col])
-                    cursor.movePosition(QtGui.QTextCursor.NextCell)
-                else:
-                    cursor.insertText(self.tblResult.item(row-1, col+1).text())
-                    cursor.movePosition(QtGui.QTextCursor.NextCell)
-        document.print_(printer)
+            &nbsp;<br>
+            
+            <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
+                <h3 style="margin-bottom: 0px">Results</h3>
+                <em>-Past 6 months displayed.</em>
+            
+                <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse; padding: 5px">
+                    <tr>
+                        <th style="background-color: #04AA6D; color: white; text-align: center">Date</th>
+                        <th style="background-color: #04AA6D; color: white; text-align: center">INR</th>
+                        <th style="background-color: #04AA6D; color: white; text-align: center">Goal</th>
+                        <th style="background-color: #04AA6D; color: white; text-align: center">Total Dose</th>
+                        <th style="background-color: #04AA6D; color: white; text-align: center">Comment</th>
+                    </tr>
+            """
+
+        today = datetime.date.today()
+        delta = dateutil.relativedelta.relativedelta(months=6)
+        six_months_ago = today - delta
+
+        query = QSqlQuery()
+        query.prepare("SELECT * FROM inr WHERE date >= :past AND date <= :today AND patient_id = :id ORDER BY date DESC")
+        query.bindValue(":id", self.mrn)
+        query.bindValue(":past", str(six_months_ago))
+        query.bindValue(":today", str(today))
+        bOk = query.exec()
+        if bOk:
+            while query.next():
+                html += f"""
+        <tr>
+            <td style="background-color: gray; color: white; text-align: center">{query.value('date')}</td>
+            <td style="background-color: gray; color: white; text-align: center">{query.value('result')}</td>
+            <td style="background-color: gray; color: white; text-align: center">{query.value('inr_goal_from')} - {query.value('inr_goal_to')}</td>
+            <td style="background-color: gray; color: white; text-align: center">
+            {Decimal(query.value('dose_mon')) + 
+            Decimal(query.value('dose_tue')) + 
+            Decimal(query.value('dose_wed')) + 
+            Decimal(query.value('dose_thu')) + 
+            Decimal(query.value('dose_fri')) + 
+            Decimal(query.value('dose_sat')) + 
+            Decimal(query.value('dose_sun'))}</td>
+            <td style="background-color: gray; color: white; text-align: center">{query.value('comment')}</td>
+        </tr>
+        """
+            html += """
+        </table>
+        </div>
+        """
+
+        return html  ### result is not sorted by date for some reason
 
     def populate_patient_summary(self):
         """
@@ -601,7 +698,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         # set default values for line edit boxes
         self.set_daily_doses_to_zero()
 
-        # signal for text changes in line edit widgets for doses; calculate weekly dose
+        # Signal for text changes in line edit widgets for doses; calculate weekly dose
         self.ledMonday.textEdited.connect(self.calculate_weekly_dose)
         self.ledTuesday.textEdited.connect(self.calculate_weekly_dose)
         self.ledWednesday.textEdited.connect(self.calculate_weekly_dose)
@@ -610,7 +707,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         self.ledSaturday.textEdited.connect(self.calculate_weekly_dose)
         self.ledSunday.textEdited.connect(self.calculate_weekly_dose)
 
-        # signal for buttons
+        # Signal for buttons
         self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
         self.btnCancel.clicked.connect(self.close)
         self.rbtnGoal_New.clicked.connect(self.evt_rbtn_new_goal_clicked)
