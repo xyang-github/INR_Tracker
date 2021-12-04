@@ -399,16 +399,15 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     writer.writerow(data)
 
     def evt_btn_pdf_clicked(self):
-        # path = QFileDialog.getSaveFileName(self, 'Save File', '', 'PDF(*.pdf)')
-        # if path[0] != "":
+        """Saves a summary chart in PDF format"""
         html = self.create_html()
         document = QTextDocument()
         document.setHtml(html)
-
         printer = QPrinter()
         document.print_(printer)
 
     def create_html(self):
+        """Constructs an HTML string for PDF output"""
         html = f"""
         <div style="font-family: arial; text-align: center">
             <h1 style="align-self: center">Patient Anticoagulation Summary Report</h1>

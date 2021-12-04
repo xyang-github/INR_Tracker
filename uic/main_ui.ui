@@ -197,47 +197,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnNewPatient">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>10</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>MS Shell Dlg 2</family>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>Create a new patient profile</string>
-    </property>
-    <property name="statusTip">
-     <string>New patient profile</string>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>New Patient</string>
-    </property>
-    <property name="icon">
-     <iconset>
-      <normaloff>../img/outline_add_circle_black_24dp.png</normaloff>../img/outline_add_circle_black_24dp.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>13</width>
-      <height>13</height>
-     </size>
-    </property>
-    <property name="shortcut">
-     <string>Ctrl+N</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="ledMRN">
     <property name="geometry">
      <rect>
@@ -337,6 +296,95 @@
     <property name="shortcut">
      <string>Return</string>
     </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>10</y>
+      <width>111</width>
+      <height>96</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="lytButtons">
+     <item>
+      <widget class="QPushButton" name="btnNewPatient">
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Create a new patient profile</string>
+       </property>
+       <property name="statusTip">
+        <string>New patient profile</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>New Patient</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../img/outline_add_circle_black_24dp.png</normaloff>../img/outline_add_circle_black_24dp.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>13</width>
+         <height>13</height>
+        </size>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+N</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnIndications">
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Add, edit or delete indications</string>
+       </property>
+       <property name="statusTip">
+        <string>Update indication list</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Indications</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>../img/outline_add_circle_black_24dp.png</normaloff>../img/outline_add_circle_black_24dp.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>13</width>
+         <height>13</height>
+        </size>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+N</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnReports">
+       <property name="text">
+        <string>Reports</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
