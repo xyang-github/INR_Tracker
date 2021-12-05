@@ -16,6 +16,8 @@ from gui.main_ui import *
 from gui.patientprofile import *
 from gui.add_update_result import *
 from gui.newpatient import *
+from gui.indications import *
+from gui.editindication import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -43,6 +45,8 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         self.actionExit.triggered.connect(self.evt_action_exit_triggered)
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
         self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
+        self.btnIndications.clicked.connect(self.evt_btn_indications_clicked)
+
 
     def evt_btn_search_clicked(self):
         """Searches for a matching patient_id in the patient table"""
@@ -80,6 +84,11 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         dlgNewPatient.show()
         dlgNewPatient.exec_()
         dlgNewPatient.populate_indication_list()
+
+    def evt_btn_indications_clicked(self):
+        dlgIndications = DlgIndications()
+        dlgIndications.show()
+        dlgIndications.exec_()
 
     def create_indication_table(self):
         """Create a table named 'indication' if not already in the database"""
@@ -145,6 +154,85 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         """
         query = QSqlQuery()
         query.exec_(command)
+
+
+class DlgIndications(QDialog, Ui_DlgIndications):
+    def __init__(self):
+        super(DlgIndications, self).__init__()
+        self.setupUi(self)
+
+        # Signal for buttons
+        self.btnAdd.clicked.connect(self.evt_btn_add_clicked)
+        self.btnEdit.clicked.connect(self.evt_button_edit_clicked)
+        self.btnExit.clicked.connect(self.close)
+
+        # Populate list widget with indications
+        self.populate_indication_list()
+
+    def populate_indication_list(self):
+        """Populate the list widget for indications"""
+        self.lstIndications.clear()
+        query = QSqlQuery()
+        bOk = query.exec("SELECT * FROM indication")
+        if bOk:
+            self.all_indications = []
+            while query.next():
+                self.all_indications.append((query.value('indication_id'), query.value('indication_name')))
+                self.lstIndications.addItem(query.value('indication_name'))
+
+    def evt_btn_add_clicked(self):
+        """Returns an error message if line edit widget text does not pass validation"""
+        error_message = validate_new_indication(self.ledNewIndication.text().lower())
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+
+    def evt_button_edit_clicked(self):
+        error_message = ""
+
+        if self.lstIndications.count() == 0:
+            error_message += "There is no indication to edit.\n"
+
+        try:
+            bOk = self.lstIndications.selectedItems()[0]
+        except IndexError:
+            error_message += "No item selected to edit."
+
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+        else:
+            original_indication = self.lstIndications.selectedItems()[0].text()
+            edit_dialog = DlgEditIndication(original_indication)
+            edit_dialog.show()
+            edit_dialog.exec_()
+            self.populate_indication_list()
+
+
+class DlgEditIndication(QDialog, Ui_DlgEditIndication):
+    """Main window for application"""
+    def __init__(self, original_indication):
+        super(DlgEditIndication, self).__init__()
+        self.setupUi(self)
+        self.original_indication = original_indication
+        self.ledIndication.setText(self.original_indication)
+
+        self.btnOk.clicked.connect(self.btn_ok_clicked)
+        self.btnExit.clicked.connect(self.close)
+
+    def btn_ok_clicked(self):
+        new_indication = self.ledIndication.text().lower()
+        error_message = validate_new_indication(new_indication)
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+        else:
+            query = QSqlQuery()
+            query.prepare("UPDATE indication SET indication_name = :new_name WHERE indication_name = :orig_name")
+            query.bindValue(":new_name", new_indication)
+            query.bindValue(":orig_name", self.original_indication)
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", f"The indication for {self.original_indication} has been renamed to {new_indication}.")
+                self.close()
+
 
 class DlgPatientProfile(QDialog, Ui_DlgProfile):
     """Dialog box for patient profile"""
@@ -1020,8 +1108,8 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         3. Repopulate indication list widget after database has been updated
         4. Clears the line edit widget for new indication
         """
-        self.new_indication = self.ledNewIndication.text()
-        error_message = self.validate_new_indication()
+        self.new_indication = self.ledNewIndication.text().lower()
+        error_message = validate_new_indication(self.new_indication)
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
@@ -1254,30 +1342,30 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
         return error_message
 
-    def validate_new_indication(self):
-        """Validates line edit widget for new indication and duplicate entries"""
-        string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
-        error_message = ""
-
-        # Validate line edit widget
-        if not re.match(string_format, self.new_indication):
-            error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
-
-        if len(self.new_indication) <= 2:
-            error_message += "Indication name must contain more than two characters.\n"
-
-        # Validate duplicate entries
-        bOk, query = self.query_get_indication_names_and_ids()
-        if bOk:
-            all_indications = []
-            while query.next():
-                all_indications.append((query.value('indication_id'), query.value('indication_name')))
-
-            for indication in all_indications:
-                if self.new_indication == indication[1]:
-                    error_message += "This indication already exists.\n"
-
-        return error_message
+    # def validate_new_indication(self):
+    #     """Validates line edit widget for new indication and duplicate entries"""
+    #     string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
+    #     error_message = ""
+    #
+    #     # Validate line edit widget
+    #     if not re.match(string_format, self.new_indication):
+    #         error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
+    #
+    #     if len(self.new_indication) <= 2:
+    #         error_message += "Indication name must contain more than two characters.\n"
+    #
+    #     # Validate duplicate entries
+    #     bOk, query = self.query_get_indication_names_and_ids()
+    #     if bOk:
+    #         all_indications = []
+    #         while query.next():
+    #             all_indications.append((query.value('indication_id'), query.value('indication_name')))
+    #
+    #         for indication in all_indications:
+    #             if self.new_indication == indication[1]:
+    #                 error_message += "This indication already exists.\n"
+    #
+    #     return error_message
 
     def is_duplicate(self, id):
         """Determines if there is a duplicate patient_id in the patient table"""
@@ -1372,6 +1460,32 @@ def style_line_edit_error():
 
     return sStyle
 
+
+def validate_new_indication(new_indication):
+    """Validates line edit widget for new indication and duplicate entries"""
+    string_format = "^[\w() -]{2,}$"  # only allow words, spaces, hyphens, and parenthesis
+    error_message = ""
+
+    # Validate line edit widget
+    if not re.match(string_format, new_indication):
+        error_message += "Indication name can only contain words, spaces, hyphens, and parenthesis.\n"
+
+    if len(new_indication) <= 2:
+        error_message += "Indication name must contain more than two characters.\n"
+
+    # Validate duplicate entries
+    query = QSqlQuery()
+    bOk = query.exec("SELECT indication_id, indication_name FROM indication")
+    if bOk:
+        all_indications = []
+        while query.next():
+            all_indications.append((query.value('indication_id'), query.value('indication_name')))
+
+        for indication in all_indications:
+            if new_indication == indication[1]:
+                error_message += "This indication already exists.\n"
+
+    return error_message
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
