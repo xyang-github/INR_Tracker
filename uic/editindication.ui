@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgEditIndication</class>
+ <widget class="QDialog" name="DlgEditIndication">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>342</width>
+    <height>71</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Edit Indication</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>321</width>
+     <height>53</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="lytMain">
+    <item>
+     <widget class="QLineEdit" name="ledIndication"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytButtons">
+      <item>
+       <widget class="QPushButton" name="btnOk">
+        <property name="text">
+         <string>OK</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnExit">
+        <property name="text">
+         <string>Exit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

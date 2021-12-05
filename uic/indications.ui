@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgIndications</class>
+ <widget class="QDialog" name="DlgIndications">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>355</width>
+    <height>455</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Indication List</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>331</width>
+     <height>431</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="lytMain">
+    <item>
+     <widget class="QLabel" name="lblHeader">
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Indication List</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytNewIndication">
+      <item>
+       <widget class="QLineEdit" name="ledNewIndication">
+        <property name="placeholderText">
+         <string>Type the name of the new indication here.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnAdd">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QListWidget" name="lstIndications"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytBottomButtons">
+      <item>
+       <widget class="QPushButton" name="btnEdit">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Edit</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnDelete">
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnExit">
+        <property name="text">
+         <string>Exit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
