@@ -170,30 +170,37 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         self.populate_indication_list()
 
     def evt_btn_add_clicked(self):
-        """Returns an error message if line edit widget text does not pass validation"""
+        """Add a new indication to the indication list widget"""
+
+        # Validate text input
         self.new_indication = self.ledNewIndication.text().lower().strip(" ")
         error_message = validate_new_indication(self.new_indication)
-
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
         else:
-
+            # Add text input into the indication table
             query = QSqlQuery()
             query.prepare("INSERT INTO indication ('indication_name') VALUES (:ind)")
             query.bindValue(":ind", self.new_indication)
             bOk = query.exec()
             if bOk:
                 QMessageBox.information(self, "Success", "Indication added to the database.")
+
+            # Repopulate and sort list widget. Clears line edit widget text.
             self.populate_indication_list()
             self.lstIndications.sortItems()
             self.ledNewIndication.setText("")
 
     def evt_btn_edit_clicked(self):
+        """Opens a dialog box to rename a selected indication"""
+
+        # Validate selection
         error_message = self.validate_if_selected()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
+            # Dialog box to rename the selected item
             original_indication = self.lstIndications.selectedItems()[0].text()
             edit_dialog = DlgEditIndication(original_indication)
             edit_dialog.show()
@@ -201,24 +208,42 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             self.populate_indication_list()
 
     def evt_btn_delete_clicked(self):
+        """Delete indication from indication table and patient_indication linking table"""
+
+        # Validation on selection
         error_message = self.validate_if_selected()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
+            # Asking user for verification of deletion
             selected_indication = self.lstIndications.selectedItems()[0].text()
             double_check_msg = QMessageBox.question(self, "Delete indication?",
                                  f"Are you sure you want to delete the indication: {selected_indication}? "
                                  f"This will remove the indication from all patients that have this indication.")
+            # Delete from indication table
             if double_check_msg == QMessageBox.Yes:
                 query = QSqlQuery()
                 query.prepare("DELETE FROM indication WHERE indication_name = :name")
                 query.bindValue(":name", selected_indication)
                 bOk = query.exec()
                 if bOk:
-                    QMessageBox.information(self, "Success", f"The indication: {selected_indication} has been deleted.")
-                    self.populate_indication_list()
+                    # Delete from patient_indication table
+                    for indication in self.all_indications:
+                        if selected_indication == indication[1]:
+                            indication_id = indication[0]
+
+                    query = QSqlQuery()
+                    query.prepare("DELETE from patient_indication WHERE indication_id = :id")
+                    query.bindValue(":id", indication_id)
+                    bOk = query.exec()
+                    if bOk:
+                        QMessageBox.information(self, "Success",
+                                                f"The indication: {selected_indication} has been deleted.")
+                        # Repopulate indication list widget
+                        self.populate_indication_list()
 
     def validate_if_selected(self):
+        """Validate if an item in the list widget exists or has been selected"""
         error_message = ""
         if self.lstIndications.count() == 0:
             error_message += "There is no indication to edit or delete.\n"
@@ -617,7 +642,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         six_months_ago = today - delta
 
         query = QSqlQuery()
-        query.prepare("SELECT * FROM inr WHERE date >= :past AND date <= :today AND patient_id = :id ORDER BY date DESC")
+        query.prepare("SELECT * FROM inr WHERE date >= :past AND date <= :today AND patient_id = :id "
+                      "ORDER BY date DESC")
         query.bindValue(":id", self.mrn)
         query.bindValue(":past", str(six_months_ago))
         query.bindValue(":today", str(today))
@@ -770,21 +796,48 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.list_patient_indication_name = []
 
         query = QSqlQuery()
-        query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
-                      "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
-                      "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
+        query.prepare("SELECT * FROM patient_indication WHERE patient_id = :id")
         query.bindValue(":id", self.mrn)
         bOk = query.exec()
         if bOk:
-            while query.next():
-                if query.isValid():
+            if query.isValid():
+                query = QSqlQuery()
+                query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
+                              "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
+                              "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
+                query.bindValue(":id", self.mrn)
+                bOk = query.exec()
+                if bOk:
+                    while query.next():
+                        print(query.value('fname'))
+                        self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
+                                                           query.value('status'), query.value('inr_goal_from'),
+                                                           query.value('inr_goal_to'), query.value('indication_name'),
+                                                           query.value('status')])
+                        self.list_patient_indication_name.append(self.list_patient_summary_info[6])
+                        print(self.list_patient_summary_info, self.list_patient_indication_name)
+
+                    return self.list_patient_summary_info, self.list_patient_indication_name
+
+            else:
+                # Will create an alternative query if there is no indication on record, due to it being deleted
+                query = QSqlQuery()
+                query.prepare(
+                    "SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
+                query.bindValue(":id", self.mrn)
+                bOk = query.exec()
+                if bOk:
+                    query.next()
+                    print(query.value('fname'))
                     self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
                                                        query.value('status'), query.value('inr_goal_from'),
-                                                       query.value('inr_goal_to'), query.value('indication_name'),
+                                                       query.value('inr_goal_to'), "No Indication On Record",
                                                        query.value('status')])
                     self.list_patient_indication_name.append(self.list_patient_summary_info[6])
+                    print(self.list_patient_summary_info, self.list_patient_indication_name)
 
-            return self.list_patient_summary_info, self.list_patient_indication_name
+                return self.list_patient_summary_info, self.list_patient_indication_name
+
 
     def query_get_inr_information(self):
         """Sends a query to retrieve information from patient table"""
