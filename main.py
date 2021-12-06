@@ -315,6 +315,20 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Populate patient data
         self.populate_patient_summary()
+
+        # Warns if no indication on record, and disables buttons associated with the result table widget
+        if self.ledIndications.text() == "No Indication On Record":
+            QMessageBox.warning(self, "Warning", "There is no indication on record for this patient. "
+                                                 "Please add an indication in order to add, edit or delete any "
+                                                 "further results.")
+            self.btnAdd.setDisabled(True)
+            self.btnEdit.setDisabled(True)
+            self.btnDelete.setDisabled(True)
+        else:
+            self.btnAdd.setDisabled(False)
+            self.btnEdit.setDisabled(False)
+            self.btnDelete.setDisabled(False)
+
         self.populate_result_table()
 
         # Event handlers
@@ -796,10 +810,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.list_patient_indication_name = []
 
         query = QSqlQuery()
-        query.prepare("SELECT * FROM patient_indication WHERE patient_id = :id")
+        query.prepare("SELECT patient_id, indication_id FROM patient_indication WHERE patient_id = :id")
         query.bindValue(":id", self.mrn)
         bOk = query.exec()
         if bOk:
+            query.next()
             if query.isValid():
                 query = QSqlQuery()
                 query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
@@ -809,13 +824,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 bOk = query.exec()
                 if bOk:
                     while query.next():
-                        print(query.value('fname'))
                         self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
                                                            query.value('status'), query.value('inr_goal_from'),
                                                            query.value('inr_goal_to'), query.value('indication_name'),
                                                            query.value('status')])
                         self.list_patient_indication_name.append(self.list_patient_summary_info[6])
-                        print(self.list_patient_summary_info, self.list_patient_indication_name)
 
                     return self.list_patient_summary_info, self.list_patient_indication_name
 
@@ -828,13 +841,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 bOk = query.exec()
                 if bOk:
                     query.next()
-                    print(query.value('fname'))
                     self.list_patient_summary_info = ([query.value('fname'), query.value('lname'), query.value('dob'),
                                                        query.value('status'), query.value('inr_goal_from'),
                                                        query.value('inr_goal_to'), "No Indication On Record",
                                                        query.value('status')])
                     self.list_patient_indication_name.append(self.list_patient_summary_info[6])
-                    print(self.list_patient_summary_info, self.list_patient_indication_name)
 
                 return self.list_patient_summary_info, self.list_patient_indication_name
 
@@ -1193,23 +1204,40 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         Add new indication to database
         1. Takes the text from the line edit widget for new indication, and passes it to a validation function
         2. If error message is blank (passes validation), a query will be sent to insert data into the indication table
+            and also to the patient_indication linking table
         3. Repopulate indication list widget after database has been updated
         4. Clears the line edit widget for new indication
         """
-        self.new_indication = self.ledNewIndication.text().lower()
-        error_message = validate_new_indication(self.new_indication)
+        self.new_indication_name = self.ledNewIndication.text().lower().strip()
+        error_message = validate_new_indication(self.new_indication_name)
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
         else:
+            # Insert input into indication table
             query = QSqlQuery()
             query.prepare("INSERT INTO indication ('indication_name') VALUES (:ind)")
-            query.bindValue(":ind", self.new_indication.lower().strip(" "))
+            query.bindValue(":ind", self.new_indication_name)
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", "Indication added to the database.")
-            self.populate_indication_list()
-            self.ledNewIndication.setText("")
+                # Retrieve indication_id for new indication
+                query = QSqlQuery()
+                query.prepare("SELECT indication_id FROM indication WHERE indication_name = :ind")
+                query.bindValue(":id", self.new_indication_name)
+                bOk = query.exec()
+                if bOk:
+                    # Insert input into patient_indication linking table
+                    new_indication_id = query.value('indication_id')
+                    query = QSqlQuery()
+                    query.prepare("INSERT INTO patient_indication (patient_id, indication_id) "
+                                  "VALUES (:patient_id, :indication_id)")
+                    query.bindValue(":patient_id", self.mrn)
+                    query.bindValue(":indication_id", new_indication_id)
+                    bOk = query.exec()
+                    if bOk:
+                        QMessageBox.information(self, "Success", "Indication added to the database.")
+        self.populate_indication_list()
+        self.ledNewIndication.setText("")
 
     def evt_btn_ok_clicked(self):
         """
