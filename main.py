@@ -466,6 +466,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Populate line edit widgets
         self.list_patient_summary_info, self.list_patient_indication_name = self.query_get_patient_summary_info()
+        self.list_patient_indication_name.sort()
         dlgEditPatient.ledMRN.setText(self.mrn)
         dlgEditPatient.ledFirstName.setText(self.list_patient_summary_info[0])
         dlgEditPatient.ledLastName.setText(self.list_patient_summary_info[1])
@@ -693,6 +694,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         2. Populate line edit widgets of the patient summary tab
         """
         self.list_patient_summary_info, self.list_patient_indication_name = self.query_get_patient_summary_info()
+        self.list_patient_indication_name.sort()
         self.ledFirstName.setText(self.list_patient_summary_info[0])
         self.ledLastName.setText(self.list_patient_summary_info[1])
         self.ledDOB.setText(self.list_patient_summary_info[2])
@@ -801,14 +803,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 QMessageBox.information(self, "Comment", self.current_selection_comment)
 
     def query_get_patient_summary_info(self):
-        """
-        Prepares and executes a query search for patient information joining of multiple tables
-        :param id: patient_id from patient database
-        :return bOk, query: True or False if the query executed correctly, and the query itself
-        """
+        """Prepares and executes a query search for patient information joining of multiple tables"""
         self.list_patient_summary_info = []
         self.list_patient_indication_name = []
 
+        # Check if patient has an indication on file
         query = QSqlQuery()
         query.prepare("SELECT patient_id, indication_id FROM patient_indication WHERE patient_id = :id")
         query.bindValue(":id", self.mrn)
@@ -816,9 +815,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         if bOk:
             query.next()
             if query.isValid():
+                # Retrieve patient summary information
                 query = QSqlQuery()
-                query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name FROM patient p "
-                              "JOIN patient_indication pi ON p.patient_id = pi.patient_id "
+                query.prepare("SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to, indication_name "
+                              "FROM patient p JOIN patient_indication pi ON p.patient_id = pi.patient_id "
                               "JOIN indication i ON pi.indication_id = i.indication_id WHERE p.patient_id = :id")
                 query.bindValue(":id", self.mrn)
                 bOk = query.exec()
@@ -833,7 +833,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     return self.list_patient_summary_info, self.list_patient_indication_name
 
             else:
-                # Will create an alternative query if there is no indication on record, due to it being deleted
+                # Will create an alternative query if there is no indication on record
                 query = QSqlQuery()
                 query.prepare(
                     "SELECT fname, lname, dob, status, inr_goal_from, inr_goal_to FROM patient WHERE patient_id = :id")
@@ -848,7 +848,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     self.list_patient_indication_name.append(self.list_patient_summary_info[6])
 
                 return self.list_patient_summary_info, self.list_patient_indication_name
-
 
     def query_get_inr_information(self):
         """Sends a query to retrieve information from patient table"""
