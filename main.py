@@ -163,40 +163,34 @@ class DlgIndications(QDialog, Ui_DlgIndications):
 
         # Signal for buttons
         self.btnAdd.clicked.connect(self.evt_btn_add_clicked)
-        self.btnEdit.clicked.connect(self.evt_button_edit_clicked)
+        self.btnEdit.clicked.connect(self.evt_btn_edit_clicked)
+        self.btnDelete.clicked.connect(self.evt_btn_delete_clicked)
         self.btnExit.clicked.connect(self.close)
 
-        # Populate list widget with indications
         self.populate_indication_list()
-
-    def populate_indication_list(self):
-        """Populate the list widget for indications"""
-        self.lstIndications.clear()
-        query = QSqlQuery()
-        bOk = query.exec("SELECT * FROM indication")
-        if bOk:
-            self.all_indications = []
-            while query.next():
-                self.all_indications.append((query.value('indication_id'), query.value('indication_name')))
-                self.lstIndications.addItem(query.value('indication_name'))
 
     def evt_btn_add_clicked(self):
         """Returns an error message if line edit widget text does not pass validation"""
-        error_message = validate_new_indication(self.ledNewIndication.text().lower())
+        self.new_indication = self.ledNewIndication.text().lower().strip(" ")
+        error_message = validate_new_indication(self.new_indication)
+
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
+            self.ledNewIndication.setStyleSheet(style_line_edit_error())
+        else:
 
-    def evt_button_edit_clicked(self):
-        error_message = ""
+            query = QSqlQuery()
+            query.prepare("INSERT INTO indication ('indication_name') VALUES (:ind)")
+            query.bindValue(":ind", self.new_indication)
+            bOk = query.exec()
+            if bOk:
+                QMessageBox.information(self, "Success", "Indication added to the database.")
+            self.populate_indication_list()
+            self.lstIndications.sortItems()
+            self.ledNewIndication.setText("")
 
-        if self.lstIndications.count() == 0:
-            error_message += "There is no indication to edit.\n"
-
-        try:
-            bOk = self.lstIndications.selectedItems()[0]
-        except IndexError:
-            error_message += "No item selected to edit."
-
+    def evt_btn_edit_clicked(self):
+        error_message = self.validate_if_selected()
         if error_message:
             QMessageBox.critical(self, "Error", error_message)
         else:
@@ -206,9 +200,49 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             edit_dialog.exec_()
             self.populate_indication_list()
 
+    def evt_btn_delete_clicked(self):
+        error_message = self.validate_if_selected()
+        if error_message:
+            QMessageBox.critical(self, "Error", error_message)
+        else:
+            selected_indication = self.lstIndications.selectedItems()[0].text()
+            double_check_msg = QMessageBox.question(self, "Delete indication?",
+                                 f"Are you sure you want to delete the indication: {selected_indication}? "
+                                 f"This will remove the indication from all patients that have this indication.")
+            if double_check_msg == QMessageBox.Yes:
+                query = QSqlQuery()
+                query.prepare("DELETE FROM indication WHERE indication_name = :name")
+                query.bindValue(":name", selected_indication)
+                bOk = query.exec()
+                if bOk:
+                    QMessageBox.information(self, "Success", f"The indication: {selected_indication} has been deleted.")
+                    self.populate_indication_list()
+
+    def validate_if_selected(self):
+        error_message = ""
+        if self.lstIndications.count() == 0:
+            error_message += "There is no indication to edit or delete.\n"
+        try:
+            bOk = self.lstIndications.selectedItems()[0]
+        except IndexError:
+            error_message += "No item selected to rename or delete."
+        return error_message
+
+    def populate_indication_list(self):
+        """Populate the list widget with indications from the indication table"""
+        self.lstIndications.clear()
+        query = QSqlQuery()
+        bOk = query.exec("SELECT * FROM indication")
+        if bOk:
+            self.all_indications = []
+            while query.next():
+                self.all_indications.append((query.value('indication_id'), query.value('indication_name')))
+                self.lstIndications.addItem(query.value('indication_name'))
+        self.lstIndications.sortItems()
+
 
 class DlgEditIndication(QDialog, Ui_DlgEditIndication):
-    """Main window for application"""
+    """Dialog box for renaming an indication"""
     def __init__(self, original_indication):
         super(DlgEditIndication, self).__init__()
         self.setupUi(self)
@@ -219,6 +253,7 @@ class DlgEditIndication(QDialog, Ui_DlgEditIndication):
         self.btnExit.clicked.connect(self.close)
 
     def btn_ok_clicked(self):
+        """Rename the indication and updates the indication table with the new value"""
         new_indication = self.ledIndication.text().lower()
         error_message = validate_new_indication(new_indication)
         if error_message:
