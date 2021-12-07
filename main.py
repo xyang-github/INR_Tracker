@@ -19,6 +19,7 @@ from gui.newpatient import *
 from gui.indications import *
 from gui.editindication import *
 from gui.report import *
+from resource.resource import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -44,6 +45,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         # event handlers
         self.actionExit.triggered.connect(self.evt_action_exit_triggered)
+        self.actionAdd_New_Patient.triggered.connect(self.evt_btn_new_patient_clicked)
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
         self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
         self.btnIndications.clicked.connect(self.evt_btn_indications_clicked)
