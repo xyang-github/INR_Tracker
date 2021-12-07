@@ -18,6 +18,7 @@ from gui.add_update_result import *
 from gui.newpatient import *
 from gui.indications import *
 from gui.editindication import *
+from gui.report import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -46,7 +47,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
         self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
         self.btnIndications.clicked.connect(self.evt_btn_indications_clicked)
-
+        self.btnReports.clicked.connect(self.evt_btn_reports_clicked)
 
     def evt_btn_search_clicked(self):
         """Searches for a matching patient_id in the patient table"""
@@ -89,6 +90,128 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         dlgIndications = DlgIndications()
         dlgIndications.show()
         dlgIndications.exec_()
+
+    def evt_btn_reports_clicked(self):
+        """Opens a dialog box for the clinic report"""
+
+        html = self.get_html()
+
+        dlgReport = DlgReport()
+        dlgReport.tedReport.setHtml(html)
+        dlgReport.show()
+        dlgReport.exec_()
+
+    def get_html(self):
+        """Create an HTML string to format the clinic report"""
+
+        # Retrieve total number of active patients
+        query = QSqlQuery()
+        query.prepare("SELECT COUNT(*) AS total FROM patient WHERE status = :status")
+        query.bindValue(":status", "A")
+        query.exec()
+        query.next()
+        total_actives = query.value('total')
+        # Retrieve total number of inactive patients
+        query = QSqlQuery()
+        query.prepare("SELECT COUNT(*) AS total FROM patient WHERE status = :status")
+        query.bindValue(":status", "I")
+        query.exec()
+        query.next()
+        total_inactives = query.value('total')
+        # Retrieve total number of patients
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(*) AS total FROM patient")
+        query.next()
+        total_all_patients = query.value('total')
+        html = f"""
+        <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
+            <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Patient Metrics</h3>
+            <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                <tr>
+                    <td><strong>Total Patients:</strong></td>
+                    <td>{total_all_patients}</td>
+                </tr>
+                <tr>
+                    <td><strong>Active Patients:</strong></td>
+                    <td>{total_actives}</td>
+                </tr>
+                <tr>
+                    <td><strong>Inactive Patients:</strong></td>
+                    <td>{total_inactives}</td>
+                </tr>
+            </table>
+        </div>
+        &nbsp;<br>
+        """
+        # Retrieve total number of indications
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(*) AS total FROM indication")
+        query.next()
+        total_indications = query.value('total')
+        # Retrieve breakdown of indications
+        list_indications = []
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
+                   "JOIN patient_indication pi ON i.indication_id = pi.indication_id GROUP BY indication_name "
+                   "ORDER BY indication_name DESC")
+        while query.next():
+            list_indications.append((query.value('indication_name'), query.value('total')))
+        list_indications.sort()
+        html += f"""
+        <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
+            <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Indication Metrics</h3>
+            <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                <tr>
+                    <td style="width: 150px"><strong>Total Indications:</strong></td>
+                    <td>{total_indications}</th>
+                </tr>
+        """
+        for indication in list_indications:
+            html += f"""
+            <tr>
+                <td>{indication[0]}</td>
+                <td>{indication[1]}</td>
+            </tr>
+            """
+        html += """
+            </table>
+        </div>
+        &nbsp;<br>
+        """
+        # Retrieve total number of goals
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(DISTINCT inr_goal_from || '-' || inr_goal_to) AS total from patient")
+        query.next()
+        total_goals = query.value('total')
+        # Retrieve breakdown of INR goals
+        list_goals = []
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, (inr_goal_from || '-' || inr_goal_to) "
+                   "AS goal FROM patient GROUP BY goal")
+        while query.next():
+            list_goals.append((query.value('goal'), query.value('total')))
+        list_goals.sort()
+        html += f"""
+        <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
+            <h3 style="background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Goal Metrics</h3>
+            <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                <tr>
+                    <td style="width: 150px"><strong>Total Goals:</strong></th>
+                    <td>{total_goals}</th>
+                </tr>
+        """
+        for goal in list_goals:
+            html += f"""
+                <tr>
+                    <td>{goal[0]}</td>
+                    <td>{goal[1]}</td>
+                </tr>
+            """
+        html += """
+            </table>
+        </div>
+        """
+        return html
 
     def create_indication_table(self):
         """Create a table named 'indication' if not already in the database"""
@@ -706,6 +829,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         else:
             self.ledStatus.setText("Inactive")
 
+        self.check_status()
+
     def populate_result_table(self):
         """
         Populates the result table widget with information from the database
@@ -801,6 +926,17 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
                 QMessageBox.information(self, "Comment", self.current_selection_comment)
+
+    def check_status(self):
+        # Disables ability to edit inr table widget for inactive patients
+        if self.ledStatus.text() == "Inactive":
+            self.btnAdd.setDisabled(True)
+            self.btnEdit.setDisabled(True)
+            self.btnDelete.setDisabled(True)
+        else:
+            self.btnAdd.setDisabled(False)
+            self.btnEdit.setDisabled(False)
+            self.btnDelete.setDisabled(False)
 
     def query_get_patient_summary_info(self):
         """Prepares and executes a query search for patient information joining of multiple tables"""
@@ -1560,6 +1696,12 @@ class DlgAnalytics(QDialog):
         self.lytMain.addWidget(chart_view)
         self.lytMain.addWidget(text_edit)
         self.setLayout(self.lytMain)
+
+class DlgReport(QDialog, Ui_DlgReport):
+    """Dialog box for the clinic report"""
+    def __init__(self):
+        super(DlgReport, self).__init__()
+        self.setupUi(self)
 
 
 def style_line_edit_error():
