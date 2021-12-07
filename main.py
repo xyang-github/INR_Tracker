@@ -6,7 +6,7 @@ import csv
 
 import dateutil
 from dateutil.relativedelta import relativedelta
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QColor, QBrush, QPainter, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtWidgets import *
@@ -19,7 +19,7 @@ from gui.newpatient import *
 from gui.indications import *
 from gui.editindication import *
 from gui.report import *
-from resource.resource import *
+from gui.resource_rc import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -1721,6 +1721,16 @@ def style_line_edit_error():
         }
     """
 
+    return sStyle
+
+
+def style_qmessagebox_critical():
+    """A stylesheet used to change the appearnce of critical QMessageBox widgets"""
+    sStyle = """
+        QMessageBox {
+            background-color: black;
+            }
+    """
     return sStyle
 
 

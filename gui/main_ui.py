@@ -9,12 +9,16 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QFontDatabase
 
 
 class Ui_dlgMain(object):
     def setupUi(self, dlgMain):
         dlgMain.setObjectName("dlgMain")
         dlgMain.resize(701, 280)
+        QFontDatabase.addApplicationFont(":/font/Righteous-Regular.ttf")
+        QFontDatabase.addApplicationFont(":/font/ReadexPro-Medium.ttf")
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -331,7 +335,7 @@ class Ui_dlgMain(object):
         self.actionINR_Tracker_Help.setShortcut(_translate("dlgMain", "Ctrl+H"))
         self.actionAdd_New_Patient.setText(_translate("dlgMain", "Add New Patient"))
         self.actionAdd_New_Patient.setShortcut(_translate("dlgMain", "Ctrl+N"))
-import resource.resource
+from gui.resource_rc import *
 
 
 if __name__ == "__main__":
