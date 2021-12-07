@@ -607,63 +607,67 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.total_days_in_ttr = 0
         self.total_days = 0
 
-        for i in range(self.total_rows - 1):
-            ttr = 0
-            shift_in_ttr = 0
-            calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
+        # Check if enough results to perform analytics
+        if self.total_rows < 2:
+            QMessageBox.critical(self, "Error", "Must have at least 2 INR results to produce analytics.")
+        else:
+            for i in range(self.total_rows - 1):
+                ttr = 0
+                shift_in_ttr = 0
+                calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
 
-            date1 = self.tblResult.item(i+1, 1).text().split("-")  # older date
-            date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
+                date1 = self.tblResult.item(i+1, 1).text().split("-")  # older date
+                date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
 
-            date2 = self.tblResult.item(i, 1).text().split("-")  # newer date
-            date2 = datetime.date(int(date2[0]), int(date2[1]), int(date2[2]))
-            days_between_results = abs((date2 - date1).days)
+                date2 = self.tblResult.item(i, 1).text().split("-")  # newer date
+                date2 = datetime.date(int(date2[0]), int(date2[1]), int(date2[2]))
+                days_between_results = abs((date2 - date1).days)
 
-            result1 = Decimal(self.tblResult.item(i+1, 2).text())  # older result
-            result2 = Decimal(self.tblResult.item(i, 2).text())  # newer result
-            total_shift = abs(result2 - result1)
+                result1 = Decimal(self.tblResult.item(i+1, 2).text())  # older result
+                result2 = Decimal(self.tblResult.item(i, 2).text())  # newer result
+                total_shift = abs(result2 - result1)
 
-            inr_goal = self.tblResult.item(i, 3).text().split("-")
-            inr_goal_lower_limit = Decimal(inr_goal[0])
-            inr_goal_upper_limit = Decimal(inr_goal[1])
+                inr_goal = self.tblResult.item(i, 3).text().split("-")
+                inr_goal_lower_limit = Decimal(inr_goal[0])
+                inr_goal_upper_limit = Decimal(inr_goal[1])
 
-            if result1 < inr_goal_lower_limit:
-                if result2 < inr_goal_lower_limit:
-                    ttr = 0
-                elif result2 > inr_goal_upper_limit:
-                    shift_in_ttr = (inr_goal_upper_limit - inr_goal_lower_limit)
-                    ttr = eval(calculate_ttr)
+                if result1 < inr_goal_lower_limit:
+                    if result2 < inr_goal_lower_limit:
+                        ttr = 0
+                    elif result2 > inr_goal_upper_limit:
+                        shift_in_ttr = (inr_goal_upper_limit - inr_goal_lower_limit)
+                        ttr = eval(calculate_ttr)
+                    else:
+                        shift_in_ttr = result2 - inr_goal_lower_limit
+                        ttr = eval(calculate_ttr)
+                elif result1 > inr_goal_upper_limit:
+                    if result2 < inr_goal_lower_limit:
+                        shift_in_ttr = inr_goal_upper_limit - inr_goal_lower_limit
+                        ttr = eval(calculate_ttr)
+                    elif result2 > inr_goal_upper_limit:
+                        ttr = 0
+                    else:
+                        shift_in_ttr = inr_goal_upper_limit - result2
+                        ttr = eval(calculate_ttr)
                 else:
-                    shift_in_ttr = result2 - inr_goal_lower_limit
-                    ttr = eval(calculate_ttr)
-            elif result1 > inr_goal_upper_limit:
-                if result2 < inr_goal_lower_limit:
-                    shift_in_ttr = inr_goal_upper_limit - inr_goal_lower_limit
-                    ttr = eval(calculate_ttr)
-                elif result2 > inr_goal_upper_limit:
-                    ttr = 0
-                else:
-                    shift_in_ttr = inr_goal_upper_limit - result2
-                    ttr = eval(calculate_ttr)
-            else:
-                if result2 < inr_goal_lower_limit:
-                    shift_in_ttr = result1 - inr_goal_lower_limit
-                    ttr = eval(calculate_ttr)
-                elif result2 > inr_goal_upper_limit:
-                    shift_in_ttr = inr_goal_upper_limit - result1
-                    ttr = eval(calculate_ttr)
-                else:
-                    ttr = days_between_results
+                    if result2 < inr_goal_lower_limit:
+                        shift_in_ttr = result1 - inr_goal_lower_limit
+                        ttr = eval(calculate_ttr)
+                    elif result2 > inr_goal_upper_limit:
+                        shift_in_ttr = inr_goal_upper_limit - result1
+                        ttr = eval(calculate_ttr)
+                    else:
+                        ttr = days_between_results
 
-            self.total_days_in_ttr += ttr
-            self.total_days += days_between_results
+                self.total_days_in_ttr += ttr
+                self.total_days += days_between_results
 
-        percent_ttr = self.total_days_in_ttr / self.total_days
+            percent_ttr = self.total_days_in_ttr / self.total_days
 
-        dlgAnalytics = DlgAnalytics(percent_ttr, self.total_days_in_ttr, self.total_days,
-                                    self.total_rows, self.number_of_results_in_range)
-        dlgAnalytics.show()
-        dlgAnalytics.exec_()
+            dlgAnalytics = DlgAnalytics(percent_ttr, self.total_days_in_ttr, self.total_days,
+                                        self.total_rows, self.number_of_results_in_range)
+            dlgAnalytics.show()
+            dlgAnalytics.exec_()
 
     def evt_btn_csv_clicked(self):
         """Write data from the result table widget to a csv file"""
