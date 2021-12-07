@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="font">
+    <file>Raleway-Regular.ttf</file>
+    <file>ReadexPro-Medium.ttf</file>
+    <file>Righteous-Regular.ttf</file>
+  </qresource>
+  <qresource prefix="icon">
+    <file>delete.png</file>
+    <file>edit.png</file>
+    <file>export.png</file>
+    <file>report.png</file>
+    <file>search.png</file>
+    <file>add.png</file>
+  </qresource>
+</RCC>
