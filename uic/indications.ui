@@ -6,19 +6,114 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
-    <height>455</height>
+    <width>385</width>
+    <height>456</height>
    </rect>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
   </property>
   <property name="windowTitle">
    <string>Indication List</string>
   </property>
-  <widget class="QWidget" name="">
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	background-color: #00b4d8;
+	color: white;
+	border-radius: 8px;
+	font-family: &quot;Readex Pro&quot;;
+	font: 12px;
+}
+
+QPushButton::hover{
+	border: 3px solid #0077b6;
+}
+
+QLineEdit {
+	border: 2px  solid gray;
+	border-radius: 20px;
+	padding: 10px;
+	font-family:  &quot;Readex Pro&quot;;
+	font: 12px;
+
+}
+
+QLabel {
+	color: #5E60CE;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>331</width>
+     <width>361</width>
      <height>431</height>
     </rect>
    </property>
@@ -27,7 +122,8 @@
      <widget class="QLabel" name="lblHeader">
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Raleway</family>
+        <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -51,8 +147,18 @@
       </item>
       <item>
        <widget class="QPushButton" name="btnAdd">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string>Add</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource/resource.qrc">
+          <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
         </property>
        </widget>
       </item>
@@ -65,23 +171,49 @@
      <layout class="QHBoxLayout" name="lytBottomButtons">
       <item>
        <widget class="QPushButton" name="btnEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="text">
          <string>Edit</string>
         </property>
+        <property name="icon">
+         <iconset resource="../resource/resource.qrc">
+          <normaloff>:/icon/edit.png</normaloff>:/icon/edit.png</iconset>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnDelete">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string>Delete</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource/resource.qrc">
+          <normaloff>:/icon/delete.png</normaloff>:/icon/delete.png</iconset>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnExit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string>Exit</string>
         </property>
@@ -92,6 +224,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
