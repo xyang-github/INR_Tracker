@@ -10,7 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtGui import QTextOption
+from PyQt5.QtWidgets import QDialog, QTextEdit
 
 
 class Ui_DlgMessageBoxQuestion(QDialog):
@@ -19,7 +20,8 @@ class Ui_DlgMessageBoxQuestion(QDialog):
         dlgMessageBoxQuestion.resize(494, 212)
         palette = QtGui.QPalette()
         dlgMessageBoxQuestion.setPalette(palette)
-        dlgMessageBoxQuestion.setStyleSheet("QLabel#lblMessage {\n"
+        dlgMessageBoxQuestion.setStyleSheet("QTextEdit {\n"
+"    border: none;\n"                                      
 "    background-color: white;\n"
 "    padding: 20px;\n"
 "    font-family:  \"Raleway\";\n"
@@ -44,10 +46,13 @@ class Ui_DlgMessageBoxQuestion(QDialog):
 "    border: 3px solid #0077b6;\n"
 "}\n"
 "")
-        self.lblMessage = QtWidgets.QLabel(dlgMessageBoxQuestion)
-        self.lblMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
-        self.lblMessage.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.lblMessage.setObjectName("lblMessage")
+        self.tedMsg = QtWidgets.QTextEdit(dlgMessageBoxQuestion)
+        self.tedMsg.setGeometry(QtCore.QRect(30, 10, 441, 141))
+        self.tedMsg.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.tedMsg.setObjectName("tedMsg")
+        self.tedMsg.setReadOnly(True)
+        self.tedMsg.LineWrapMode(QTextEdit.WidgetWidth)
+        self.tedMsg.setWordWrapMode(QTextOption.WordWrap)
         self.btnAccept = QtWidgets.QPushButton(dlgMessageBoxQuestion)
         self.btnAccept.setGeometry(QtCore.QRect(430, 170, 51, 31))
         self.btnAccept.setObjectName("btnAccept")
@@ -60,7 +65,7 @@ class Ui_DlgMessageBoxQuestion(QDialog):
         self.btnDecline.setDefault(True)
         self.btnDecline.setObjectName("btnDecline")
         self.lblColor.raise_()
-        self.lblMessage.raise_()
+        self.tedMsg.raise_()
         self.btnAccept.raise_()
         self.btnDecline.raise_()
 
@@ -70,7 +75,7 @@ class Ui_DlgMessageBoxQuestion(QDialog):
     def retranslateUi(self, DlgMessageBox):
         _translate = QtCore.QCoreApplication.translate
         DlgMessageBox.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
-        self.lblMessage.setText(_translate("DlgMessageBox", "TextLabel"))
+        self.tedMsg.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnAccept.setText(_translate("DlgMessageBox", "Accept"))
         self.btnDecline.setText(_translate("DlgMessageBox", "Decline"))
 import gui.resource_rc

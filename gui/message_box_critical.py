@@ -23,7 +23,8 @@ class Ui_DlgMessageBoxCritical(QDialog):
         dlgMessageBoxCritical.resize(494, 212)
         palette = QtGui.QPalette()
         dlgMessageBoxCritical.setPalette(palette)
-        dlgMessageBoxCritical.setStyleSheet("QLabel#lblMessage {\n"
+        dlgMessageBoxCritical.setStyleSheet("QTextEdit {\n"
+"    border: none;"                                           
 "    background-color: white;\n"
 "    padding: 20px;\n"
 "    font-family:  \"Raleway\";\n"
@@ -48,11 +49,13 @@ class Ui_DlgMessageBoxCritical(QDialog):
 "    border: 3px solid #0077b6;\n"
 "}\n"
 "")
-        self.lblMessage = QtWidgets.QLabel(dlgMessageBoxCritical)
-        self.lblMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
-        self.lblMessage.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.lblMessage.setObjectName("lblMessage")
-        self.lblMessage.setWordWrap(True)
+        self.tedMessage = QtWidgets.QTextEdit(dlgMessageBoxCritical)
+        self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
+        self.tedMessage.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.tedMessage.setObjectName("tedMsg")
+        self.tedMessage.setReadOnly(True)
+        self.tedMessage.LineWrapMode(QTextEdit.WidgetWidth)
+        self.tedMessage.setWordWrapMode(QTextOption.WrapAnywhere)
         self.btnOk = QtWidgets.QPushButton(dlgMessageBoxCritical)
         self.btnOk.setGeometry(QtCore.QRect(430, 170, 51, 31))
         self.btnOk.setObjectName("btnOk")
@@ -62,7 +65,7 @@ class Ui_DlgMessageBoxCritical(QDialog):
         self.lblColor.setText("")
         self.lblColor.setObjectName("lblColor")
         self.lblColor.lower()
-        self.lblMessage.raise_()
+        self.tedMessage.raise_()
         self.btnOk.raise_()
 
         self.retranslateUi(dlgMessageBoxCritical)
@@ -71,7 +74,7 @@ class Ui_DlgMessageBoxCritical(QDialog):
     def retranslateUi(self, dlgMessageBoxCritical):
         _translate = QtCore.QCoreApplication.translate
         dlgMessageBoxCritical.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
-        self.lblMessage.setText(_translate("DlgMessageBox", "TextLabel"))
+        self.tedMessage.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnOk.setText(_translate("DlgMessageBox", "Okay"))
 
 import gui.resource_rc
