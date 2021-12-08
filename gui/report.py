@@ -14,32 +14,86 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgReport(object):
     def setupUi(self, DlgReport):
         DlgReport.setObjectName("DlgReport")
-        DlgReport.resize(436, 582)
-        self.widget = QtWidgets.QWidget(DlgReport)
-        self.widget.setGeometry(QtCore.QRect(10, 10, 411, 561))
-        self.widget.setObjectName("widget")
-        self.lytMain = QtWidgets.QVBoxLayout(self.widget)
+        DlgReport.resize(430, 584)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        DlgReport.setPalette(palette)
+        DlgReport.setStyleSheet("QPushButton {\n"
+"    background-color: #00b4d8;\n"
+"    color: white;\n"
+"    border-radius: 8px;\n"
+"    font-family: \"Readex Pro\";\n"
+"    font: 12px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"    border: 3px solid #0077b6;\n"
+"}\n"
+"\n"
+"QLineEdit {\n"
+"    border: 2px  solid gray;\n"
+"    border-radius: 10px;\n"
+"    padding: 10px;\n"
+"    font-family:  \"Readex Pro\";\n"
+"    font: 12px;\n"
+"\n"
+"}\n"
+"\n"
+"QLabel {\n"
+"    color: #5E60CE;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 36px;    \n"
+"    font-weight: bold;\n"
+"    margin: 0;\n"
+"}")
+        self.layoutWidget = QtWidgets.QWidget(DlgReport)
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 411, 561))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
         self.lytMain.setObjectName("lytMain")
-        self.lblHeader = QtWidgets.QLabel(self.widget)
+        self.lblHeader = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblHeader.setFont(font)
         self.lblHeader.setAlignment(QtCore.Qt.AlignCenter)
         self.lblHeader.setObjectName("lblHeader")
         self.lytMain.addWidget(self.lblHeader)
-        self.tedReport = QtWidgets.QTextEdit(self.widget)
+        self.tedReport = QtWidgets.QTextEdit(self.layoutWidget)
         self.tedReport.setReadOnly(True)
         self.tedReport.setObjectName("tedReport")
         self.lytMain.addWidget(self.tedReport)
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
-        self.btnPDF = QtWidgets.QPushButton(self.widget)
+        self.btnPDF = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnPDF.setMinimumSize(QtCore.QSize(0, 30))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icon/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnPDF.setIcon(icon)
         self.btnPDF.setObjectName("btnPDF")
         self.lytButtons.addWidget(self.btnPDF)
-        self.btnExit = QtWidgets.QPushButton(self.widget)
+        self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnExit.setMinimumSize(QtCore.QSize(0, 30))
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
         self.lytMain.addLayout(self.lytButtons)
@@ -53,6 +107,7 @@ class Ui_DlgReport(object):
         self.lblHeader.setText(_translate("DlgReport", "Clinic Report"))
         self.btnPDF.setText(_translate("DlgReport", "Export to PDF"))
         self.btnExit.setText(_translate("DlgReport", "Exit"))
+import gui.resource_rc
 
 
 if __name__ == "__main__":
