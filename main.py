@@ -19,7 +19,8 @@ from gui.newpatient import *
 from gui.indications import *
 from gui.editindication import *
 from gui.report import *
-from gui.resource_rc import *
+from gui.message_box_critical import *
+from gui.message_box_question import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -41,7 +42,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
             if "patient_indication" not in self.database.tables():
                 self.create_patient_indication_table()
         else:
-            QMessageBox.critical(self, "Database Error", "Could not connect with the database.")
+            message_box_critical("Could not connect with the database.")
 
         # event handlers
         self.actionExit.triggered.connect(self.evt_action_exit_triggered)
@@ -55,7 +56,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         """Searches for a matching patient_id in the patient table"""
         self.mrn = self.ledMRN.text()
         if self.ledMRN.text() == "":
-            QMessageBox.critical(self, "No MRN Entered", "Please enter a medical record number.")
+            message_box_critical("Please enter a medical record number.")
         else:
             query = QSqlQuery()
             query.prepare("SELECT patient_id FROM patient WHERE patient_id = (:id)")
@@ -69,8 +70,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
                 dlgPatientProfile.exec_()
 
             else:
-                QMessageBox.critical(self, "No Match Found", "The medical record number entered into the search "
-                                                             "box does not match an existing record in the database.")
+                message_box_critical("The medical record number entered does not match a patient on record.")
 
         self.ledMRN.clear()  # clear text box after searching
 
@@ -301,7 +301,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         self.new_indication = self.ledNewIndication.text().lower().strip(" ")
         error_message = validate_new_indication(self.new_indication)
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
         else:
             # Add text input into the indication table
@@ -310,7 +310,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             query.bindValue(":ind", self.new_indication)
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", "Indication added to the database.")
+                message_box_critical("Indication added to the database.")
 
             # Repopulate and sort list widget. Clears line edit widget text.
             self.populate_indication_list()
@@ -323,7 +323,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         # Validate selection
         error_message = self.validate_if_selected()
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             # Dialog box to rename the selected item
             original_indication = self.lstIndications.selectedItems()[0].text()
@@ -338,34 +338,38 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         # Validation on selection
         error_message = self.validate_if_selected()
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             # Asking user for verification of deletion
-            selected_indication = self.lstIndications.selectedItems()[0].text()
-            double_check_msg = QMessageBox.question(self, "Delete indication?",
-                                 f"Are you sure you want to delete the indication: {selected_indication}? "
+            self.selected_indication = self.lstIndications.selectedItems()[0].text()
+            self.question = message_box_question(
+                                 f"Are you sure you want to delete the indication: {self.selected_indication}? "
                                  f"This will remove the indication from all patients that have this indication.")
-            # Delete from indication table
-            if double_check_msg == QMessageBox.Yes:
-                query = QSqlQuery()
-                query.prepare("DELETE FROM indication WHERE indication_name = :name")
-                query.bindValue(":name", selected_indication)
-                bOk = query.exec()
-                if bOk:
-                    # Delete from patient_indication table
-                    for indication in self.all_indications:
-                        if selected_indication == indication[1]:
-                            indication_id = indication[0]
+            self.question.btnAccept.clicked.connect(self.query_delete_indication)
+            self.question.show()
+            self.question.exec()
 
-                    query = QSqlQuery()
-                    query.prepare("DELETE from patient_indication WHERE indication_id = :id")
-                    query.bindValue(":id", indication_id)
-                    bOk = query.exec()
-                    if bOk:
-                        QMessageBox.information(self, "Success",
-                                                f"The indication: {selected_indication} has been deleted.")
-                        # Repopulate indication list widget
-                        self.populate_indication_list()
+            self.populate_indication_list()
+
+    def query_delete_indication(self):
+        query = QSqlQuery()
+        query.prepare("DELETE FROM indication WHERE indication_name = :name")
+        query.bindValue(":name", self.selected_indication)
+        bOk = query.exec()
+        if bOk:
+            # Delete from patient_indication table
+            for indication in self.all_indications:
+                if self.selected_indication == indication[1]:
+                    indication_id = indication[0]
+
+            query = QSqlQuery()
+            query.prepare("DELETE from patient_indication WHERE indication_id = :id")
+            query.bindValue(":id", indication_id)
+            bOk = query.exec()
+            if bOk:
+                message_box_critical(f"The indication: {self.selected_indication} has been deleted.")
+                self.question.close()
+
 
     def validate_if_selected(self):
         """Validate if an item in the list widget exists or has been selected"""
@@ -407,7 +411,7 @@ class DlgEditIndication(QDialog, Ui_DlgEditIndication):
         new_indication = self.ledIndication.text().lower()
         error_message = validate_new_indication(new_indication)
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             query = QSqlQuery()
             query.prepare("UPDATE indication SET indication_name = :new_name WHERE indication_name = :orig_name")
@@ -415,7 +419,7 @@ class DlgEditIndication(QDialog, Ui_DlgEditIndication):
             query.bindValue(":orig_name", self.original_indication)
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", f"The indication for {self.original_indication} has been renamed to {new_indication}.")
+                message_box_critical(f"The indication for {self.original_indication} has been renamed to {new_indication}.")
                 self.close()
 
 
@@ -443,9 +447,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Warns if no indication on record, and disables buttons associated with the result table widget
         if self.ledIndications.text() == "No Indication On Record":
-            QMessageBox.warning(self, "Warning", "There is no indication on record for this patient. "
-                                                 "Please add an indication in order to add, edit or delete any "
-                                                 "further results.")
+            message_box_critical("""
+            There is no indication on record for this patient. Please add an indication in order to add, edit or 
+            delete any further results."
+            """)
+
             self.btnAdd.setDisabled(True)
             self.btnEdit.setDisabled(True)
             self.btnDelete.setDisabled(True)
@@ -486,7 +492,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         try:
             self.get_current_row_and_inr_id()
         except AttributeError:
-            QMessageBox.critical(self, "Error", "No entries to edit.")
+            message_box_critical("No entries to edit.")
             return
 
         dlgEditResult = DlgAddUpdateResult(self.mrn, self.current_selection_inr_id)
@@ -546,7 +552,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         try:
             self.get_current_row_and_inr_id()
         except AttributeError:
-            QMessageBox.critical(self, "Error", "No entries to delete.")
+            message_box_critical("No entries to delete.")
             return
 
         double_check_msg = QMessageBox.question(self, "Delete Result",
@@ -557,7 +563,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             query.bindValue(":id", self.current_selection_inr_id)
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", "Record deleted")
+                message_box_critical("Record deleted.")
         self.populate_result_table()
 
     def evt_btn_edit_patient_clicked(self):
@@ -611,7 +617,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Check if enough results to perform analytics
         if self.total_rows < 2:
-            QMessageBox.critical(self, "Error", "Must have at least 2 INR results to produce analytics.")
+            message_box_critical("Must have at least 2 INR results to produce analytics.")
         else:
             for i in range(self.total_rows - 1):
                 ttr = 0
@@ -931,7 +937,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
-                QMessageBox.information(self, "Comment", self.current_selection_comment)
+                message_box_critical(self.current_selection_comment)
 
     def check_status(self):
         # Disables ability to edit inr table widget for inactive patients
@@ -1048,7 +1054,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         error_message = self.validate_entry()
 
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             sql_command = """
             INSERT INTO inr (patient_id, date, result, dose_mon, dose_tue, dose_wed, dose_thu, dose_fri, dose_sat, 
@@ -1058,11 +1064,11 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
             query = self.query_inr_table_prepare_and_bind_query(sql_command)
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", "Result added to the database.")
+                message_box_critical("Result added to the database.")
                 self.close()
             else:
                 print(query.lastError().text())
-                QMessageBox.critical(self, "Error", "Could not save results into the database.")
+                message_box_critical("Could not save results into the database.")
 
     def evt_btn_update_result_clicked(self):
         """
@@ -1073,7 +1079,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
 
         error_message = self.validate_entry()
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             sql_command = """
             UPDATE inr SET patient_id = :id, date = :date, result = :result, dose_mon = :mon, dose_tue = :tue, 
@@ -1084,10 +1090,10 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
             query.bindValue(":inr_id", int(self.inr_id))
             bOk = query.exec()
             if bOk:
-                QMessageBox.information(self, "Success", "Record updated.")
+                message_box_critical("Record updated.")
                 self.close()
             else:
-                QMessageBox.critical(self, "Error", "Not able to update record.")
+                message_box_critical("Not able to update record.")
 
     def evt_chkbox_no_changes_clicked(self, chk):
         """
@@ -1125,7 +1131,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
                     self.ledSunday.setText(query.value('dose_sun'))
                     self.calculate_weekly_dose()
                 else:
-                    QMessageBox.critical(self, "Error", "No previous doses detected on record.")
+                    message_box_critical("No previous doses detected on record.")
                     self.chkNoChanges.setChecked(False)
                     self.set_read_only_false()
         else:
@@ -1352,7 +1358,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         self.new_indication_name = self.ledNewIndication.text().lower().strip()
         error_message = validate_new_indication(self.new_indication_name)
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
             self.ledNewIndication.setStyleSheet(style_line_edit_error())
         else:
             # Insert input into indication table
@@ -1376,7 +1382,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
                     query.bindValue(":indication_id", new_indication_id)
                     bOk = query.exec()
                     if bOk:
-                        QMessageBox.information(self, "Success", "Indication added to the database.")
+                        message_box_critical("Indication added to the database.")
         self.populate_indication_list()
         self.ledNewIndication.setText("")
 
@@ -1392,7 +1398,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         error_message = self.validate_patient_information()
         action = ""
         if error_message:
-            QMessageBox.critical(self, "Error", error_message)
+            message_box_critical(error_message)
         else:
             if self.lblHeader.text() != "New Patient":
                 self.query_update_patient_table()
@@ -1404,7 +1410,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
             patient_indication_id = self.query_get_patient_indication_ids()
             self.query_update_patientindication_table(patient_indication_id)
 
-            QMessageBox.information(self, "Success", f"Patient profile has been {action}.")
+            message_box_critical(f"Patient profile has been {action}.")
             self.close()
 
     def query_insert_patient_table(self):
@@ -1710,6 +1716,20 @@ class DlgReport(QDialog, Ui_DlgReport):
         self.setupUi(self)
 
 
+class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
+    """Dialog box for the clinic report"""
+    def __init__(self):
+        super(DlgMessageBoxCritical, self).__init__()
+        self.setupUi(self)
+
+
+class DlgMessageBoxQuestion(Ui_DlgMessageBoxQuestion):
+    """Dialog box for the clinic report"""
+    def __init__(self):
+        super(DlgMessageBoxQuestion, self).__init__()
+        self.setupUi(self)
+
+
 def style_line_edit_error():
     """
     A style sheet used to show line edit boxes with invalid entries
@@ -1759,6 +1779,24 @@ def validate_new_indication(new_indication):
                 error_message += "This indication already exists.\n"
 
     return error_message
+
+
+def message_box_critical(msg):
+    msg_box = DlgMessageBoxCritical()
+    msg_box.setWindowFlag(Qt.FramelessWindowHint)
+    msg_box.setAttribute(Qt.WA_TranslucentBackground)
+    msg_box.lblMessage.setText(msg)
+    msg_box.show()
+    msg_box.exec()
+
+
+def message_box_question(msg):
+    msg_box = DlgMessageBoxQuestion()
+    msg_box.setWindowFlag(Qt.FramelessWindowHint)
+    msg_box.setAttribute(Qt.WA_TranslucentBackground)
+    msg_box.lblMessage.setText(msg)
+    msg_box.btnDecline.clicked.connect(msg_box.done)
+    return msg_box
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -17,18 +17,13 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-class Ui_DlgMessageBox(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.setWindowFlags(Qt.CustomizeWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-
-    def setupUi(self, DlgMessageBox):
-        DlgMessageBox.setObjectName("DlgMessageBox")
-        DlgMessageBox.resize(494, 212)
+class Ui_DlgMessageBoxCritical(QDialog):
+    def setupUi(self, dlgMessageBoxCritical):
+        dlgMessageBoxCritical.setObjectName("dlgMessageBoxCritical")
+        dlgMessageBoxCritical.resize(494, 212)
         palette = QtGui.QPalette()
-        DlgMessageBox.setPalette(palette)
-        DlgMessageBox.setStyleSheet("QLabel#lblMessage {\n"
+        dlgMessageBoxCritical.setPalette(palette)
+        dlgMessageBoxCritical.setStyleSheet("QLabel#lblMessage {\n"
 "    background-color: white;\n"
 "    padding: 20px;\n"
 "    font-family:  \"Raleway\";\n"
@@ -53,14 +48,16 @@ class Ui_DlgMessageBox(QDialog):
 "    border: 3px solid #0077b6;\n"
 "}\n"
 "")
-        self.lblMessage = QtWidgets.QLabel(DlgMessageBox)
+        self.lblMessage = QtWidgets.QLabel(dlgMessageBoxCritical)
         self.lblMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
         self.lblMessage.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblMessage.setObjectName("lblMessage")
-        self.btnOk = QtWidgets.QPushButton(DlgMessageBox)
+        self.lblMessage.setWordWrap(True)
+        self.btnOk = QtWidgets.QPushButton(dlgMessageBoxCritical)
         self.btnOk.setGeometry(QtCore.QRect(430, 170, 51, 31))
         self.btnOk.setObjectName("btnOk")
-        self.lblColor = QtWidgets.QLabel(DlgMessageBox)
+        self.btnOk.clicked.connect(self.close)
+        self.lblColor = QtWidgets.QLabel(dlgMessageBoxCritical)
         self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 211))
         self.lblColor.setText("")
         self.lblColor.setObjectName("lblColor")
@@ -68,26 +65,26 @@ class Ui_DlgMessageBox(QDialog):
         self.lblMessage.raise_()
         self.btnOk.raise_()
 
-        self.retranslateUi(DlgMessageBox)
-        QtCore.QMetaObject.connectSlotsByName(DlgMessageBox)
+        self.retranslateUi(dlgMessageBoxCritical)
+        QtCore.QMetaObject.connectSlotsByName(dlgMessageBoxCritical)
 
-    def retranslateUi(self, DlgMessageBox):
+    def retranslateUi(self, dlgMessageBoxCritical):
         _translate = QtCore.QCoreApplication.translate
-        DlgMessageBox.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
+        dlgMessageBoxCritical.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
         self.lblMessage.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnOk.setText(_translate("DlgMessageBox", "Okay"))
 
-import resource_rc
+import gui.resource_rc
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    DlgMessageBox = QtWidgets.QDialog()
-    DlgMessageBox.setWindowFlag(Qt.FramelessWindowHint)
-    DlgMessageBox.setAttribute(Qt.WA_TranslucentBackground)
-    DlgMessageBox.setModal(True)
-    ui = Ui_DlgMessageBox()
-    ui.setupUi(DlgMessageBox)
-    DlgMessageBox.show()
+    dlgMessageBoxCritical = QtWidgets.QDialog()
+    dlgMessageBoxCritical.setWindowFlag(Qt.FramelessWindowHint)
+    dlgMessageBoxCritical.setAttribute(Qt.WA_TranslucentBackground)
+    dlgMessageBoxCritical.setModal(True)
+    ui = Ui_DlgMessageBoxCritical()
+    ui.setupUi(dlgMessageBoxCritical)
+    dlgMessageBoxCritical.show()
     sys.exit(app.exec_())
