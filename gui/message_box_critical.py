@@ -26,7 +26,7 @@ class Ui_DlgMessageBoxCritical(QDialog):
         dlgMessageBoxCritical.setStyleSheet("QTextEdit {\n"
 "    border: none;"                                           
 "    background-color: white;\n"
-"    padding: 20px;\n"
+"    padding: 3px;\n"
 "    font-family:  \"Raleway\";\n"
 "    font-size: 14px;\n"
 "}\n"
@@ -50,18 +50,21 @@ class Ui_DlgMessageBoxCritical(QDialog):
 "}\n"
 "")
         self.tedMessage = QtWidgets.QTextEdit(dlgMessageBoxCritical)
-        self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
+        # self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
+        self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 61))
         self.tedMessage.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.tedMessage.setObjectName("tedMsg")
         self.tedMessage.setReadOnly(True)
         self.tedMessage.LineWrapMode(QTextEdit.WidgetWidth)
         self.tedMessage.setWordWrapMode(QTextOption.WrapAnywhere)
         self.btnOk = QtWidgets.QPushButton(dlgMessageBoxCritical)
-        self.btnOk.setGeometry(QtCore.QRect(430, 170, 51, 31))
+        # self.btnOk.setGeometry(QtCore.QRect(430, 170, 51, 31))
+        self.btnOk.setGeometry(QtCore.QRect(430, 80, 51, 25))
         self.btnOk.setObjectName("btnOk")
         self.btnOk.clicked.connect(self.close)
         self.lblColor = QtWidgets.QLabel(dlgMessageBoxCritical)
-        self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 211))
+        # self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 211))
+        self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 111))
         self.lblColor.setText("")
         self.lblColor.setObjectName("lblColor")
         self.lblColor.lower()
