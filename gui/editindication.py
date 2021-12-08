@@ -14,22 +14,44 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgEditIndication(object):
     def setupUi(self, DlgEditIndication):
         DlgEditIndication.setObjectName("DlgEditIndication")
-        DlgEditIndication.resize(342, 71)
-        self.widget = QtWidgets.QWidget(DlgEditIndication)
-        self.widget.setGeometry(QtCore.QRect(10, 10, 321, 53))
-        self.widget.setObjectName("widget")
-        self.lytMain = QtWidgets.QVBoxLayout(self.widget)
+        DlgEditIndication.resize(342, 102)
+        palette = QtGui.QPalette()
+        DlgEditIndication.setPalette(palette)
+        DlgEditIndication.setStyleSheet("QPushButton {\n"
+"    background-color: #00b4d8;\n"
+"    color: white;\n"
+"    border-radius: 8px;\n"
+"    font-family: \"Readex Pro\";\n"
+"    font: 12px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"    border: 3px solid #0077b6;\n"
+"}\n"
+"\n"
+"QLineEdit {\n"
+"    border: 2px  solid gray;\n"
+"    border-radius: 20px;\n"
+"    padding: 10px;\n"
+"    font-family:  \"Readex Pro\";\n"
+"    font: 12px;\n"
+"\n"
+"}")
+        self.layoutWidget = QtWidgets.QWidget(DlgEditIndication)
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 321, 78))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
         self.lytMain.setObjectName("lytMain")
-        self.ledIndication = QtWidgets.QLineEdit(self.widget)
+        self.ledIndication = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledIndication.setObjectName("ledIndication")
         self.lytMain.addWidget(self.ledIndication)
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
-        self.btnOk = QtWidgets.QPushButton(self.widget)
+        self.btnOk = QtWidgets.QPushButton(self.layoutWidget)
         self.btnOk.setObjectName("btnOk")
         self.lytButtons.addWidget(self.btnOk)
-        self.btnExit = QtWidgets.QPushButton(self.widget)
+        self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
         self.lytMain.addLayout(self.lytButtons)
@@ -42,6 +64,7 @@ class Ui_DlgEditIndication(object):
         DlgEditIndication.setWindowTitle(_translate("DlgEditIndication", "Edit Indication"))
         self.btnOk.setText(_translate("DlgEditIndication", "OK"))
         self.btnExit.setText(_translate("DlgEditIndication", "Exit"))
+import gui.resource_rc
 
 
 if __name__ == "__main__":
