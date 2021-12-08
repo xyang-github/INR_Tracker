@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>703</width>
-    <height>529</height>
+    <width>714</width>
+    <height>539</height>
    </rect>
   </property>
   <property name="palette">
@@ -77,6 +77,56 @@
   <property name="windowTitle">
    <string>Patient Profile</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	background-color: #00b4d8;
+	color: white;
+	border-radius: 8px;
+	font-family: &quot;Readex Pro&quot;;
+	font: 12px;
+}
+
+QPushButton::hover{
+	border: 3px solid #0077b6;
+}
+
+QLineEdit {
+	border: 2px  solid gray;
+	border-radius: 20px;
+	padding: 10px;
+	font-family:  &quot;Readex Pro&quot;;
+	font: 12px;
+
+}
+
+QLabel {
+	color: #5E60CE;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+QLabel#lblNotice {
+	font-family: &quot;Readex Pro&quot;;
+	font-size: 12px;	
+	font-weight: normal;
+	color: black;
+	margin: 0;
+}
+
+QTabBar::tab {
+	background-color: #023e8a;
+	color: white;
+	padding: 6px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
+QTabBar::tab::hover{
+	background-color: #7400b8;
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTabWidget" name="tabProfile">
@@ -144,6 +194,9 @@
        </disabled>
       </palette>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="tabShape">
       <enum>QTabWidget::Rounded</enum>
      </property>
@@ -157,23 +210,24 @@
       <attribute name="title">
        <string>Summary</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>10</y>
-         <width>461</width>
-         <height>154</height>
+         <width>641</width>
+         <height>343</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="lytSummaryMain">
+       <layout class="QVBoxLayout" name="lytSummaryMain">
         <item>
-         <layout class="QFormLayout" name="lytSummary">
+         <layout class="QFormLayout" name="lytSummaryInfo">
           <item row="0" column="0">
            <widget class="QLabel" name="lblFirstName">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -194,7 +248,8 @@
            <widget class="QLabel" name="lblLastName">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -215,7 +270,8 @@
            <widget class="QLabel" name="lblDOB">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -236,7 +292,8 @@
            <widget class="QLabel" name="lblIndications">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -257,7 +314,8 @@
            <widget class="QLabel" name="lblGoal">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -278,7 +336,8 @@
            <widget class="QLabel" name="lblStatus">
             <property name="font">
              <font>
-              <pointsize>12</pointsize>
+              <family>Raleway</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -298,43 +357,58 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="lytButtons">
-          <item>
-           <widget class="QPushButton" name="btnEditPatient">
-            <property name="text">
-             <string>Edit Patient</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnCSV">
-            <property name="text">
-             <string>Export to CSV</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnPDF">
-            <property name="text">
-             <string>Export to PDF</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnAnalytics">
-            <property name="text">
-             <string>Analytics</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnExit">
-            <property name="text">
-             <string>Exit</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QLabel" name="lblNotice">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>460</y>
+         <width>521</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="lytButtons">
+        <item>
+         <widget class="QPushButton" name="btnExit">
+          <property name="text">
+           <string>Exit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnAnalytics">
+          <property name="text">
+           <string>Analytics</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnPDF">
+          <property name="text">
+           <string>Export to PDF</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnCSV">
+          <property name="text">
+           <string>Export to CSV</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnEditPatient">
+          <property name="text">
+           <string>Edit Patient</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -348,7 +422,7 @@
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>661</width>
+         <width>671</width>
          <height>431</height>
         </rect>
        </property>
@@ -442,15 +516,35 @@
          <layout class="QVBoxLayout" name="lytResultRight">
           <item>
            <widget class="QPushButton" name="btnAdd">
+            <property name="minimumSize">
+             <size>
+              <width>75</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Add Result</string>
+             <string>Add</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource/resource.qrc">
+              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btnEdit">
+            <property name="minimumSize">
+             <size>
+              <width>75</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Edit Result</string>
+             <string>Edit</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource/resource.qrc">
+              <normaloff>:/icon/edit.png</normaloff>:/icon/edit.png</iconset>
             </property>
             <property name="autoDefault">
              <bool>false</bool>
@@ -459,8 +553,18 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnDelete">
+            <property name="minimumSize">
+             <size>
+              <width>75</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Delete Result</string>
+             <string>Delete</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource/resource.qrc">
+              <normaloff>:/icon/delete.png</normaloff>:/icon/delete.png</iconset>
             </property>
            </widget>
           </item>
@@ -492,7 +596,10 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <family>Raleway</family>
+         <pointsize>-1</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
@@ -510,7 +617,6 @@
   <tabstop>btnPDF</tabstop>
   <tabstop>btnAnalytics</tabstop>
   <tabstop>btnExit</tabstop>
-  <tabstop>tabProfile</tabstop>
   <tabstop>btnEdit</tabstop>
   <tabstop>ledFirstName</tabstop>
   <tabstop>ledLastName</tabstop>
@@ -522,6 +628,8 @@
   <tabstop>btnAdd</tabstop>
   <tabstop>btnDelete</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

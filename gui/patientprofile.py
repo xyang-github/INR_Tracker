@@ -9,12 +9,13 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 
 
 class Ui_DlgProfile(object):
     def setupUi(self, DlgProfile):
         DlgProfile.setObjectName("DlgProfile")
-        DlgProfile.resize(703, 529)
+        DlgProfile.resize(714, 539)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -35,6 +36,54 @@ class Ui_DlgProfile(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgProfile.setPalette(palette)
+        DlgProfile.setStyleSheet("QPushButton {\n"
+"    background-color: #00b4d8;\n"
+"    color: white;\n"
+"    border-radius: 8px;\n"
+"    font-family: \"Readex Pro\";\n"
+"    font: 12px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"    border: 3px solid #0077b6;\n"
+"}\n"
+"\n"
+"QLineEdit {\n"
+"    border: 2px  solid gray;\n"
+"    border-radius: 20px;\n"
+"    padding: 10px;\n"
+"    font-family:  \"Readex Pro\";\n"
+"    font: 12px;\n"
+"\n"
+"}\n"
+"\n"
+"QLabel {\n"
+"    color: #5E60CE;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"    margin-top: 10px;\n"
+"}\n"
+"\n"
+"QLabel#lblNotice {\n"
+"    font-family: \"Readex Pro\";\n"
+"    font-size: 12px;    \n"
+"    font-weight: normal;\n"
+"    color: black;\n"
+"    margin: 0;\n"
+"}\n"
+"\n"
+"QTabBar::tab {\n"
+"    background-color: #023e8a;\n"
+"    color: white;\n"
+"    padding: 6px;\n"
+"    border-top-left-radius: 6px;\n"
+"    border-top-right-radius: 6px;\n"
+"}\n"
+"\n"
+"QTabBar::tab::hover{\n"
+"    background-color: #7400b8;\n"
+"}")
         self.verticalLayout = QtWidgets.QVBoxLayout(DlgProfile)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tabProfile = QtWidgets.QTabWidget(DlgProfile)
@@ -58,115 +107,129 @@ class Ui_DlgProfile(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         self.tabProfile.setPalette(palette)
+        self.tabProfile.setStyleSheet("")
         self.tabProfile.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.tabProfile.setObjectName("tabProfile")
         self.Summary = QtWidgets.QWidget()
         self.Summary.setFocusPolicy(QtCore.Qt.TabFocus)
         self.Summary.setObjectName("Summary")
-        self.widget = QtWidgets.QWidget(self.Summary)
-        self.widget.setGeometry(QtCore.QRect(10, 10, 461, 154))
-        self.widget.setObjectName("widget")
-        self.lytSummaryMain = QtWidgets.QHBoxLayout(self.widget)
+        self.layoutWidget = QtWidgets.QWidget(self.Summary)
+        self.layoutWidget.setGeometry(QtCore.QRect(20, 10, 641, 343))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytSummaryMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytSummaryMain.setContentsMargins(0, 0, 0, 0)
         self.lytSummaryMain.setObjectName("lytSummaryMain")
-        self.lytSummary = QtWidgets.QFormLayout()
-        self.lytSummary.setObjectName("lytSummary")
-        self.lblFirstName = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo = QtWidgets.QFormLayout()
+        self.lytSummaryInfo.setObjectName("lytSummaryInfo")
+        self.lblFirstName = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblFirstName.setFont(font)
         self.lblFirstName.setObjectName("lblFirstName")
-        self.lytSummary.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lblFirstName)
-        self.ledFirstName = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lblFirstName)
+        self.ledFirstName = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledFirstName.setReadOnly(True)
         self.ledFirstName.setObjectName("ledFirstName")
-        self.lytSummary.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.ledFirstName)
-        self.lblLastName = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.ledFirstName)
+        self.lblLastName = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblLastName.setFont(font)
         self.lblLastName.setObjectName("lblLastName")
-        self.lytSummary.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.lblLastName)
-        self.ledLastName = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.lblLastName)
+        self.ledLastName = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledLastName.setReadOnly(True)
         self.ledLastName.setObjectName("ledLastName")
-        self.lytSummary.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.ledLastName)
-        self.lblDOB = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.ledLastName)
+        self.lblDOB = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblDOB.setFont(font)
         self.lblDOB.setObjectName("lblDOB")
-        self.lytSummary.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.lblDOB)
-        self.ledDOB = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.lblDOB)
+        self.ledDOB = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledDOB.setReadOnly(True)
         self.ledDOB.setObjectName("ledDOB")
-        self.lytSummary.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.ledDOB)
-        self.lblIndications = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.ledDOB)
+        self.lblIndications = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblIndications.setFont(font)
         self.lblIndications.setObjectName("lblIndications")
-        self.lytSummary.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.lblIndications)
-        self.ledIndications = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.lblIndications)
+        self.ledIndications = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledIndications.setReadOnly(True)
         self.ledIndications.setObjectName("ledIndications")
-        self.lytSummary.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.ledIndications)
-        self.lblGoal = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.ledIndications)
+        self.lblGoal = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblGoal.setFont(font)
         self.lblGoal.setObjectName("lblGoal")
-        self.lytSummary.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.lblGoal)
-        self.ledGoal = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.lblGoal)
+        self.ledGoal = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledGoal.setReadOnly(True)
         self.ledGoal.setObjectName("ledGoal")
-        self.lytSummary.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.ledGoal)
-        self.lblStatus = QtWidgets.QLabel(self.widget)
+        self.lytSummaryInfo.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.ledGoal)
+        self.lblStatus = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblStatus.setFont(font)
         self.lblStatus.setObjectName("lblStatus")
-        self.lytSummary.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.lblStatus)
-        self.ledStatus = QtWidgets.QLineEdit(self.widget)
+        self.lytSummaryInfo.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.lblStatus)
+        self.ledStatus = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledStatus.setReadOnly(True)
         self.ledStatus.setObjectName("ledStatus")
-        self.lytSummary.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.ledStatus)
-        self.lytSummaryMain.addLayout(self.lytSummary)
-        self.lytButtons = QtWidgets.QVBoxLayout()
+        self.lytSummaryInfo.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.ledStatus)
+        self.lytSummaryMain.addLayout(self.lytSummaryInfo)
+        self.lblNotice = QtWidgets.QLabel(self.layoutWidget)
+        self.lblNotice.setText("")
+        self.lblNotice.setObjectName("lblNotice")
+        self.lytSummaryMain.addWidget(self.lblNotice)
+        self.widget = QtWidgets.QWidget(self.Summary)
+        self.widget.setGeometry(QtCore.QRect(70, 460, 521, 23))
+        self.widget.setObjectName("widget")
+        self.lytButtons = QtWidgets.QHBoxLayout(self.widget)
+        self.lytButtons.setContentsMargins(0, 0, 0, 0)
         self.lytButtons.setObjectName("lytButtons")
-        self.btnEditPatient = QtWidgets.QPushButton(self.widget)
-        self.btnEditPatient.setObjectName("btnEditPatient")
-        self.lytButtons.addWidget(self.btnEditPatient)
-        self.btnCSV = QtWidgets.QPushButton(self.widget)
-        self.btnCSV.setObjectName("btnCSV")
-        self.lytButtons.addWidget(self.btnCSV)
-        self.btnPDF = QtWidgets.QPushButton(self.widget)
-        self.btnPDF.setObjectName("btnPDF")
-        self.lytButtons.addWidget(self.btnPDF)
-        self.btnAnalytics = QtWidgets.QPushButton(self.widget)
-        self.btnAnalytics.setObjectName("btnAnalytics")
-        self.lytButtons.addWidget(self.btnAnalytics)
         self.btnExit = QtWidgets.QPushButton(self.widget)
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
-        self.lytSummaryMain.addLayout(self.lytButtons)
+        self.btnAnalytics = QtWidgets.QPushButton(self.widget)
+        self.btnAnalytics.setObjectName("btnAnalytics")
+        self.lytButtons.addWidget(self.btnAnalytics)
+        self.btnPDF = QtWidgets.QPushButton(self.widget)
+        self.btnPDF.setObjectName("btnPDF")
+        self.lytButtons.addWidget(self.btnPDF)
+        self.btnCSV = QtWidgets.QPushButton(self.widget)
+        self.btnCSV.setObjectName("btnCSV")
+        self.lytButtons.addWidget(self.btnCSV)
+        self.btnEditPatient = QtWidgets.QPushButton(self.widget)
+        self.btnEditPatient.setObjectName("btnEditPatient")
+        self.lytButtons.addWidget(self.btnEditPatient)
         self.tabProfile.addTab(self.Summary, "")
         self.Results = QtWidgets.QWidget()
         self.Results.setObjectName("Results")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.Results)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 50, 661, 431))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 50, 671, 431))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.lytResultsMain = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.lytResultsMain.setContentsMargins(0, 0, 0, 0)
@@ -220,13 +283,25 @@ class Ui_DlgProfile(object):
         self.lytResultRight = QtWidgets.QVBoxLayout()
         self.lytResultRight.setObjectName("lytResultRight")
         self.btnAdd = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.btnAdd.setMinimumSize(QtCore.QSize(75, 30))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnAdd.setIcon(icon)
         self.btnAdd.setObjectName("btnAdd")
         self.lytResultRight.addWidget(self.btnAdd)
         self.btnEdit = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.btnEdit.setMinimumSize(QtCore.QSize(75, 30))
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/icon/edit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnEdit.setIcon(icon1)
         self.btnEdit.setAutoDefault(False)
         self.btnEdit.setObjectName("btnEdit")
         self.lytResultRight.addWidget(self.btnEdit)
         self.btnDelete = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.btnDelete.setMinimumSize(QtCore.QSize(75, 30))
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnDelete.setIcon(icon2)
         self.btnDelete.setObjectName("btnDelete")
         self.lytResultRight.addWidget(self.btnDelete)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -235,7 +310,10 @@ class Ui_DlgProfile(object):
         self.lblName = QtWidgets.QLabel(self.Results)
         self.lblName.setGeometry(QtCore.QRect(10, 10, 661, 31))
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setWeight(75)
         self.lblName.setFont(font)
         self.lblName.setObjectName("lblName")
         self.tabProfile.addTab(self.Results, "")
@@ -248,8 +326,7 @@ class Ui_DlgProfile(object):
         DlgProfile.setTabOrder(self.btnCSV, self.btnPDF)
         DlgProfile.setTabOrder(self.btnPDF, self.btnAnalytics)
         DlgProfile.setTabOrder(self.btnAnalytics, self.btnExit)
-        DlgProfile.setTabOrder(self.btnExit, self.tabProfile)
-        DlgProfile.setTabOrder(self.tabProfile, self.btnEdit)
+        DlgProfile.setTabOrder(self.btnExit, self.btnEdit)
         DlgProfile.setTabOrder(self.btnEdit, self.ledFirstName)
         DlgProfile.setTabOrder(self.ledFirstName, self.ledLastName)
         DlgProfile.setTabOrder(self.ledLastName, self.ledDOB)
@@ -269,11 +346,11 @@ class Ui_DlgProfile(object):
         self.lblIndications.setText(_translate("DlgProfile", "Indication(s)"))
         self.lblGoal.setText(_translate("DlgProfile", "INR Goal"))
         self.lblStatus.setText(_translate("DlgProfile", "Status"))
-        self.btnEditPatient.setText(_translate("DlgProfile", "Edit Patient"))
-        self.btnCSV.setText(_translate("DlgProfile", "Export to CSV"))
-        self.btnPDF.setText(_translate("DlgProfile", "Export to PDF"))
-        self.btnAnalytics.setText(_translate("DlgProfile", "Analytics"))
         self.btnExit.setText(_translate("DlgProfile", "Exit"))
+        self.btnAnalytics.setText(_translate("DlgProfile", "Analytics"))
+        self.btnPDF.setText(_translate("DlgProfile", "Export to PDF"))
+        self.btnCSV.setText(_translate("DlgProfile", "Export to CSV"))
+        self.btnEditPatient.setText(_translate("DlgProfile", "Edit Patient"))
         self.tabProfile.setTabText(self.tabProfile.indexOf(self.Summary), _translate("DlgProfile", "Summary"))
         item = self.tblResult.horizontalHeaderItem(0)
         item.setText(_translate("DlgProfile", "ID"))
@@ -287,11 +364,12 @@ class Ui_DlgProfile(object):
         item.setText(_translate("DlgProfile", "Total Dose"))
         item = self.tblResult.horizontalHeaderItem(5)
         item.setText(_translate("DlgProfile", "Comment"))
-        self.btnAdd.setText(_translate("DlgProfile", "Add Result"))
-        self.btnEdit.setText(_translate("DlgProfile", "Edit Result"))
-        self.btnDelete.setText(_translate("DlgProfile", "Delete Result"))
+        self.btnAdd.setText(_translate("DlgProfile", "Add"))
+        self.btnEdit.setText(_translate("DlgProfile", "Edit"))
+        self.btnDelete.setText(_translate("DlgProfile", "Delete"))
         self.lblName.setText(_translate("DlgProfile", "Last name, First name"))
         self.tabProfile.setTabText(self.tabProfile.indexOf(self.Results), _translate("DlgProfile", "Results"))
+import gui.resource_rc
 
 
 if __name__ == "__main__":
