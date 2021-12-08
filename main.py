@@ -342,9 +342,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         else:
             # Asking user for verification of deletion
             self.selected_indication = self.lstIndications.selectedItems()[0].text()
-            self.question = message_box_question(
-                                 f"Are you sure you want to delete the indication: {self.selected_indication}? "
-                                 f"This will remove the indication from all patients that have this indication.")
+            self.question = message_box_question(f"Are you sure you want to delete the indication: {self.selected_indication}? This will remove the indication from all patients that have this indication.")
             self.question.btnAccept.clicked.connect(self.query_delete_indication)
             self.question.show()
             self.question.exec()
@@ -352,6 +350,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             self.populate_indication_list()
 
     def query_delete_indication(self):
+        """Send a query to delete an indication from the indication table"""
         query = QSqlQuery()
         query.prepare("DELETE FROM indication WHERE indication_name = :name")
         query.bindValue(":name", self.selected_indication)
@@ -368,8 +367,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             bOk = query.exec()
             if bOk:
                 message_box_critical(f"The indication: {self.selected_indication} has been deleted.")
-                self.question.close()
-
+                self.question.close()  # close dialog box
 
     def validate_if_selected(self):
         """Validate if an item in the list widget exists or has been selected"""
@@ -555,16 +553,23 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             message_box_critical("No entries to delete.")
             return
 
-        double_check_msg = QMessageBox.question(self, "Delete Result",
-                             f"You have selected row {self.current_selection_row + 1} to be deleted.")
-        if double_check_msg == QMessageBox.Yes:
-            query = QSqlQuery()
-            query.prepare("DELETE FROM inr WHERE inr_id = :id")
-            query.bindValue(":id", self.current_selection_inr_id)
-            bOk = query.exec()
-            if bOk:
-                message_box_critical("Record deleted.")
+        self.question = message_box_question(f"You have selected row {self.current_selection_row + 1} to be deleted.")
+        self.question.btnAccept.clicked.connect(self.query_delete_inr)
+        self.question.show()
+        self.question.exec_()
+
         self.populate_result_table()
+
+    def query_delete_inr(self):
+        """Send a query to delete an inr row from the inr table"""
+        query = QSqlQuery()
+        query.prepare("DELETE FROM inr WHERE inr_id = :id")
+        query.bindValue(":id", self.current_selection_inr_id)
+        bOk = query.exec()
+        if bOk:
+            message_box_critical("Record deleted.")
+
+        self.question.close()  # close dialog box
 
     def evt_btn_edit_patient_clicked(self):
         """
@@ -1709,6 +1714,7 @@ class DlgAnalytics(QDialog):
         self.lytMain.addWidget(text_edit)
         self.setLayout(self.lytMain)
 
+
 class DlgReport(QDialog, Ui_DlgReport):
     """Dialog box for the clinic report"""
     def __init__(self):
@@ -1782,21 +1788,24 @@ def validate_new_indication(new_indication):
 
 
 def message_box_critical(msg):
+    """Creates a dialog widget showing a critical message"""
     msg_box = DlgMessageBoxCritical()
     msg_box.setWindowFlag(Qt.FramelessWindowHint)
     msg_box.setAttribute(Qt.WA_TranslucentBackground)
-    msg_box.lblMessage.setText(msg)
+    msg_box.tedMessage.setText(msg)
     msg_box.show()
     msg_box.exec()
 
 
 def message_box_question(msg):
+    """Creates a dialog widget asking for verification"""
     msg_box = DlgMessageBoxQuestion()
     msg_box.setWindowFlag(Qt.FramelessWindowHint)
     msg_box.setAttribute(Qt.WA_TranslucentBackground)
-    msg_box.lblMessage.setText(msg)
+    msg_box.tedMsg.setText(msg)
     msg_box.btnDecline.clicked.connect(msg_box.done)
     return msg_box
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

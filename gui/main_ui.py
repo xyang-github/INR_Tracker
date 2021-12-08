@@ -15,7 +15,9 @@ from PyQt5.QtGui import QFontDatabase
 class Ui_dlgMain(object):
     def setupUi(self, dlgMain):
         dlgMain.setObjectName("dlgMain")
-        dlgMain.resize(701, 280)
+        width = 701
+        height = 280
+        dlgMain.setFixedSize(width, height)
         QFontDatabase.addApplicationFont(":/font/Righteous-Regular.ttf")
         QFontDatabase.addApplicationFont(":/font/ReadexPro-Medium.ttf")
 
