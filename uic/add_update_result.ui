@@ -7,11 +7,125 @@
     <x>0</x>
     <y>0</y>
     <width>264</width>
-    <height>718</height>
+    <height>818</height>
    </rect>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>226</red>
+        <green>242</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
   </property>
   <property name="windowTitle">
    <string>Add Result</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	background-color: #00b4d8;
+	color: white;
+	border-radius: 8px;
+	font-family: &quot;Readex Pro&quot;;
+	font: 12px;
+}
+
+QPushButton::hover{
+	border: 3px solid #0077b6;
+}
+
+QLineEdit {
+	border: 2px  solid gray;
+	border-radius: 10px;
+	padding: 10px;
+	font-family:  &quot;Readex Pro&quot;;
+	font: 12px;
+
+}
+
+QLabel {
+	color: #5E60CE;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+QLabel#lblComment{
+	color: black;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+QLabel#lblGoal{
+	color: black;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+QLabel#lblDoseTitle{
+	color: black;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+}</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -19,7 +133,7 @@
      <x>10</x>
      <y>10</y>
      <width>241</width>
-     <height>694</height>
+     <height>791</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="lytMain">
@@ -29,7 +143,8 @@
        <widget class="QLabel" name="lblDate">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -41,6 +156,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QDateEdit" name="dteDate">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
         <property name="toolTip">
          <string>Enter date of the blood draw</string>
         </property>
@@ -61,6 +182,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="ledResult">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="toolTip">
          <string>Enter the INR result</string>
         </property>
@@ -73,7 +200,8 @@
        <widget class="QLabel" name="lblResult">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -101,7 +229,8 @@
        <widget class="QLabel" name="lblDoseTitle">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -110,7 +239,7 @@
          <string>Dose</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -139,7 +268,14 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="ledMonday"/>
+         <widget class="QLineEdit" name="ledMonday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="lblTuesday">
@@ -149,7 +285,14 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="ledTuesday"/>
+         <widget class="QLineEdit" name="ledTuesday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="lblWednesday">
@@ -159,7 +302,14 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="ledWednesday"/>
+         <widget class="QLineEdit" name="ledWednesday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="lblThursday">
@@ -169,7 +319,14 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="ledThursday"/>
+         <widget class="QLineEdit" name="ledThursday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="lblFriday">
@@ -179,7 +336,14 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLineEdit" name="ledFriday"/>
+         <widget class="QLineEdit" name="ledFriday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="5" column="0">
          <widget class="QLabel" name="lblSaturday">
@@ -189,7 +353,14 @@
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLineEdit" name="ledSaturday"/>
+         <widget class="QLineEdit" name="ledSaturday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="lblSunday">
@@ -199,14 +370,22 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLineEdit" name="ledSunday"/>
+         <widget class="QLineEdit" name="ledSunday">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item row="7" column="0">
          <widget class="QLabel" name="lblTotal">
           <property name="font">
            <font>
+            <family>Raleway</family>
+            <pointsize>-1</pointsize>
             <weight>75</weight>
-            <italic>true</italic>
             <bold>true</bold>
            </font>
           </property>
@@ -217,10 +396,19 @@
         </item>
         <item row="7" column="1">
          <widget class="QLineEdit" name="ledTotal">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <family>Readex Pro</family>
+            <pointsize>-1</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
            </font>
           </property>
           <property name="readOnly">
@@ -248,7 +436,8 @@
        <widget class="QLabel" name="lblGoal">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -257,7 +446,7 @@
          <string>INR Goal</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -301,7 +490,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="ledNewGoalFrom"/>
+          <widget class="QLineEdit" name="ledNewGoalFrom">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="lblNewGoalTo">
@@ -311,7 +507,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="ledNewGoalTo"/>
+          <widget class="QLineEdit" name="ledNewGoalTo">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -334,13 +537,17 @@
        <widget class="QLabel" name="lblComment">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
         <property name="text">
          <string>Comment</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -400,7 +607,9 @@
   <tabstop>btnCancel</tabstop>
   <tabstop>ledTotal</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
  <connections/>
  <buttongroups>
   <buttongroup name="rbtnGroup_Goal"/>

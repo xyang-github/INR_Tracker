@@ -14,9 +14,77 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgAddResult(object):
     def setupUi(self, DlgAddResult):
         DlgAddResult.setObjectName("DlgAddResult")
-        DlgAddResult.resize(264, 718)
+        DlgAddResult.resize(264, 818)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        DlgAddResult.setPalette(palette)
+        DlgAddResult.setStyleSheet("QPushButton {\n"
+"    background-color: #00b4d8;\n"
+"    color: white;\n"
+"    border-radius: 8px;\n"
+"    font-family: \"Readex Pro\";\n"
+"    font: 12px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"    border: 3px solid #0077b6;\n"
+"}\n"
+"\n"
+"QLineEdit {\n"
+"    border: 2px  solid gray;\n"
+"    border-radius: 10px;\n"
+"    padding: 10px;\n"
+"    font-family:  \"Readex Pro\";\n"
+"    font: 12px;\n"
+"\n"
+"}\n"
+"\n"
+"QLabel {\n"
+"    color: #5E60CE;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"\n"
+"QLabel#lblComment{\n"
+"    color: black;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"\n"
+"QLabel#lblGoal{\n"
+"    color: black;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"\n"
+"QLabel#lblDoseTitle{\n"
+"    color: black;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"}")
         self.layoutWidget = QtWidgets.QWidget(DlgAddResult)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 694))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 791))
         self.layoutWidget.setObjectName("layoutWidget")
         self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
@@ -25,23 +93,27 @@ class Ui_DlgAddResult(object):
         self.lytDateResult.setObjectName("lytDateResult")
         self.lblDate = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblDate.setFont(font)
         self.lblDate.setObjectName("lblDate")
         self.lytDateResult.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lblDate)
         self.dteDate = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dteDate.setMinimumSize(QtCore.QSize(0, 25))
         self.dteDate.setDateTime(QtCore.QDateTime(QtCore.QDate(2021, 1, 1), QtCore.QTime(0, 0, 0)))
         self.dteDate.setCalendarPopup(True)
         self.dteDate.setObjectName("dteDate")
         self.lytDateResult.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.dteDate)
         self.ledResult = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledResult.setMinimumSize(QtCore.QSize(0, 40))
         self.ledResult.setObjectName("ledResult")
         self.lytDateResult.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.ledResult)
         self.lblResult = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblResult.setFont(font)
@@ -57,11 +129,12 @@ class Ui_DlgAddResult(object):
         self.lytDose.setObjectName("lytDose")
         self.lblDoseTitle = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblDoseTitle.setFont(font)
-        self.lblDoseTitle.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lblDoseTitle.setAlignment(QtCore.Qt.AlignCenter)
         self.lblDoseTitle.setObjectName("lblDoseTitle")
         self.lytDose.addWidget(self.lblDoseTitle)
         self.chkNoChanges = QtWidgets.QCheckBox(self.layoutWidget)
@@ -76,56 +149,68 @@ class Ui_DlgAddResult(object):
         self.lblMonday.setObjectName("lblMonday")
         self.lytDailyDoses.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lblMonday)
         self.ledMonday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledMonday.setMinimumSize(QtCore.QSize(0, 20))
         self.ledMonday.setObjectName("ledMonday")
         self.lytDailyDoses.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.ledMonday)
         self.lblTuesday = QtWidgets.QLabel(self.layoutWidget)
         self.lblTuesday.setObjectName("lblTuesday")
         self.lytDailyDoses.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.lblTuesday)
         self.ledTuesday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledTuesday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledTuesday.setObjectName("ledTuesday")
         self.lytDailyDoses.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.ledTuesday)
         self.lblWednesday = QtWidgets.QLabel(self.layoutWidget)
         self.lblWednesday.setObjectName("lblWednesday")
         self.lytDailyDoses.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.lblWednesday)
         self.ledWednesday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledWednesday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledWednesday.setObjectName("ledWednesday")
         self.lytDailyDoses.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.ledWednesday)
         self.lblThursday = QtWidgets.QLabel(self.layoutWidget)
         self.lblThursday.setObjectName("lblThursday")
         self.lytDailyDoses.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.lblThursday)
         self.ledThursday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledThursday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledThursday.setObjectName("ledThursday")
         self.lytDailyDoses.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.ledThursday)
         self.lblFriday = QtWidgets.QLabel(self.layoutWidget)
         self.lblFriday.setObjectName("lblFriday")
         self.lytDailyDoses.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.lblFriday)
         self.ledFriday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledFriday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledFriday.setObjectName("ledFriday")
         self.lytDailyDoses.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.ledFriday)
         self.lblSaturday = QtWidgets.QLabel(self.layoutWidget)
         self.lblSaturday.setObjectName("lblSaturday")
         self.lytDailyDoses.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.lblSaturday)
         self.ledSaturday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledSaturday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledSaturday.setObjectName("ledSaturday")
         self.lytDailyDoses.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.ledSaturday)
         self.lblSunday = QtWidgets.QLabel(self.layoutWidget)
         self.lblSunday.setObjectName("lblSunday")
         self.lytDailyDoses.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.lblSunday)
         self.ledSunday = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledSunday.setMinimumSize(QtCore.QSize(0, 30))
         self.ledSunday.setObjectName("ledSunday")
         self.lytDailyDoses.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.ledSunday)
         self.lblTotal = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
-        font.setItalic(True)
         font.setWeight(75)
         self.lblTotal.setFont(font)
         self.lblTotal.setObjectName("lblTotal")
         self.lytDailyDoses.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.lblTotal)
         self.ledTotal = QtWidgets.QLineEdit(self.layoutWidget)
+        self.ledTotal.setMinimumSize(QtCore.QSize(0, 30))
         font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
+        font.setFamily("Readex Pro")
+        font.setPointSize(-1)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
         self.ledTotal.setFont(font)
         self.ledTotal.setReadOnly(True)
         self.ledTotal.setObjectName("ledTotal")
@@ -141,11 +226,12 @@ class Ui_DlgAddResult(object):
         self.lytGoal.setObjectName("lytGoal")
         self.lblGoal = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblGoal.setFont(font)
-        self.lblGoal.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lblGoal.setAlignment(QtCore.Qt.AlignCenter)
         self.lblGoal.setObjectName("lblGoal")
         self.lytGoal.addWidget(self.lblGoal)
         self.rbtn_Goal_Default = QtWidgets.QRadioButton(self.layoutWidget)
@@ -169,12 +255,14 @@ class Ui_DlgAddResult(object):
         self.lblNewGoalFrom.setObjectName("lblNewGoalFrom")
         self.horizontalLayout.addWidget(self.lblNewGoalFrom)
         self.ledNewGoalFrom = QtWidgets.QLineEdit(self.gbxNewGoal)
+        self.ledNewGoalFrom.setMinimumSize(QtCore.QSize(0, 40))
         self.ledNewGoalFrom.setObjectName("ledNewGoalFrom")
         self.horizontalLayout.addWidget(self.ledNewGoalFrom)
         self.lblNewGoalTo = QtWidgets.QLabel(self.gbxNewGoal)
         self.lblNewGoalTo.setObjectName("lblNewGoalTo")
         self.horizontalLayout.addWidget(self.lblNewGoalTo)
         self.ledNewGoalTo = QtWidgets.QLineEdit(self.gbxNewGoal)
+        self.ledNewGoalTo.setMinimumSize(QtCore.QSize(0, 40))
         self.ledNewGoalTo.setObjectName("ledNewGoalTo")
         self.horizontalLayout.addWidget(self.ledNewGoalTo)
         self.lytGoal.addWidget(self.gbxNewGoal)
@@ -188,10 +276,12 @@ class Ui_DlgAddResult(object):
         self.lytComment.setObjectName("lytComment")
         self.lblComment = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setFamily("Raleway")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.lblComment.setFont(font)
+        self.lblComment.setAlignment(QtCore.Qt.AlignCenter)
         self.lblComment.setObjectName("lblComment")
         self.lytComment.addWidget(self.lblComment)
         self.txtComment = QtWidgets.QTextEdit(self.layoutWidget)
@@ -258,6 +348,7 @@ class Ui_DlgAddResult(object):
         self.txtComment.setPlaceholderText(_translate("DlgAddResult", "Type any clinically relevant information pertaining to the result."))
         self.btnOK.setText(_translate("DlgAddResult", "OK"))
         self.btnCancel.setText(_translate("DlgAddResult", "Cancel"))
+import gui.resource_rc
 
 
 if __name__ == "__main__":
