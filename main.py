@@ -98,7 +98,7 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         html = self.get_html()
 
-        dlgReport = DlgReport()
+        dlgReport = DlgReport(html)
         dlgReport.tedReport.setHtml(html)
         dlgReport.show()
         dlgReport.exec_()
@@ -1337,8 +1337,8 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         self.btnAddIndication.clicked.connect(self.evt_btn_add_patient_indication_clicked)
         self.btnRemoveIndication.clicked.connect(self.evt_btn_remove_patient_indication_clicked)
         self.btnNewIndication.clicked.connect(self.evt_btn_new_indication_clicked)
-        self.buttonBox.accepted.connect(self.evt_btn_ok_clicked)
-        self.buttonBox.rejected.connect(self.close)
+        self.btnOk.clicked.connect(self.evt_btn_ok_clicked)
+        self.btnExit.clicked.connect(self.close)
 
     def evt_btn_add_patient_indication_clicked(self):
         """Move list widget item to patient-set indication list widget"""
@@ -1720,9 +1720,25 @@ class DlgAnalytics(QDialog):
 
 class DlgReport(QDialog, Ui_DlgReport):
     """Dialog box for the clinic report"""
-    def __init__(self):
+    def __init__(self, html):
         super(DlgReport, self).__init__()
+        header = """
+        <h1>Clinic Report</h1>
+        <br>
+        """
+        self.html = header + html
         self.setupUi(self)
+
+        # Button signals
+        self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
+        self.btnExit.clicked.connect(self.close)
+
+    def evt_btn_pdf_clicked(self):
+        """Save table widget as a PDF document"""
+        document = QTextDocument()
+        document.setHtml(self.html)
+        printer = QPrinter()
+        document.print_(printer)
 
 
 class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
