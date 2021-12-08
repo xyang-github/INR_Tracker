@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
-    <height>535</height>
+    <width>614</width>
+    <height>754</height>
    </rect>
   </property>
   <property name="palette">
@@ -77,13 +77,51 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	background-color: #00b4d8;
+	color: white;
+	border-radius: 8px;
+	font-family: &quot;Readex Pro&quot;;
+	font: 12px;
+}
+
+QPushButton::hover{
+	border: 3px solid #0077b6;
+}
+
+QLineEdit {
+	border: 2px  solid gray;
+	border-radius: 10px;
+	padding: 10px;
+	font-family:  &quot;Readex Pro&quot;;
+	font: 12px;
+
+}
+
+QLabel {
+	color: #5E60CE;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+QLabel#lblHeader {
+	font-family: &quot;Raleway&quot;;
+	font-size: 36px;	
+	font-weight: bold;
+	margin: 0;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>607</width>
-     <height>514</height>
+     <x>11</x>
+     <y>11</y>
+     <width>591</width>
+     <height>726</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="lytMain">
@@ -91,7 +129,8 @@
      <widget class="QLabel" name="lblHeader">
       <property name="font">
        <font>
-        <pointsize>16</pointsize>
+        <family>Raleway</family>
+        <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -113,7 +152,8 @@
        <widget class="QLabel" name="lblMRN">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -125,6 +165,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="ledMRN">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter medical record number</string>
         </property>
@@ -134,7 +180,8 @@
        <widget class="QLabel" name="lblFirstName">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -149,6 +196,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="ledFirstName">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter first name</string>
         </property>
@@ -158,7 +211,8 @@
        <widget class="QLabel" name="lblLastName">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -170,6 +224,12 @@
       </item>
       <item row="2" column="1">
        <widget class="QLineEdit" name="ledLastName">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter last name</string>
         </property>
@@ -179,7 +239,8 @@
        <widget class="QLabel" name="lblDOB">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -191,6 +252,12 @@
       </item>
       <item row="3" column="1">
        <widget class="QLineEdit" name="ledDOB">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter date of birth in the following format: YYYY-MM-DD</string>
         </property>
@@ -200,7 +267,8 @@
        <widget class="QLabel" name="lblStatus">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -243,7 +311,8 @@
      <widget class="QLabel" name="lblIndications">
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <family>Raleway</family>
+        <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -261,6 +330,12 @@
          <layout class="QHBoxLayout" name="lytIndicationAdd">
           <item>
            <widget class="QLineEdit" name="ledNewIndication">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
             <property name="placeholderText">
              <string>Type new indication here</string>
             </property>
@@ -268,11 +343,21 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnNewIndication">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>Add new indication to list of indications in the database</string>
             </property>
             <property name="text">
              <string>Add</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource/resource.qrc">
+              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
             </property>
            </widget>
           </item>
@@ -300,6 +385,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="btnAddIndication">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="toolTip">
            <string>Add indication to patient's profile</string>
           </property>
@@ -352,12 +443,13 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="lytBottom">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="lblGoalFrom">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -375,6 +467,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter lower end of INR goal</string>
         </property>
@@ -384,7 +482,8 @@
        <widget class="QLabel" name="lblGoalTo">
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <family>Raleway</family>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -396,6 +495,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="ledGoalTo">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="placeholderText">
          <string>Enter higher end of INR goal</string>
         </property>
@@ -404,21 +509,53 @@
      </layout>
     </item>
     <item>
-     <widget class="QDialogButtonBox" name="buttonBox">
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="standardButtons">
-       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="lytBottomButtons">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnOk">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>OK</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnExit">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Exit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
