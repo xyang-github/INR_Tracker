@@ -935,11 +935,13 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def display_comment_column(self, selected):
         """Display a dialog box containing comments if the comment column if the result table is filled"""
         self.current_selection_row = self.tblResult.currentRow()
-        self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
+        self.current_selection_comment = f"<b>Comment:</b> <br>" \
+                                         f"{self.tblResult.item(self.current_selection_row, 5).text()}"
 
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
                 message_box_critical(self.current_selection_comment)
+                self.tblResult.selectionModel().clearSelection()
 
     def check_status(self):
         """Check for inactive patient status. If patient is inactive, the buttons to add, edit and delete
