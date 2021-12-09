@@ -85,6 +85,10 @@ class Ui_DlgReport(object):
         self.lytMain.addWidget(self.tedReport)
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
+        self.btnPatientList = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnPatientList.setMinimumSize(QtCore.QSize(0, 30))
+        self.btnPatientList.setObjectName("btnPatientList")
+        self.lytButtons.addWidget(self.btnPatientList)
         self.btnPDF = QtWidgets.QPushButton(self.layoutWidget)
         self.btnPDF.setMinimumSize(QtCore.QSize(0, 30))
         icon = QtGui.QIcon()
@@ -105,6 +109,7 @@ class Ui_DlgReport(object):
         _translate = QtCore.QCoreApplication.translate
         DlgReport.setWindowTitle(_translate("DlgReport", "Clinic Report"))
         self.lblHeader.setText(_translate("DlgReport", "Clinic Report"))
+        self.btnPatientList.setText(_translate("DlgReport", "Patient List"))
         self.btnPDF.setText(_translate("DlgReport", "Export to PDF"))
         self.btnExit.setText(_translate("DlgReport", "Exit"))
 import gui.resource_rc

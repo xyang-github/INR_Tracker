@@ -145,6 +145,19 @@ QLabel {
     <item>
      <layout class="QHBoxLayout" name="lytButtons">
       <item>
+       <widget class="QPushButton" name="btnPatientList">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Patient List</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnPDF">
         <property name="minimumSize">
          <size>
