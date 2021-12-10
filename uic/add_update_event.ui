@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgAddEditEvent</class>
+ <widget class="QDialog" name="DlgAddEditEvent">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>614</width>
+    <height>618</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add Event</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+	background-color: #e2f2ff;
+}
+
+QPushButton {
+	background-color: #00b4d8;
+	color: white;
+	border-radius: 8px;
+	font-family: &quot;Readex Pro&quot;;
+	font: 12px;
+}
+
+QPushButton::hover{
+	border: 3px solid #0077b6;
+}
+
+QLineEdit {
+	border: 2px  solid gray;
+	border-radius: 10px;
+	padding: 10px;
+	font-family:  &quot;Readex Pro&quot;;
+	font: 12px;
+
+}
+
+QLabel {
+	color: #5E60CE;
+	font-family: &quot;Raleway&quot;;
+	font-size: 16px;
+	font-weight: bold;
+}</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>11</y>
+     <width>591</width>
+     <height>596</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="lytMain">
+    <item>
+     <layout class="QHBoxLayout" name="lytDate">
+      <item>
+       <widget class="QLabel" name="lblDate_event">
+        <property name="text">
+         <string>Date</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="dteDate_event"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>800</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelEvent">
+      <property name="text">
+       <string>Clinical Event</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytBottom">
+      <item>
+       <layout class="QVBoxLayout" name="lytLeft">
+        <item>
+         <layout class="QHBoxLayout" name="lytAddEvent">
+          <item>
+           <widget class="QLineEdit" name="ledNewEvent">
+            <property name="placeholderText">
+             <string>Type new clinical event here</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnNewEvent">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Add new indication to list of indications in the database</string>
+            </property>
+            <property name="text">
+             <string>Add</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resource/resource.qrc">
+              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="lstCurrentEvent"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="lytEventButtons">
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnAddEvent">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Add indication to patient's profile</string>
+          </property>
+          <property name="text">
+           <string>--&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRemoveEvent">
+          <property name="toolTip">
+           <string>Remove indication from patient's profile</string>
+          </property>
+          <property name="text">
+           <string>&lt;--</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListWidget" name="lstPatientEvent"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblComment">
+      <property name="text">
+       <string>Comment</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="txtComment_event">
+      <property name="toolTip">
+       <string>Add clinically relevant comments</string>
+      </property>
+      <property name="tabChangesFocus">
+       <bool>false</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Type any clinically relevant information pertaining to the result.</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="lytButton">
+      <item>
+       <widget class="QPushButton" name="btnOK_event">
+        <property name="text">
+         <string>OK</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnCancel_event">
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <zorder>lblDate_event</zorder>
+  <zorder>dteDate_event</zorder>
+  <zorder>ledNewEvent</zorder>
+  <zorder>btnNewEvent</zorder>
+  <zorder>lstCurrentEvent</zorder>
+  <zorder>btnRemoveEvent</zorder>
+  <zorder>lstPatientEvent</zorder>
+  <zorder>btnAddEvent</zorder>
+  <zorder>txtComment_event</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>lblComment</zorder>
+ </widget>
+ <resources>
+  <include location="../resource/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
