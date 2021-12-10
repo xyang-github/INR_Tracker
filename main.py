@@ -1205,10 +1205,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             message_box_critical("No entry selected to edit.")
             return
 
-        dlgEditEvent = DlgAddEditEvent(self.mrn)
-        dlgEditEvent.setWindowTitle("Edit Event")
-        dlgEditEvent.lstCurrentEvent.clear()
-        dlgEditEvent.lstPatientEvent.clear()
+        self.dlgEditEvent = DlgAddEditEvent(self.mrn)
+        self.dlgEditEvent.setWindowTitle("Edit Event")
+        self.dlgEditEvent.lstCurrentEvent.clear()
+        self.dlgEditEvent.lstPatientEvent.clear()
 
         # Retrieve information from the selected row in the event table widget
         row = self.tblEvents.currentRow()
@@ -1221,30 +1221,30 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.comments = self.tblEvents.item(row, 2).text()
 
         # Populates the input widgets on the window
-        dlgEditEvent.dteDate_event.setDate(QDate(year, month, day))
-        dlgEditEvent.txtComment_event.insertPlainText(self.comments)
-        dlgEditEvent.lstPatientEvent.addItem(QListWidgetItem(self.event_name))
+        self.dlgEditEvent.dteDate_event.setDate(QDate(year, month, day))
+        self.dlgEditEvent.txtComment_event.insertPlainText(self.comments)
+        self.dlgEditEvent.lstPatientEvent.addItem(QListWidgetItem(self.event_name))
 
         query = QSqlQuery()
         bOk = query.exec("SELECT event_id, event_name FROM event")
         if bOk:
             while query.next():
                 if query.value('event_name') != self.event_name:
-                    dlgEditEvent.lstCurrentEvent.addItem(query.value('event_name'))
+                    self.dlgEditEvent.lstCurrentEvent.addItem(query.value('event_name'))
 
         # Set input widgets to read only except the comment
-        dlgEditEvent.dteDate_event.setReadOnly(True)
-        dlgEditEvent.ledNewEvent.setPlaceholderText("Disabled when editing entry.")
-        dlgEditEvent.ledNewEvent.setReadOnly(True)
-        dlgEditEvent.btnAddEvent.setDisabled(True)
-        dlgEditEvent.btnRemoveEvent.setDisabled(True)
-        dlgEditEvent.btnNewEvent.setDisabled(True)
+        self.dlgEditEvent.dteDate_event.setReadOnly(True)
+        self.dlgEditEvent.ledNewEvent.setPlaceholderText("Disabled when editing entry.")
+        self.dlgEditEvent.ledNewEvent.setReadOnly(True)
+        self.dlgEditEvent.btnAddEvent.setDisabled(True)
+        self.dlgEditEvent.btnRemoveEvent.setDisabled(True)
+        self.dlgEditEvent.btnNewEvent.setDisabled(True)
 
         # Event handler for push button when editing an event entry
-        dlgEditEvent.btnOK_event.clicked.connect(self.evt_btn_update_event_clicked)
+        self.dlgEditEvent.btnOK_event.clicked.connect(self.evt_btn_update_event_clicked)
 
-        dlgEditEvent.show()
-        dlgEditEvent.exec()
+        self.dlgEditEvent.show()
+        self.dlgEditEvent.exec()
         self.populate_event_table()
 
     def evt_btn_update_event_clicked(self):
@@ -1257,17 +1257,16 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         event_id = query.value('event_id')
 
         query = QSqlQuery()
-        query.prepare("UPDATE patient_event SET comment = :comment WHERE date = :date AND event_id = :event_id "
-                      "AND patient_id = :patient_id)")
-        query.bindValue(":date", self.date)
-        query.bindValue(":event_id", event_id)
-        query.bindValue(":patient_id", self.mrn)
-        query.bindValue(":comment", self.comments)
+        query.prepare("UPDATE patient_event SET comment = :comment WHERE date = :event_date AND event_id = :event_id "
+                      "AND patient_id = :patient_id")
+        query.bindValue(":comment", self.dlgEditEvent.txtComment_event.toPlainText())
+        query.bindValue(":event_date", self.date)
+        query.bindValue(":event_id", int(event_id))
+        query.bindValue(":patient_id", int(self.mrn))
         bOk = query.exec()
-        print(bOk)   ########################## PRINTS FALSE
         if bOk:
             message_box_critical("Record updated.")
-            self.close()
+            self.dlgEditEvent.close()
         else:
             message_box_critical("Not able to update record.")
 
@@ -1996,6 +1995,9 @@ class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
     def __init__(self):
         super(DlgMessageBoxCritical, self).__init__()
         self.setupUi(self)
+
+        self.btnOk.setText("OK")
+        self.btnOk.clicked.connect(self.close)
 
 
 class DlgMessageBoxQuestion(Ui_DlgMessageBoxQuestion):
