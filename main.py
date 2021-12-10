@@ -596,7 +596,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.setSortingEnabled(True)
         self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblResult.setSelectionMode(1)  # Single selection mode
-        self.tblResult.selectionModel().selectionChanged.connect(self.display_comment_column)
+        self.tblResult.selectionModel().selectionChanged.connect(self.display_result_comment_column)
 
         # Event table widget formatting
         self.tblEvents.setAlternatingRowColors(True)
@@ -604,6 +604,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblEvents.setSortingEnabled(True)
         self.tblEvents.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblEvents.setSelectionMode(1)
+        self.tblEvents.selectionModel().selectionChanged.connect(self.display_event_comment_column)
 
         self.populate_patient_summary()
 
@@ -626,9 +627,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.populate_result_table()
         self.populate_event_table()
 
-        # Event handlers for push buttons and double clicking
+        # Event handlers for result tab
         self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
-        # self.tblEvents.itemDoubleClicked.connect()
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
@@ -637,8 +637,12 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
         self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
+
+        # Event handlers for the event tab
+        self.tblEvents.itemDoubleClicked.connect(self.evt_btn_edit_event_clicked)
         self.btnAdd_event.clicked.connect(self.evt_btn_add_event_clicked)
         self.btnEdit_event.clicked.connect(self.evt_btn_edit_event_clicked)
+        self.btnDelete_event.clicked.connect(self.evt_btn_delete_event_clicked)
 
 # Result Tab
     def evt_btn_add_result_clicked(self):
@@ -818,7 +822,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.current_selection_row = self.tblResult.currentRow()
         self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
 
-    def display_comment_column(self, selected):
+    def display_result_comment_column(self, selected):
         """Display a dialog box containing comments if the comment column if the result table is filled"""
         self.current_selection_row = self.tblResult.currentRow()
         self.current_selection_comment = f"<b>Comment:</b> <br>" \
@@ -1270,6 +1274,42 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         else:
             message_box_critical("Not able to update record.")
 
+    def evt_btn_delete_event_clicked(self):
+        """Ask for verification to delete the selected row from the events table widget and database"""
+
+        # Check if there is any item in the event table widget to edit
+        if self.tblEvents.rowCount() == 0:
+            message_box_critical("No entries to delete.")
+            return
+
+        # Check if a selection has been made to edit
+        if not self.tblEvents.selectedItems():
+            message_box_critical("No entry selected to delete.")
+            return
+
+        # Retrieve information from the selected row
+        row = self.tblEvents.currentRow()
+        self.date = self.tblEvents.item(row, 0).text()
+        self.event_name = self.tblEvents.item(row, 1).text()
+
+        query = QSqlQuery()
+        query.prepare("SELECT event_id from event WHERE event_name = :name")
+        query.bindValue(":name", self.event_name)
+        query.exec()
+        query.next()
+        self.event_id = query.value('event_id')
+
+        # Ask for verification to delete record
+        self.question = message_box_question(f"You have selected row {row + 1} to be deleted.")
+
+        # Event handler to delete record from the result table and database
+        self.question.btnAccept.clicked.connect(self.query_delete_event)
+
+        self.question.show()
+        self.question.exec_()
+
+        self.populate_event_table()
+
     def populate_event_table(self):
         """Populates the event table widget with information from the database"""
         self.tblEvents.clearContents()
@@ -1288,6 +1328,32 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 for col in range(3):
                     tbl_row_value = QTableWidgetItem(str(query.value(col)))
                     self.tblEvents.setItem(row, col, tbl_row_value)
+
+    def display_event_comment_column(self, selected):
+        """Display a dialog box containing comments if the comment column if the events table is filled"""
+        self.current_selection_row = self.tblEvents.currentRow()
+        self.current_selection_comment = f"<b>Comment:</b> <br>" \
+                                         f"{self.tblEvents.item(self.current_selection_row, 2).text()}"
+
+        for i in selected.indexes():
+            if i.column() == 2 and self.current_selection_comment:
+                message_box_critical(self.current_selection_comment)
+                self.tblEvents.selectionModel().clearSelection()
+
+    def query_delete_event(self):
+        """Query a request to delete record from the database"""
+        query = QSqlQuery()
+        query.prepare("DELETE FROM patient_event WHERE date = :event_date AND event_id = :event_id "
+                      "AND patient_id = :patient_id")
+        query.bindValue(":event_date", self.date)
+        query.bindValue(":event_id", int(self.event_id))
+        query.bindValue(":patient_id", int(self.mrn))
+        bOk = query.exec()
+        if bOk:
+            self.question.close()
+            message_box_critical("Record deleted.")
+
+        self.question.close()  # close dialog box
 
 
 class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
@@ -1940,16 +2006,19 @@ class DlgAnalytics(QDialog):
         <ul style="font-size: 14px">
             <li><strong>Total Days On Record: </strong> <span style="color: blue">{round(total_days)}</span></li>
             <li><strong>Days Within Range: </strong> <span style="color: blue">{round(total_days_in_ttr)}</span></li>
-            <li><strong>Percent of Days Within Range: </strong> <span style="color: blue">{round((total_days_in_ttr / total_days) * 100)}%</span><br></li>
+            <li><strong>Percent of Days Within Range: </strong> <span style="color: blue">
+            {round((total_days_in_ttr / total_days) * 100)}%</span><br></li>
             <li><strong>Total Number of Tests:</strong> <span style="color: blue">{total_tests}</span></li>
-            <li><strong>Number of Tests in Range: </strong> <span style="color: blue">{number_of_results_in_range}</span></li>
-            <li><strong>Percent of Test in Range: </strong> <span style="color: blue">{round((number_of_results_in_range / total_tests) * 100)}%</span></li>
+            <li><strong>Number of Tests in Range: </strong> 
+            <span style="color: blue">{number_of_results_in_range}</span></li>
+            <li><strong>Percent of Test in Range: </strong> <span style="color: blue">
+            {round((number_of_results_in_range / total_tests) * 100)}%</span></li>
         </ul>
         
         <div style = "font-size: 14px">
-        <em>TTR was calculated using the Rosendaal linear interpolation method, which assumes a linear change between INR 
-        measurements over time. Clinical judgement should be used when evaluating the significance of TTR in clinical
-        decision making.</em>
+        <em>TTR was calculated using the Rosendaal linear interpolation method, which assumes a linear change between 
+        INR measurements over time. Clinical judgement should be used when evaluating the significance of TTR in 
+        clinical decision making.</em>
         </div>
         """
 
