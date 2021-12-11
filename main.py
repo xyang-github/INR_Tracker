@@ -2,7 +2,9 @@ import re
 from decimal import Decimal
 import datetime
 import csv
+
 import dateutil
+from dateutil.relativedelta import relativedelta
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QColor, QBrush, QPainter, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
@@ -957,8 +959,33 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
             percent_ttr = self.days_in_ttr / self.total_days
 
+            date_range = [6, 12, 'all']
+            number_of_events = []
+            for date in date_range:
+                if date == 'all':
+                    query = QSqlQuery()
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event WHERE patient_id = :id")
+                    query.bindValue(":id", int(self.mrn))
+                    bOk = query.exec()
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+                else:
+                    today = datetime.date.today()
+                    delta = dateutil.relativedelta.relativedelta(months=date)
+                    date_limit = today - delta
+
+                    query = QSqlQuery()
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event WHERE patient_id = :id AND date > :date")
+                    query.bindValue(":id", int(self.mrn))
+                    query.bindValue(":date", date_limit)
+                    bOk = query.exec()
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+
             dlgAnalytics = DlgAnalytics(percent_ttr, self.days_in_ttr, self.total_days,
-                                        self.total_rows, self.number_of_results_in_range)
+                                        self.total_rows, self.number_of_results_in_range, number_of_events)
             dlgAnalytics.show()
             dlgAnalytics.exec_()
 
@@ -1969,10 +1996,10 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
 class DlgAnalytics(QDialog):
     """Dialog window to display analytics"""
-    def __init__(self, percent_ttr, total_days_in_ttr, total_days, total_tests, number_of_results_in_range):
+    def __init__(self, percent_ttr, total_days_in_ttr, total_days, total_tests, number_of_results_in_range, number_of_events):
         super(DlgAnalytics, self).__init__()
         width = 700
-        height = 600
+        height = 800
         self.setFixedSize(width, height)
         self.setWindowTitle("Analytics")
         self.lytMain = QVBoxLayout()
@@ -2023,12 +2050,22 @@ class DlgAnalytics(QDialog):
             <li><strong>Percent of Test in Range: </strong> <span style="color: blue">
             {round((number_of_results_in_range / total_tests) * 100)}%</span></li>
         </ul>
-        
+        <br>
+        <h2>Clinical Events:</h2>
+        <ul style="font-size: 14px">
+            <li><strong>Past 6 months:</strong><span style="color: blue"> {number_of_events[0]}</span></li>
+            <li><strong>Past 12 months:</strong> <span style="color: blue">{number_of_events[1]}</span></li>
+            <li><strong>All time:</strong> <span style="color: blue">{number_of_events[2]}</span></li>
+        </ul>
+
+        <br>
         <div style = "font-size: 14px">
         <em>TTR was calculated using the Rosendaal linear interpolation method, which assumes a linear change between 
         INR measurements over time. Clinical judgement should be used when evaluating the significance of TTR in 
         clinical decision making.</em>
         </div>
+    
+        
         """
 
         text_edit = QTextEdit(description)
