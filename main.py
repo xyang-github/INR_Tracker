@@ -1996,7 +1996,8 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
 
 class DlgAnalytics(QDialog):
     """Dialog window to display analytics"""
-    def __init__(self, percent_ttr, total_days_in_ttr, total_days, total_tests, number_of_results_in_range, number_of_events):
+    def __init__(self, percent_ttr, total_days_in_ttr, total_days, total_tests, number_of_results_in_range,
+                 number_of_events):
         super(DlgAnalytics, self).__init__()
         width = 700
         height = 800
