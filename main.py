@@ -596,15 +596,13 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.setSortingEnabled(True)
         self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblResult.setSelectionMode(1)  # Single selection mode
-        self.tblResult.selectionModel().selectionChanged.connect(self.display_result_comment_column)
 
         # Event table widget formatting
-        self.tblEvents.setAlternatingRowColors(True)
         self.tblEvents.horizontalHeader().setStretchLastSection(True)
-        self.tblEvents.setSortingEnabled(True)
+        #self.tblEvents.setSortingEnabled(True)
         self.tblEvents.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblEvents.setSelectionMode(1)
-        self.tblEvents.selectionModel().selectionChanged.connect(self.display_event_comment_column)
+
 
         self.populate_patient_summary()
 
@@ -629,6 +627,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Event handlers for result tab
         self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
+        self.tblResult.selectionModel().selectionChanged.connect(self.display_result_comment_column)
         self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
         self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
         self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
@@ -640,6 +639,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Event handlers for the event tab
         self.tblEvents.itemDoubleClicked.connect(self.evt_btn_edit_event_clicked)
+        self.tblEvents.selectionModel().selectionChanged.connect(self.display_event_comment_column)
         self.btnAdd_event.clicked.connect(self.evt_btn_add_event_clicked)
         self.btnEdit_event.clicked.connect(self.evt_btn_edit_event_clicked)
         self.btnDelete_event.clicked.connect(self.evt_btn_delete_event_clicked)
@@ -1253,26 +1253,29 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def evt_btn_update_event_clicked(self):
         """Update the comment column. Date, event id and patient id are composite primary keys"""
-        query = QSqlQuery()
-        query.prepare("SELECT event_id from event WHERE event_name = :name")
-        query.bindValue(":name", self.event_name)
-        query.exec()
-        query.next()
-        event_id = query.value('event_id')
-
-        query = QSqlQuery()
-        query.prepare("UPDATE patient_event SET comment = :comment WHERE date = :event_date AND event_id = :event_id "
-                      "AND patient_id = :patient_id")
-        query.bindValue(":comment", self.dlgEditEvent.txtComment_event.toPlainText())
-        query.bindValue(":event_date", self.date)
-        query.bindValue(":event_id", int(event_id))
-        query.bindValue(":patient_id", int(self.mrn))
-        bOk = query.exec()
+        msg = "Record updated."
+        query1 = QSqlQuery()
+        query1.prepare("SELECT event_id FROM patient_event WHERE patient_id = :id AND date = :date_event")
+        query1.bindValue(":id", int(self.mrn))
+        query1.bindValue(":date_event", self.date)
+        bOk = query1.exec()
         if bOk:
-            message_box_critical("Record updated.")
-            self.dlgEditEvent.close()
-        else:
-            message_box_critical("Not able to update record.")
+            while query1.next():
+                query2 = QSqlQuery()
+                query2.prepare("UPDATE patient_event SET comment = :comment WHERE date = :date AND patient_id = "
+                               ":patient_id AND event_id = :event_id")
+                query2.bindValue(":comment", self.dlgEditEvent.txtComment_event.toPlainText())
+                query2.bindValue(":date", self.date)
+                query2.bindValue(":patient_id", int(self.mrn))
+                query2.bindValue(":event_id", int(query1.value('event_id')))
+
+                bOk = query2.exec()
+                if not bOk:
+                    msg = "Not able to update record."
+
+        message_box_critical(msg)
+
+        self.dlgEditEvent.close()
 
     def evt_btn_delete_event_clicked(self):
         """Ask for verification to delete the selected row from the events table widget and database"""
@@ -1329,16 +1332,22 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     tbl_row_value = QTableWidgetItem(str(query.value(col)))
                     self.tblEvents.setItem(row, col, tbl_row_value)
 
+        # Make duplicate comments not visible
+        count = self.tblEvents.rowCount()
+        for i in range(count-1):
+            if self.tblEvents.item(i, 2).text() == self.tblEvents.item(i+1, 2).text():
+                self.tblEvents.item(i+1, 2).setForeground(QColor("white"))
+
     def display_event_comment_column(self, selected):
-        """Display a dialog box containing comments if the comment column if the events table is filled"""
+        """Display a dialog box containing comments if the comment column if the result table is filled"""
         self.current_selection_row = self.tblEvents.currentRow()
-        self.current_selection_comment = f"<b>Comment:</b> <br>" \
-                                         f"{self.tblEvents.item(self.current_selection_row, 2).text()}"
+        self.current_selection_comment = self.tblEvents.item(self.current_selection_row, 2).text()
 
         for i in selected.indexes():
             if i.column() == 2 and self.current_selection_comment:
-                message_box_critical(self.current_selection_comment)
+                message_box_critical("<b>Comment:</b><br>" + self.current_selection_comment)
                 self.tblEvents.selectionModel().clearSelection()
+                return  # prevent duplicate message boxes for merged comment fields
 
     def query_delete_event(self):
         """Query a request to delete record from the database"""
@@ -2298,6 +2307,7 @@ def validate_new_indication(new_indication):
 def message_box_critical(msg):
     """Creates a dialog window showing a critical message"""
     msg_box = DlgMessageBoxCritical()
+    msg_box.setModal(True)
     msg_box.setWindowFlag(Qt.FramelessWindowHint)
     msg_box.setAttribute(Qt.WA_TranslucentBackground)
     msg_box.tedMessage.setText(msg)
