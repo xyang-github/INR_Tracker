@@ -2015,7 +2015,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         query.exec("SELECT COUNT(*) AS total FROM patient")
         query.next()
         total_all_patients = query.value('total')
-        html = f"""
+        self.html = f"""
         <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
             <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Patient Metrics</h3>
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
@@ -2045,18 +2045,18 @@ class DlgReport(QDialog, Ui_DlgReport):
         # Retrieve breakdown of indications
         list_indications = []
         if toggle == "All":
-            query = self.query_all_patients()
+            query = self.query_indications_all_patients()
         if toggle == "Active":
-            query = self.query_active_patients()
+            query = self.query_indications_active_patients()
         if toggle == "Inactive":
-            query = self.query_inactive_patients()
+            query = self.query_indications_inactive_patients()
 
         while query.next():
             list_indications.append((query.value('indication_name'), query.value('total')))
 
         list_indications.sort()
 
-        html += f"""
+        self.html += f"""
         <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
             <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">
             Indication Metrics</h3>
@@ -2067,13 +2067,13 @@ class DlgReport(QDialog, Ui_DlgReport):
                 </tr>
         """
         for indication in list_indications:
-            html += f"""
+            self.html += f"""
             <tr>
                 <td>{indication[0]}</td>
                 <td>{indication[1]}</td>
             </tr>
             """
-        html += """
+        self.html += """
             </table>
         </div>
         &nbsp;<br>
@@ -2087,13 +2087,19 @@ class DlgReport(QDialog, Ui_DlgReport):
 
         # Retrieve breakdown of INR goals
         list_goals = []
-        query = QSqlQuery()
-        query.exec("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, (inr_goal_from || '-' || inr_goal_to) "
-                   "AS goal FROM patient GROUP BY goal")
+        if toggle == "All":
+            query = self.query_goal_all_patients()
+        if toggle == "Active":
+            query = self.query_goal_active_patients()
+        if toggle == "Inactive":
+            query = self.query_goal_inactive_patients()
+
         while query.next():
             list_goals.append((query.value('goal'), query.value('total')))
+
         list_goals.sort()
-        html += f"""
+
+        self.html += f"""
         <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
             <h3 style="background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Goal Metrics</h3>
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
@@ -2103,18 +2109,18 @@ class DlgReport(QDialog, Ui_DlgReport):
                 </tr>
         """
         for goal in list_goals:
-            html += f"""
+            self.html += f"""
                 <tr>
                     <td>{goal[0]}</td>
                     <td>{goal[1]}</td>
                 </tr>
             """
-        html += """
+        self.html += """
             </table>
         </div>
         """
 
-        self.populate_clinic_report(html)
+        self.populate_clinic_report()
 
     def query_indications_all_patients(self):
         """Create and return a query for all patients"""
@@ -2148,8 +2154,37 @@ class DlgReport(QDialog, Ui_DlgReport):
         query.exec()
         return query
 
-    def populate_clinic_report(self, html):
-        self.tedReport.setHtml(html)
+    def query_goal_all_patients(self):
+        """Create and return a query for all patients"""
+        query = QSqlQuery()
+        query.exec("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, (inr_goal_from || '-' || inr_goal_to) "
+                   "AS goal FROM patient GROUP BY goal")
+        return query
+
+    def query_goal_active_patients(self):
+        """Create and return a query for active patients only"""
+        query = QSqlQuery()
+        query.prepare("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, "
+                      "(inr_goal_from || '-' || inr_goal_to) AS goal FROM patient WHERE status = :status "
+                      "GROUP BY goal")
+        query.bindValue(":status", "A")
+        query.exec()
+        print(query.lastError().text())
+        return query
+
+    def query_goal_inactive_patients(self):
+        """Create and return a query for inactive patients only"""
+        query = QSqlQuery()
+        query.prepare("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, "
+                      "(inr_goal_from || '-' || inr_goal_to) AS goal FROM patient WHERE status = :status "
+                      "GROUP BY goal")
+        query.bindValue(":status", "I")
+        query.exec()
+        print(query.lastError().text())
+        return query
+
+    def populate_clinic_report(self):
+        self.tedReport.setHtml(self.html)
 
 
 class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
