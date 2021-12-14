@@ -1963,7 +1963,6 @@ class DlgReport(QDialog, Ui_DlgReport):
         self.setupUi(self)
 
         self.html = self.get_html_clinic_report()
-        self.tedReport.setHtml(self.html)
 
         # Event handlers for push buttons
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
@@ -1971,9 +1970,9 @@ class DlgReport(QDialog, Ui_DlgReport):
         self.btnExit.clicked.connect(self.close)
 
         # Event handlers for radio buttons
-        self.rbtAll.clicked.connect(lambda toggle="All": self.get_html_clinic_report(toggle))
-        self.rbtActive.clicked.connect(lambda toggle="Active": self.get_html_clinic_report(toggle))
-        # self.rbtInactive.clicked.connect(self.evt_rbt_inactive_patients_clicked)
+        self.rbtAll.clicked.connect(lambda toggle="All": self.get_html_clinic_report(toggle="All"))
+        self.rbtActive.clicked.connect(lambda toggle="Active": self.get_html_clinic_report(toggle="Active"))
+        self.rbtInactive.clicked.connect(lambda toggle="Inactive": self.get_html_clinic_report(toggle="Inactive"))
 
     def evt_btn_pdf_clicked(self):
         """Create and save a PDF document"""
@@ -2046,21 +2045,21 @@ class DlgReport(QDialog, Ui_DlgReport):
         # Retrieve breakdown of indications
         list_indications = []
         if toggle == "All":
-            print("All")
-            bOk, query = self.query_all_patients()
+            query = self.query_all_patients()
         if toggle == "Active":
-            print("Active")
             query = self.query_active_patients()
-        # if self.rbtInactive.isChecked():
-        #     print("Inactive")
-        #     bOk, query = self.query_inactive_patients()
+        if toggle == "Inactive":
+            query = self.query_inactive_patients()
 
         while query.next():
             list_indications.append((query.value('indication_name'), query.value('total')))
+
         list_indications.sort()
+
         html += f"""
         <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; border-color: gray">
-            <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">Indication Metrics</h3>
+            <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">
+            Indication Metrics</h3>
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
                 <tr>
                     <td style="width: 150px"><strong>Total Indications:</strong></td>
@@ -2114,26 +2113,31 @@ class DlgReport(QDialog, Ui_DlgReport):
             </table>
         </div>
         """
-        return html
 
-    def query_all_patients(self):
+        self.populate_clinic_report(html)
+
+    def query_indications_all_patients(self):
+        """Create and return a query for all patients"""
         query = QSqlQuery()
         query.exec("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
                    "JOIN patient_indication pi ON i.indication_id = pi.indication_id GROUP BY indication_name "
                    "ORDER BY indication_name DESC")
-        bOk = query.exec()
-        return bOk, query
+        query.exec()
+        return query
 
-    def query_inactive_patients(self):
+    def query_indications_inactive_patients(self):
+        """Create and return a query for inactive patients only"""
         query = QSqlQuery()
-        query.exec("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
-                   "JOIN patient_indication pi ON i.indication_id = pi.indication_id GROUP BY indication_name "
-                   "WHERE status = :status ORDER BY indication_name DESC")
+        query.prepare("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
+                   "JOIN patient_indication pi ON i.indication_id = pi.indication_id "
+                   "JOIN patient p ON pi.patient_id = p.patient_id "
+                   "GROUP BY indication_name HAVING status = :status ORDER BY indication_name DESC")
         query.bindValue(":status", "I")
-        bOk = query.exec()
-        return bOk, query
+        query.exec()
+        print(query.lastError().text())
+        return query
 
-    def query_active_patients(self):
+    def query_indications_active_patients(self):
         """Create and return a query for active patients only"""
         query = QSqlQuery()
         query.prepare("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
@@ -2144,6 +2148,8 @@ class DlgReport(QDialog, Ui_DlgReport):
         query.exec()
         return query
 
+    def populate_clinic_report(self, html):
+        self.tedReport.setHtml(html)
 
 
 class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
