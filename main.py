@@ -1962,7 +1962,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         super(DlgReport, self).__init__()
         self.setupUi(self)
 
-        self.html = self.get_html_clinic_report()
+        self.get_html_clinic_report()
 
         # Event handlers for push buttons
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
@@ -1976,10 +1976,17 @@ class DlgReport(QDialog, Ui_DlgReport):
 
     def evt_btn_pdf_clicked(self):
         """Create and save a PDF document"""
-        header = """
-        <h1>Clinic Report</h1>
-        <br>
+        header = f"""
+        <h1 style="text-align: center;">Clinic Report</h1>
+        <h3 style="text-align: center;">Date: {QDate.currentDate().toString("yyyy-MM-dd")}<br></h3>
         """
+
+        if self.rbtAll.isChecked():
+            header += "<h3 style='text-align: center;'>All Patients</h3>"
+        if self.rbtActive.isChecked():
+            header += "<h3 style='text-align: center;'>Active Patients Only</h3>"
+        if self.rbtInactive.isChecked():
+            header += "<h3 style='text-align: center;'>Inactive Patients Only</h3>"
 
         document = QTextDocument()
         document.setHtml(header + self.html)
@@ -2120,7 +2127,84 @@ class DlgReport(QDialog, Ui_DlgReport):
         </div>
         """
 
+        # Retrieve clinical events in the past 6 months, 12 months, and all time for ALL patients
+        date_range = [6, 12, 'all']
+        number_of_events = []
+        if toggle == "All":
+            for date in date_range:
+                if date == 'all':
+                    query = QSqlQuery()
+                    bOk = query.exec("SELECT COUNT(*) AS total FROM patient_event")
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+                else:
+                    today = datetime.date.today()
+                    delta = dateutil.relativedelta.relativedelta(months=date)
+                    date_limit = today - delta
+
+                    query = QSqlQuery()
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
+                                  "ON pe.patient_id = p.patient_id WHERE date > :date")
+                    query.bindValue(":date", date_limit)
+                    bOk = query.exec()
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+
+        # Retrieve clinical events in the past 6 months, 12 months, and all time for Active or Inactive patients
+        if toggle == "Active" or toggle == "Inactive":
+            status = toggle
+            for date in date_range:
+                if date == 'all':
+                    query = QSqlQuery()
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
+                                  "ON pe.patient_id = p.patient_id WHERE status = :status")
+                    query.bindValue(":status", status[0])
+                    bOk = query.exec()
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+                else:
+                    today = datetime.date.today()
+                    delta = dateutil.relativedelta.relativedelta(months=date)
+                    date_limit = today - delta
+
+                    query = QSqlQuery()
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
+                                  "ON pe.patient_id == p.patient_id WHERE date > :date AND status = :status")
+                    query.bindValue(":date", date_limit)
+                    query.bindValue(":status", status[0])
+                    bOk = query.exec()
+                    if bOk:
+                        query.next()
+                        number_of_events.append(query.value('total'))
+
+        self.html += f"""
+                <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; 
+                border-color: gray">
+                    <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">
+                    Clinical Events Metrics</h3>
+                    <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                """
+
+        time_stamp = ["6 months", "12 months", "all time"]
+        for i in range(3):
+            self.html += f"""
+                    <tr>
+                        <td style="width: 150px"><strong>Number of events, {time_stamp[i]}</strong></td>
+                        <td>{number_of_events[i]}</td>
+                    </tr>
+                """
+        self.html += """
+            </table>
+        </div>
+        """
+
         self.populate_clinic_report()
+
+    def populate_clinic_report(self):
+        self.tedReport.setHtml(self.html)
 
     def query_indications_all_patients(self):
         """Create and return a query for all patients"""
@@ -2182,9 +2266,6 @@ class DlgReport(QDialog, Ui_DlgReport):
         query.exec()
         print(query.lastError().text())
         return query
-
-    def populate_clinic_report(self):
-        self.tedReport.setHtml(self.html)
 
 
 class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):
