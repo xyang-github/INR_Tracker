@@ -2145,7 +2145,7 @@ class DlgReport(QDialog, Ui_DlgReport):
                     query = QSqlQuery()
                     query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
                                   "ON pe.patient_id = p.patient_id WHERE date > :date")
-                    query.bindValue(":date", date_limit)
+                    query.bindValue(":date", str(date_limit))
                     bOk = query.exec()
                     if bOk:
                         query.next()
@@ -2172,7 +2172,7 @@ class DlgReport(QDialog, Ui_DlgReport):
                     query = QSqlQuery()
                     query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
                                   "ON pe.patient_id == p.patient_id WHERE date > :date AND status = :status")
-                    query.bindValue(":date", date_limit)
+                    query.bindValue(":date", str(date_limit))
                     query.bindValue(":status", status[0])
                     bOk = query.exec()
                     if bOk:
@@ -2191,7 +2191,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         for i in range(3):
             self.html += f"""
                     <tr>
-                        <td style="width: 150px"><strong>Number of events, {time_stamp[i]}</strong></td>
+                        <td style="width: 150px"><strong>Number of events,</strong> {time_stamp[i]}</td>
                         <td>{number_of_events[i]}</td>
                     </tr>
                 """
