@@ -2123,81 +2123,161 @@ class DlgReport(QDialog, Ui_DlgReport):
             """
         self.html += """
             </table>
-        </div>
-        """
+            </div>
+                <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; 
+                border-color: gray">
+                    <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">
+                    Clinical Events Metrics</h3>
+                    <table width="100%" cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
+                """
 
         # Retrieve clinical events in the past 6 months, 12 months, and all time for ALL patients
         date_range = [6, 12, 'all']
-        number_of_events = []
+
         if toggle == "All":
             for date in date_range:
                 if date == 'all':
+                    number_of_events = []  # Resets the list for each iteration
+                    command = """
+                    SELECT COUNT(*) AS total, e.event_name FROM patient p JOIN patient_event pe 
+                    ON p.patient_id = pe.patient_id JOIN event e ON pe.event_id = e.event_id 
+                    GROUP BY event_name ORDER BY event_name ASC
+                    """
+
                     query = QSqlQuery()
-                    bOk = query.exec("SELECT COUNT(*) AS total FROM patient_event")
+                    bOk = query.exec(command)
                     if bOk:
-                        query.next()
-                        number_of_events.append(query.value('total'))
+                        while query.next():
+                            number_of_events.append((query.value('total'), query.value('event_name')))
+
+                        count_events = 0
+                        breakdown_stats = "<ul>"
+                        for i in range(len(number_of_events)):
+                            count_events += number_of_events[i][0]
+                            breakdown_stats += f"<li>{number_of_events[i][1]}: {number_of_events[i][0]}</li>"
+                        breakdown_stats += "</ul>"
+
+                        self.html += f"""
+                                <tr>
+                                    <td width="50%"><strong>Number of events,</strong> {date} months:</td>
+                                    <td>{count_events}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan='2'>{breakdown_stats}</td>
+                                </tr>
+                            """
                 else:
+                    number_of_events = []
                     today = datetime.date.today()
                     delta = dateutil.relativedelta.relativedelta(months=date)
                     date_limit = today - delta
+                    command = """
+                    SELECT COUNT(*) AS total, e.event_name FROM patient p JOIN patient_event pe 
+                    ON p.patient_id = pe.patient_id JOIN event e ON pe.event_id = e.event_id 
+                    GROUP BY event_name HAVING pe.date > :date ORDER BY event_name ASC
+                    """
 
                     query = QSqlQuery()
-                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
-                                  "ON pe.patient_id = p.patient_id WHERE date > :date")
+                    query.prepare(command)
                     query.bindValue(":date", str(date_limit))
                     bOk = query.exec()
                     if bOk:
-                        query.next()
-                        number_of_events.append(query.value('total'))
+                        while query.next():
+                            number_of_events.append((query.value('total'), query.value('event_name')))
+
+                    count_events = 0
+                    breakdown_stats = "<ul>"
+                    for i in range(len(number_of_events)):
+                        count_events += number_of_events[i][0]
+                        breakdown_stats += f"<li>{number_of_events[i][1]}: {number_of_events[i][0]}</li>"
+                    breakdown_stats += "</ul>"
+
+                    self.html += f"""
+                            <tr>
+                                <td width="50%"><strong>Number of events,</strong> {date} months:</td>
+                                <td>{count_events}</td>
+                            </tr>
+                            <tr>
+                                <td colspan='2'>{breakdown_stats}</td>
+                            </tr>
+                        """
 
         # Retrieve clinical events in the past 6 months, 12 months, and all time for Active or Inactive patients
         if toggle == "Active" or toggle == "Inactive":
             status = toggle
             for date in date_range:
                 if date == 'all':
+                    number_of_events = []  # Resets the list for each iteration
                     query = QSqlQuery()
-                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
-                                  "ON pe.patient_id = p.patient_id WHERE status = :status")
+                    command = """
+                    SELECT COUNT(*) AS total, e.event_name FROM patient p JOIN patient_event pe 
+                    ON p.patient_id = pe.patient_id JOIN event e ON pe.event_id = e.event_id 
+                    GROUP BY event_name HAVING p.status = :status ORDER BY event_name ASC
+                    """
+
+                    query.prepare(command)
                     query.bindValue(":status", status[0])
                     bOk = query.exec()
                     if bOk:
-                        query.next()
-                        number_of_events.append(query.value('total'))
+                        while query.next():
+                            number_of_events.append((query.value('total'), query.value('event_name')))
+
+                    count_events = 0
+                    breakdown_stats = "<ul>"
+                    for i in range(len(number_of_events)):
+                        count_events += number_of_events[i][0]
+                        breakdown_stats += f"<li>{number_of_events[i][1]}: {number_of_events[i][0]}</li>"
+                    breakdown_stats += "</ul>"
+
+                    self.html += f"""
+                            <tr>
+                                <td width="50%"><strong>Number of events,</strong> {date} months:</td>
+                                <td>{count_events}</td>
+                            </tr>
+                            <tr>
+                                <td colspan='2'>{breakdown_stats}</td>
+                            </tr>
+                        """
                 else:
+                    number_of_events = []  # Resets the list for each iteration
                     today = datetime.date.today()
                     delta = dateutil.relativedelta.relativedelta(months=date)
                     date_limit = today - delta
+                    command = """
+                    SELECT COUNT(*) AS total, e.event_name FROM patient p JOIN patient_event pe 
+                    ON p.patient_id = pe.patient_id JOIN event e ON pe.event_id = e.event_id 
+                    GROUP BY event_name HAVING p.status = :status AND pe.date > :date ORDER BY event_name ASC
+                    """
 
                     query = QSqlQuery()
-                    query.prepare("SELECT COUNT(*) AS total FROM patient_event pe JOIN patient p "
-                                  "ON pe.patient_id == p.patient_id WHERE date > :date AND status = :status")
+                    query.prepare(command)
                     query.bindValue(":date", str(date_limit))
                     query.bindValue(":status", status[0])
                     bOk = query.exec()
                     if bOk:
-                        query.next()
-                        number_of_events.append(query.value('total'))
+                        while query.next():
+                            number_of_events.append((query.value('total'), query.value('event_name')))
 
-        self.html += f"""
-                <div style="font-family: arial; border-style: solid; border-radius: 15px; padding: 10px; 
-                border-color: gray">
-                    <h3 style = "background-color: #04AA6D; color: white; margin-top: 5px; margin-bottom: 10px">
-                    Clinical Events Metrics</h3>
-                    <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
-                """
+                    count_events = 0
+                    breakdown_stats = "<ul>"
+                    for i in range(len(number_of_events)):
+                        count_events += number_of_events[i][0]
+                        breakdown_stats += f"<li>{number_of_events[i][1]}: {number_of_events[i][0]}</li>"
+                    breakdown_stats += "</ul>"
 
-        time_stamp = ["6 months", "12 months", "all time"]
-        for i in range(3):
-            self.html += f"""
-                    <tr>
-                        <td style="width: 150px"><strong>Number of events,</strong> {time_stamp[i]}</td>
-                        <td>{number_of_events[i]}</td>
-                    </tr>
-                """
+                    self.html += f"""
+                            <tr>
+                                <td width="50%"><strong>Number of events,</strong> {date} months:</td>
+                                <td>{count_events}</td>
+                            </tr>
+                            <tr>
+                                <td colspan='2'>{breakdown_stats}</td>
+                            </tr>
+                        """
+
         self.html += """
             </table>
-        </div>
+            </div>
         """
 
         self.populate_clinic_report()
