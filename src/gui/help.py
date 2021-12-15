@@ -108,7 +108,6 @@ class Ui_DlgHelp(object):
         DlgHelp.setWindowTitle(_translate("DlgHelp", "Help"))
         self.lblHeader.setText(_translate("DlgHelp", "Help"))
         self.btnExit.setText(_translate("DlgHelp", "Exit"))
-import gui.resource_rc
 
 
 if __name__ == "__main__":

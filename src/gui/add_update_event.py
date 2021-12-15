@@ -152,7 +152,6 @@ class Ui_DlgAddEditEvent(object):
         self.txtComment_event.setPlaceholderText(_translate("DlgAddEditEvent", "Type any clinically relevant information pertaining to the result."))
         self.btnOK_event.setText(_translate("DlgAddEditEvent", "OK"))
         self.btnCancel_event.setText(_translate("DlgAddEditEvent", "Cancel"))
-import gui.resource_rc
 
 
 if __name__ == "__main__":

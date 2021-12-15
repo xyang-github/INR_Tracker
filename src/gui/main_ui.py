@@ -337,7 +337,7 @@ class Ui_dlgMain(object):
         self.actionINR_Tracker_Help.setShortcut(_translate("dlgMain", "Ctrl+H"))
         self.actionAdd_New_Patient.setText(_translate("dlgMain", "Add New Patient"))
         self.actionAdd_New_Patient.setShortcut(_translate("dlgMain", "Ctrl+N"))
-from gui.resource_rc import *
+from resource.resource_rc import *
 
 
 if __name__ == "__main__":

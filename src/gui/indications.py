@@ -131,7 +131,6 @@ class Ui_DlgIndications(object):
         self.btnEdit.setText(_translate("DlgIndications", "Edit"))
         self.btnDelete.setText(_translate("DlgIndications", "Delete"))
         self.btnExit.setText(_translate("DlgIndications", "Exit"))
-import gui.resource_rc
 
 
 if __name__ == "__main__":

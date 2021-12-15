@@ -9,12 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QWidget
 
-import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 class Ui_DlgMessageBoxCritical(QDialog):
@@ -77,8 +73,6 @@ class Ui_DlgMessageBoxCritical(QDialog):
         dlgMessageBoxCritical.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
         self.tedMessage.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnOk.setText(_translate("DlgMessageBox", "Okay"))
-
-import gui.resource_rc
 
 
 if __name__ == "__main__":

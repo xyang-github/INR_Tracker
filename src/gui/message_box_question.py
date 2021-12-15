@@ -78,7 +78,6 @@ class Ui_DlgMessageBoxQuestion(QDialog):
         self.tedMsg.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnAccept.setText(_translate("DlgMessageBox", "Accept"))
         self.btnDecline.setText(_translate("DlgMessageBox", "Decline"))
-import gui.resource_rc
 
 
 if __name__ == "__main__":

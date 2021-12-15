@@ -1,6 +1,6 @@
 # INR_Tracker
 
-<img src="screenshot/main.JPG">
+<img src="resource/screenshot/main.JPG">
 
 INR Tracker is a desktop application intended to assist with the management of Anticoagulation Clinics (specifically for patients on warfarin). Overall, this application can create patient profiles, allow the input of INR results and to produce analytics from those results. All information is stored into a relational database, which allows editing and deleting of information.
 
