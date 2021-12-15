@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QBrush, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog, QListWidgetItem
-from src.gui.patientprofile import Ui_DlgProfile
+from src.ui.patientprofile import Ui_DlgProfile
 from src.message_boxes.format_msg import message_box_question
 from src.profile.event import *
 from src.profile.analytic import *
@@ -28,44 +28,27 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.horizontalHeader().setStretchLastSection(True)
         self.tblResult.setSortingEnabled(True)
         self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
-        self.tblResult.setSelectionMode(1)  # Single selection mode
+        self.tblResult.setSelectionMode(1)
 
         # Event table widget formatting
         self.tblEvents.horizontalHeader().setStretchLastSection(True)
-        #self.tblEvents.setSortingEnabled(True)
         self.tblEvents.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblEvents.setSelectionMode(1)
 
-
+        # Populate patient summary, result and event tabs
         self.populate_patient_summary()
-
-        # Warning message will display if no indication on record for a patient.
-        # Also disables buttons to add, edit and delete results.
-        if self.ledIndications.text() == "No Indication On Record":
-            message_box_critical("""
-            There is no indication on record for this patient. Please add an indication in order to add, edit or 
-            delete any further results."
-            """)
-
-            self.btnAdd.setDisabled(True)
-            self.btnEdit.setDisabled(True)
-            self.btnDelete.setDisabled(True)
-        else:
-            self.btnAdd.setDisabled(False)
-            self.btnEdit.setDisabled(False)
-            self.btnDelete.setDisabled(False)
-
         self.populate_result_table()
         self.populate_event_table()
+        self.if_no_indication_on_record()
 
         # Event handlers for result tab
-        self.tblResult.itemDoubleClicked.connect(self.evt_btn_edit_result_clicked)
+        self.tblResult.itemDoubleClicked.connect(self.edit_result_dialog)
         self.tblResult.selectionModel().selectionChanged.connect(self.display_result_comment_column)
-        self.btnAdd.clicked.connect(self.evt_btn_add_result_clicked)
-        self.btnEdit.clicked.connect(self.evt_btn_edit_result_clicked)
-        self.btnDelete.clicked.connect(self.evt_btn_delete_result_clicked)
+        self.btnAddResult.clicked.connect(self.add_result_dialog)
+        self.btnEditResult.clicked.connect(self.edit_result_dialog)
+        self.btnDeleteResult.clicked.connect(self.delete_result)
         self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
-        self.btnExit.clicked.connect(self.close)
+        self.btnExitProfile.clicked.connect(self.close)
         self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
         self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
@@ -73,12 +56,28 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         # Event handlers for the event tab
         self.tblEvents.itemDoubleClicked.connect(self.evt_btn_edit_event_clicked)
         self.tblEvents.selectionModel().selectionChanged.connect(self.display_event_comment_column)
-        self.btnAdd_event.clicked.connect(self.evt_btn_add_event_clicked)
-        self.btnEdit_event.clicked.connect(self.evt_btn_edit_event_clicked)
-        self.btnDelete_event.clicked.connect(self.evt_btn_delete_event_clicked)
+        self.btnAddEvent.clicked.connect(self.evt_btn_add_event_clicked)
+        self.btnEditEvent.clicked.connect(self.evt_btn_edit_event_clicked)
+        self.btnDeleteEvent.clicked.connect(self.evt_btn_delete_event_clicked)
 
-# Result Tab
-    def evt_btn_add_result_clicked(self):
+    def if_no_indication_on_record(self):
+        """Show a message box and disables push buttons if no indication on record"""
+        msg = "There is no indication on record for this patient. Please add an indication in order to add, " \
+              "edit or delete any further results."
+
+        if self.ledIndications.text() == "No Indication On Record":
+            message_box_critical(msg)
+
+            self.btnAddResult.setDisabled(True)
+            self.btnEditResult.setDisabled(True)
+            self.btnDeleteResult.setDisabled(True)
+        else:
+            self.btnAddResult.setDisabled(False)
+            self.btnEditResult.setDisabled(False)
+            self.btnDeleteResult.setDisabled(False)
+
+    # Result Tab
+    def add_result_dialog(self):
         """Create a dialog window to add new results to the result table widget and database"""
         dlgAddResult = DlgAddUpdateResult(self.mrn)
         dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_add_result_clicked)
@@ -86,14 +85,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgAddResult.exec_()
         self.populate_result_table()
 
-    def evt_btn_edit_result_clicked(self):
+    def edit_result_dialog(self):
         """Creates a dialog window to edit a result selected from the result table widget"""
-
-        # Check if there is any item in the result table widget to edit
-        try:
-            self.get_current_row_and_inr_id()
-        except AttributeError:
-            message_box_critical("No entries to edit.")
+        bOk = self.check_entries()
+        if not bOk:
             return
 
         # Create the dialog window to edit the selected result
@@ -144,23 +139,29 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditResult.exec_()
         self.populate_result_table()
 
-    def evt_btn_delete_result_clicked(self):
+    def delete_result(self):
         """Ask for verification to delete the selected row from the result table widget and database"""
-        try:
-            self.get_current_row_and_inr_id()
-        except AttributeError:
-            message_box_critical("No entries to delete.")
+        bOk = self.check_entries()
+        if not bOk:
             return
 
         self.question = message_box_question(f"You have selected row {self.current_selection_row + 1} to be deleted.")
-
-        # Event handler to delete record from the result table and database
         self.question.btnAccept.clicked.connect(self.query_delete_inr)
 
         self.question.show()
         self.question.exec_()
 
         self.populate_result_table()
+
+    def check_entries(self):
+        # Check if there is any item in the result table widget to edit
+        try:
+            self.current_selection_row = self.tblResult.currentRow()
+            self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+        except AttributeError:
+            message_box_critical("No entries on record")
+            return False
+        return True
 
     def populate_result_table(self):
         """Populates the result table widget with information from the database"""
@@ -178,21 +179,21 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         if bOk:
             while query.next():
                 # Populate the result table widget with information retrieved from the database
-                row = self.tblResult.rowCount()
-                self.tblResult.insertRow(row)
+                self.row = self.tblResult.rowCount()
+                self.tblResult.insertRow(self.row)
                 for col in range(6):
                     tbl_row_value = QTableWidgetItem(str(query.value(col)))
-                    self.tblResult.setItem(row, col, tbl_row_value)
+                    self.tblResult.setItem(self.row, col, tbl_row_value)
 
                     if col == 2:
-                        tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
+                        self.tbl_result_col_value = QTableWidgetItem(str(query.value(col)))
 
                     if col == 3:
-                        tbl_goal_col_value = QTableWidgetItem(str(query.value(col))).text()
-                        inr_low = tbl_goal_col_value.split("-")[0].strip(" ")
-                        inr_high = tbl_goal_col_value.split("-")[1].strip(" ")
+                        self.tbl_goal_col_value = QTableWidgetItem(str(query.value(col))).text()
+                        self.inr_low = self.tbl_goal_col_value.split("-")[0].strip(" ")
+                        self.inr_high = self.tbl_goal_col_value.split("-")[1].strip(" ")
 
-                self.format_result_col(row, tbl_result_col_value, inr_low, inr_high)
+                self.format_result_col()
 
             self.format_weekly_dose()
             self.format_goal()
@@ -200,17 +201,17 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.tblResult.setColumnHidden(0, True)  # Hide 'inr_id' column from view
         self.tblResult.setCurrentCell(0, 1)  # Set default selection to the most recent entry
 
-    def format_result_col(self, row, tbl_result_col_value, inr_low, inr_high):
+    def format_result_col(self):
         """
         Format the background color of the result column in the result table widget. Green for therapeutic, yellow
         for subtherapeutic and red for supratherapeutic results.
         """
-        if tbl_result_col_value.text() > inr_high:
-            self.tblResult.item(row, 2).setBackground(QColor("#ff3300"))
-        elif tbl_result_col_value.text() < inr_low:
-            self.tblResult.item(row, 2).setBackground(QColor("#ffff00"))
+        if self.tbl_result_col_value.text() > self.inr_high:
+            self.tblResult.item(self.row, 2).setBackground(QColor("#ff3300"))
+        elif self.tbl_result_col_value.text() < self.inr_low:
+            self.tblResult.item(self.row, 2).setBackground(QColor("#ffff00"))
         else:
-            self.tblResult.item(row, 2).setBackground(QColor("#00ff80"))
+            self.tblResult.item(self.row, 2).setBackground(QColor("#00ff80"))
             self.number_of_results_in_range += 1
 
     def format_weekly_dose(self):
@@ -218,11 +219,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Change the font formatting of the weekly dose column in the result table widget.  Formatting will be
         applied if the weekly dose has changed from the previous entry.
         """
-        self.total_rows = self.tblResult.rowCount()
-
-        for row in range(self.total_rows - 1):
-            self.current_weekly_dose = self.tblResult.item(row, 4)
-            self.next_weekly_dose = self.tblResult.item(row+1, 4)
+        for i in range(self.tblResult.rowCount() - 1):
+            self.current_weekly_dose = self.tblResult.item(i, 4)
+            self.next_weekly_dose = self.tblResult.item(i+1, 4)
 
             if self.current_weekly_dose.text() != self.next_weekly_dose.text():
                 font = QtGui.QFont()
@@ -235,11 +234,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         Change the font formatting of the goal column in the result table widget.  Formatting will be
         applied if the inr-specific goal has changed from the previous entry.
         """
-        self.total_rows = self.tblResult.rowCount()
-
-        for row in range(self.total_rows - 1):
-            self.current_inr_goal = self.tblResult.item(row, 3)
-            self.next_inr_goal = self.tblResult.item(row+1, 3)
+        for i in range(self.tblResult.rowCount() - 1):
+            self.current_inr_goal = self.tblResult.item(i, 3)
+            self.next_inr_goal = self.tblResult.item(i+1, 3)
 
             if self.current_inr_goal.text() != self.next_inr_goal.text():
                 font = QtGui.QFont()
@@ -247,22 +244,15 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 self.current_inr_goal.setFont(font)
                 self.current_inr_goal.setForeground(QBrush(QColor("darkMagenta")))
 
-    def get_current_row_and_inr_id(self):
-        """
-        Retrieve the row number and inr_id of the current selection in the result table widget. These values are stored
-        in a variable to be used in other functions.
-        """
-        self.current_selection_row = self.tblResult.currentRow()
-        self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
-
     def display_result_comment_column(self, selected):
         """Display a dialog box containing comments if the comment column if the result table is filled"""
         self.current_selection_row = self.tblResult.currentRow()
-        self.current_selection_comment = f"<b>Comment:</b> <br>" \
-                                         f"{self.tblResult.item(self.current_selection_row, 5).text()}"
+        self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
 
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
+                self.current_selection_comment = f"<b>Comment:</b> <br>" \
+                                                 f"{self.tblResult.item(self.current_selection_row, 5).text()}"
                 message_box_critical(self.current_selection_comment)
                 self.tblResult.selectionModel().clearSelection()
 
@@ -587,16 +577,16 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Check for inactive patient status. If patient is inactive, the buttons to add, edit and delete
         results will be disabled"""
         if self.ledStatus.text() == "Inactive":
-            self.btnAdd.setDisabled(True)
-            self.btnEdit.setDisabled(True)
-            self.btnDelete.setDisabled(True)
+            self.btnAddResult.setDisabled(True)
+            self.btnEditResult.setDisabled(True)
+            self.btnDeleteResult.setDisabled(True)
             self.lblNotice.setText("This patient's status is currently INACTIVE. Only ACTIVE patients can have "
                                    "results added, edited, \nand deleted.")
         else:
             self.lblNotice.setText("")
-            self.btnAdd.setDisabled(False)
-            self.btnEdit.setDisabled(False)
-            self.btnDelete.setDisabled(False)
+            self.btnAddResult.setDisabled(False)
+            self.btnEditResult.setDisabled(False)
+            self.btnDeleteResult.setDisabled(False)
 
     def query_get_patient_summary_info(self):
         """Query a request for patient information. Returns a list of patient information and patient indications."""

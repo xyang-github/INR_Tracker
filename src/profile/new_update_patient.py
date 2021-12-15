@@ -5,7 +5,7 @@ from decimal import Decimal
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog
 
-from src.gui.newpatient import Ui_DlgNewPatient
+from src.ui.newpatient import Ui_DlgNewPatient
 from src.validate import validate_new_indication
 from src.style import style_line_edit_error
 from src.message_boxes.format_msg import message_box_critical

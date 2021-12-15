@@ -1,4 +1,4 @@
-from src.gui.message_box_critical import Ui_DlgMessageBoxCritical
+from src.ui.message_box_critical import Ui_DlgMessageBoxCritical
 
 
 class DlgMessageBoxCritical(Ui_DlgMessageBoxCritical):

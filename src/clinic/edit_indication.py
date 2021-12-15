@@ -1,7 +1,7 @@
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog
 
-from src.gui.editindication import Ui_DlgEditIndication
+from src.ui.editindication import Ui_DlgEditIndication
 from src.validate import validate_new_indication
 from src.message_boxes.format_msg import message_box_critical
 

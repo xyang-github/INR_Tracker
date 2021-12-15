@@ -1,4 +1,4 @@
-from src.gui.message_box_question import Ui_DlgMessageBoxQuestion
+from src.ui.message_box_question import Ui_DlgMessageBoxQuestion
 
 
 class DlgMessageBoxQuestion(Ui_DlgMessageBoxQuestion):

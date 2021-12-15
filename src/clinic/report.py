@@ -5,7 +5,7 @@ from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 
-from src.gui.report import *
+from src.ui.report import *
 from src.clinic.patient_list import *
 
 

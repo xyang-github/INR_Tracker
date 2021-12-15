@@ -1,4 +1,4 @@
-from src.gui.indications import Ui_DlgIndications
+from src.ui.indications import Ui_DlgIndications
 from src.style import style_line_edit_error
 from src.clinic.edit_indication import *
 from src.message_boxes.format_msg import message_box_critical, message_box_question

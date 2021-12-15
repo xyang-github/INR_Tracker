@@ -4,7 +4,7 @@ from PyQt5.QtCore import QDate
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog
 
-from src.gui.add_update_event import Ui_DlgAddEditEvent
+from src.ui.add_update_event import Ui_DlgAddEditEvent
 from src.style import style_line_edit_error
 from src.message_boxes.format_msg import message_box_critical
 

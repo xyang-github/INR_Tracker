@@ -1,8 +1,9 @@
 import sys
+from dateutil.relativedelta import relativedelta
 from PyQt5.QtSql import *
-from gui.main_ui import *
-from gui.message_box_critical import *
-from gui.add_update_event import *
+from ui.main_ui import *
+from ui.message_box_critical import *
+from ui.add_update_event import *
 from src.clinic.help import *
 from src.clinic.indications import *
 from src.clinic.report import *

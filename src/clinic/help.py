@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QDialog
 
-from src.gui.help import Ui_DlgHelp
+from src.ui.help import Ui_DlgHelp
 
 
 class DlgHelp(QDialog, Ui_DlgHelp):

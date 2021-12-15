@@ -1,7 +1,7 @@
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
-from src.gui.patientlist import Ui_DlgPatients
+from src.ui.patientlist import Ui_DlgPatients
 
 
 class DlgPatientList(QDialog, Ui_DlgPatients):
