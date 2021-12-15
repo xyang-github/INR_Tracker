@@ -855,9 +855,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                     date_limit = today - delta
 
                     query = QSqlQuery()
-                    query.prepare("SELECT COUNT(*) AS total FROM patient_event WHERE patient_id = :id AND date > :date")
+                    query.prepare("SELECT COUNT(*) AS total FROM patient_event WHERE patient_id = :id AND date >= :date")
                     query.bindValue(":id", int(self.mrn))
-                    query.bindValue(":date", date_limit)
+                    query.bindValue(":date", str(date_limit))
                     bOk = query.exec()
                     if bOk:
                         query.next()
@@ -874,7 +874,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         for col in range(1, self.tblResult.columnCount()):
             column_header.append(self.tblResult.horizontalHeaderItem(col).text())
 
-        print(self.tblResult.horizontalHeaderItem(1).text())
         path = QFileDialog.getSaveFileName(self, 'Save File', '', 'CSV(*.csv)')
         if path[0] != "":
             with open(path[0], 'w') as csv_file:
@@ -2224,7 +2223,6 @@ class DlgReport(QDialog, Ui_DlgReport):
                    "GROUP BY indication_name HAVING status = :status ORDER BY indication_name DESC")
         query.bindValue(":status", "I")
         query.exec()
-        print(query.lastError().text())
         return query
 
     def query_indications_active_patients(self):
@@ -2253,7 +2251,6 @@ class DlgReport(QDialog, Ui_DlgReport):
                       "GROUP BY goal")
         query.bindValue(":status", "A")
         query.exec()
-        print(query.lastError().text())
         return query
 
     def query_goal_inactive_patients(self):
@@ -2264,7 +2261,6 @@ class DlgReport(QDialog, Ui_DlgReport):
                       "GROUP BY goal")
         query.bindValue(":status", "I")
         query.exec()
-        print(query.lastError().text())
         return query
 
 
@@ -2318,7 +2314,6 @@ class DlgPatientList(QDialog, Ui_DlgPatients):
 
     def query_active_patients(self):
         """Send a query to retrieve only active patients"""
-        print("Active")
         query = QSqlQuery()
         query.prepare("SELECT patient_id, lname, fname FROM patient WHERE status = :status")
         query.bindValue(":status", "A")
