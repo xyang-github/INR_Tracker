@@ -16,8 +16,39 @@ class Ui_DlgEditIndication(object):
         DlgEditIndication.setObjectName("DlgEditIndication")
         DlgEditIndication.resize(342, 102)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgEditIndication.setPalette(palette)
-        DlgEditIndication.setStyleSheet("QPushButton {\n"
+        DlgEditIndication.setStyleSheet("QDialog {\n"
+"    background-color: #e2f2ff;\n"
+"}\n"
+"\n"
+"QPushButton {\n"
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
@@ -49,9 +80,12 @@ class Ui_DlgEditIndication(object):
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
         self.btnOk = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnOk.setMinimumSize(QtCore.QSize(0, 20))
         self.btnOk.setObjectName("btnOk")
         self.lytButtons.addWidget(self.btnOk)
         self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnExit.setMinimumSize(QtCore.QSize(0, 20))
+        self.btnExit.setStyleSheet("")
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
         self.lytMain.addLayout(self.lytButtons)
@@ -64,6 +98,7 @@ class Ui_DlgEditIndication(object):
         DlgEditIndication.setWindowTitle(_translate("DlgEditIndication", "Edit Indication"))
         self.btnOk.setText(_translate("DlgEditIndication", "OK"))
         self.btnExit.setText(_translate("DlgEditIndication", "Exit"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":

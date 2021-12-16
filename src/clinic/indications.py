@@ -113,6 +113,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
     def populate_indication_list(self):
         """Populate the indication list widget with indications from the database"""
         self.lstIndications.clear()  # If not cleared, will show duplicate list widget items
+        self.ledNewIndication.setStyleSheet("")
 
         query = QSqlQuery()
         bOk = query.exec("SELECT * FROM indication")
