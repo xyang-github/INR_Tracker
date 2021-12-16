@@ -42,7 +42,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.if_no_indication_on_record()
 
         # Event handlers for result tab
-        self.tblResult.itemDoubleClicked.connect(self.edit_result_dialog)
+        self.tblResult.itemDoubleClicked.connect(lambda: self.edit_result_dialog(self.tblResult.currentRow()))
         self.tblResult.selectionModel().selectionChanged.connect(self.display_result_comment_column)
         self.btnAddResult.clicked.connect(self.add_result_dialog)
         self.btnEditResult.clicked.connect(self.edit_result_dialog)
@@ -54,10 +54,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
 
         # Event handlers for the event tab
-        self.tblEvents.itemDoubleClicked.connect(self.evt_btn_edit_event_clicked)
+        self.tblEvents.itemDoubleClicked.connect(self.edit_event_dialog)
         self.tblEvents.selectionModel().selectionChanged.connect(self.display_event_comment_column)
-        self.btnAddEvent.clicked.connect(self.evt_btn_add_event_clicked)
-        self.btnEditEvent.clicked.connect(self.evt_btn_edit_event_clicked)
+        self.btnAddEvent.clicked.connect(self.add_event_dialog)
+        self.btnEditEvent.clicked.connect(self.edit_event_dialog)
         self.btnDeleteEvent.clicked.connect(self.evt_btn_delete_event_clicked)
 
     def if_no_indication_on_record(self):
@@ -80,16 +80,18 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def add_result_dialog(self):
         """Create a dialog window to add new results to the result table widget and database"""
         dlgAddResult = DlgAddUpdateResult(self.mrn)
-        dlgAddResult.btnOK.clicked.connect(dlgAddResult.evt_btn_add_result_clicked)
         dlgAddResult.show()
         dlgAddResult.exec_()
         self.populate_result_table()
 
-    def edit_result_dialog(self):
+    def edit_result_dialog(self, row=None):
         """Creates a dialog window to edit a result selected from the result table widget"""
-        bOk = self.check_entries()
-        if not bOk:
+        if self.tblResult.rowCount() == 0:
+            message_box_critical("No entries to edit.")
             return
+        else:
+            self.current_selection_row = self.tblResult.currentRow()
+            self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
 
         # Create the dialog window to edit the selected result
         dlgEditResult = DlgAddUpdateResult(self.mrn, self.current_selection_inr_id)
@@ -114,8 +116,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Toggles radio buttons for default or new INR goal
         if patient_inr_goal_from != query.value('inr_goal_from') and patient_inr_goal_to != query.value('inr_goal_to'):
-            dlgEditResult.rbtnGoal_New.setChecked(True)
-            dlgEditResult.evt_rbtn_new_goal_clicked()
+            dlgEditResult.rbtnGoalNew.setChecked(True)
+            dlgEditResult.set_new_goal()
             dlgEditResult.ledNewGoalFrom.setText(inr_goal_from)
             dlgEditResult.ledNewGoalTo.setText(inr_goal_to)
 
@@ -133,7 +135,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditResult.txtComment.setPlainText(query.value('comment'))
 
         # Event handler for push button to update the result table widget and database
-        dlgEditResult.btnOK.clicked.connect(dlgEditResult.evt_btn_update_result_clicked)
+        dlgEditResult.btnOK.clicked.connect(dlgEditResult.update_result)
 
         dlgEditResult.show()
         dlgEditResult.exec_()
@@ -141,8 +143,8 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def delete_result(self):
         """Ask for verification to delete the selected row from the result table widget and database"""
-        bOk = self.check_entries()
-        if not bOk:
+        if self.tblResult.rowCount() == 0:
+            message_box_critical("No entries to delete.")
             return
 
         self.question = message_box_question(f"You have selected row {self.current_selection_row + 1} to be deleted.")
@@ -152,16 +154,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.question.exec_()
 
         self.populate_result_table()
-
-    def check_entries(self):
-        # Check if there is any item in the result table widget to edit
-        try:
-            self.current_selection_row = self.tblResult.currentRow()
-            self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
-        except AttributeError:
-            message_box_critical("No entries on record")
-            return False
-        return True
 
     def populate_result_table(self):
         """Populates the result table widget with information from the database"""
@@ -636,14 +628,14 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
 # Event Tab
 
-    def evt_btn_add_event_clicked(self):
+    def add_event_dialog(self):
         dlgAddEvent = DlgAddEditEvent(self.mrn)
         dlgAddEvent.show()
         dlgAddEvent.btnOK_event.clicked.connect(dlgAddEvent.evt_btn_ok_event_clicked)
         dlgAddEvent.exec()
         self.populate_event_table()
 
-    def evt_btn_edit_event_clicked(self):
+    def edit_event_dialog(self):
         """Creates a dialog window to edit an event selected from the event table widget"""
 
         # Check if there is any item in the event table widget to edit

@@ -1,10 +1,8 @@
 import re
 from decimal import Decimal
-
 from PyQt5.QtCore import QDate
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog
-
 from src.ui.add_update_result import Ui_DlgAddResult
 from src.style import style_line_edit_error
 from src.message_boxes.format_msg import message_box_critical
@@ -15,15 +13,16 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
     def __init__(self, patient_id, inr_id=None):
         super(DlgAddUpdateResult, self).__init__()
         self.setupUi(self)
+
         self.mrn = patient_id  # The patient_id for use in query
         self.inr_id = inr_id  # The inr_id for use in query. For updating purposes.
         self.dteDate.setDate(QDate.currentDate())  # Set current date as the default for the date object
         self.ledResult.setFocus()
         self.gbxNewGoal.setHidden(True)
 
-        # Set radio button default selection
+        # Set default option for radio button
         self.patient_inr_goal_from, self.patient_inr_goal_to = self.query_get_patient_inr_goal()
-        self.rbtn_Goal_Default.setText(f"Default: {self.patient_inr_goal_from} - {self.patient_inr_goal_to}")
+        self.rbtnGoalDefault.setText(f"Default: {self.patient_inr_goal_from} - {self.patient_inr_goal_to}")
 
         # Set the value for each daily dose's line edit widgets to 0
         self.set_daily_doses_to_zero()
@@ -38,12 +37,13 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         self.ledSunday.textEdited.connect(self.calculate_weekly_dose)
 
         # Event handlers for input widgets
-        self.chkNoChanges.clicked.connect(self.evt_chkbox_no_changes_clicked)
-        self.rbtnGoal_New.clicked.connect(self.evt_rbtn_new_goal_clicked)
-        self.rbtn_Goal_Default.clicked.connect(self.evt_rbtn_default_goal_clicked)
+        self.chkNoChanges.clicked.connect(self.no_changes_to_dose)
+        self.rbtnGoalNew.clicked.connect(self.set_new_goal)
+        self.rbtnGoalDefault.clicked.connect(self.set_same_goal)
+        self.btnOK.clicked.connect(self.add_result)
         self.btnCancel.clicked.connect(self.close)
 
-    def evt_btn_add_result_clicked(self):
+    def add_result(self):
         """Add new result entry into the database"""
         error_message = self.validate_entry()
 
@@ -63,7 +63,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
             else:
                 message_box_critical("Could not save results into the database.")
 
-    def evt_btn_update_result_clicked(self):
+    def update_result(self):
         """Update a selected result entry in the database"""
         error_message = self.validate_entry()
 
@@ -84,7 +84,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
             else:
                 message_box_critical("Not able to update record.")
 
-    def evt_chkbox_no_changes_clicked(self, chk):
+    def no_changes_to_dose(self, chk):
         """
         Provide different effects if the checkbox is checked, or unchecked.
         If checked: change daily doses to read-only and will fill their values to match the previous entry
@@ -124,11 +124,11 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
             self.set_read_only_false()
             self.set_daily_doses_to_zero()
 
-    def evt_rbtn_new_goal_clicked(self):
+    def set_new_goal(self):
         """Reveal widgets for entering a new INR goal when the associated radio button is selected."""
         self.gbxNewGoal.setHidden(False)
 
-    def evt_rbtn_default_goal_clicked(self):
+    def set_same_goal(self):
         """Hide widgets for entering a new INR goal when the default radio button is selected"""
         self.gbxNewGoal.setHidden(True)
 
@@ -220,7 +220,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
                 eval(command)
 
         # Validate new INR goal
-        if self.rbtnGoal_New.isChecked():
+        if self.rbtnGoalNew.isChecked():
             if self.ledNewGoalFrom.text() == "" or self.ledNewGoalFrom.text() == "0":
                 error_message += "New INR goal cannot be blank or 0.\n"
                 self.ledNewGoalFrom.setStyleSheet(style_line_edit_error())
@@ -252,11 +252,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         return error_message
 
     def query_inr_table_prepare_and_bind_query(self, sql_command):
-        """
-        Prepares and bind values to a query associated with the inr table
-        :param sql_command: sql statement to be executed
-        :return: the executed query
-        """
+        """Prepares and bind values to a query associated with the inr table"""
         query = QSqlQuery()
         query.prepare(sql_command)
         query.bindValue(":id", self.mrn)
@@ -271,10 +267,10 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         query.bindValue(":sat", "{:.2f}".format(Decimal(self.ledSaturday.text())))
         query.bindValue(":sun", "{:.2f}".format(Decimal(self.ledSunday.text())))
 
-        if self.rbtnGoal_New.isChecked():
+        if self.rbtnGoalNew.isChecked():
             query.bindValue(":goal_from", self.new_inr_goal_from)
             query.bindValue(":goal_to", self.new_inr_goal_to)
-        if self.rbtn_Goal_Default.isChecked():
+        if self.rbtnGoalDefault.isChecked():
             query.bindValue(":goal_from", self.patient_inr_goal_from)
             query.bindValue(":goal_to", self.patient_inr_goal_to)
 
