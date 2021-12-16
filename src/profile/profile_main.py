@@ -47,9 +47,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnAddResult.clicked.connect(self.add_result_dialog)
         self.btnEditResult.clicked.connect(self.edit_result_dialog)
         self.btnDeleteResult.clicked.connect(self.delete_result)
-        self.btnEditPatient.clicked.connect(self.evt_btn_edit_patient_clicked)
+        self.btnEditPatient.clicked.connect(self.edit_patient)
         self.btnExitProfile.clicked.connect(self.close)
-        self.btnAnalytics.clicked.connect(self.evt_btn_analytics_clicked)
+        self.btnAnalytics.clicked.connect(self.show_analytics)
         self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
         self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
 
@@ -271,7 +271,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
 # Summary Tab
 
-    def evt_btn_edit_patient_clicked(self):
+    def edit_patient(self):
         """Creates a dialog window to edit patient information"""
         self.list_patient_indication_name = []
         query = QSqlQuery()
@@ -304,7 +304,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         dlgEditPatient.exec_()
         self.populate_patient_summary()
 
-    def evt_btn_analytics_clicked(self):
+    def show_analytics(self):
         """Calculates the TTR and opens a dialog window to display the results"""
         self.total_rows = self.tblResult.rowCount()
         self.total_days = 0
