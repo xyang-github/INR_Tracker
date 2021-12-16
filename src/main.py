@@ -9,6 +9,7 @@ from src.clinic.help import *
 from src.clinic.indications import *
 from src.clinic.report import *
 from src.profile.profile_main import *
+from src.clinic.events import *
 
 
 class DlgMain(QMainWindow, Ui_dlgMain):
@@ -39,10 +40,14 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         # Event handlers for action and button widgets
         self.menuExit.triggered.connect(self.exit_program)
         self.menuNewPatient.triggered.connect(self.add_new_patient_dialog)
-        self.menuHelp.triggered.connect(self.help_dialog)
+        self.menuIndications.triggered.connect(self.indication_dialog)
+        self.menuEvents.triggered.connect(self.event_dialog)
+        self.menuReports.triggered.connect(self.reports_dialog)
+        self.menuHelpDialog.triggered.connect(self.help_dialog)
         self.btnSearchPatient.clicked.connect(self.search_patient)
         self.btnNewPatient.clicked.connect(self.add_new_patient_dialog)
         self.btnIndications.clicked.connect(self.indication_dialog)
+        self.btnEvents.clicked.connect(self.event_dialog)
         self.btnReports.clicked.connect(self.reports_dialog)
 
     def search_patient(self):
@@ -85,6 +90,12 @@ class DlgMain(QMainWindow, Ui_dlgMain):
         dlgIndications = DlgIndications()
         dlgIndications.show()
         dlgIndications.exec_()
+
+    def event_dialog(self):
+        """Careate a dialog window to add/edit/delete event list"""
+        dlgEvents = DlgEvents()
+        dlgEvents.show()
+        dlgEvents.exec_()
 
     def reports_dialog(self):
         """Create a dialog window for the clinic report"""
@@ -218,10 +229,10 @@ A clinic report can be generated with certain metrics. The information can also 
                 "atrial fibrillation",
                 "aortic valve replacement",
                 "mitral valve replacement",
-                "pulmonary embolism, treatment",
-                "pulmonary embolism, prophylaxis",
-                "venous thromboembolism, treatment",
-                "venous thromboembolism, prophylaxis"
+                "pulmonary embolism (treatment)",
+                "pulmonary embolism (prophylaxis)",
+                "venous thromboembolism (treatment)",
+                "venous thromboembolism (prophylaxis)"
             ]
             for indication in default_indications:
                 query = QSqlQuery()
@@ -296,9 +307,9 @@ A clinic report can be generated with certain metrics. The information can also 
         bOk = query.exec_(command)
         if bOk:
             default_events = [
-                "bleeding, clinically-significant",
-                "stroke/thromboembolism",
-                "emergency/urgent department visit",
+                "bleeding (clinically-significant)",
+                "stroke or thromboembolism",
+                "emergency or urgent department visit",
                 "hospitalization",
                 "death"
             ]
