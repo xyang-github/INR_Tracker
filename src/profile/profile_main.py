@@ -47,11 +47,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.btnAddResult.clicked.connect(self.add_result_dialog)
         self.btnEditResult.clicked.connect(self.edit_result_dialog)
         self.btnDeleteResult.clicked.connect(self.delete_result)
-        self.btnEditPatient.clicked.connect(self.edit_patient)
+        self.btnEditPatient.clicked.connect(self.edit_patient_dialog)
         self.btnExitProfile.clicked.connect(self.close)
         self.btnAnalytics.clicked.connect(self.show_analytics)
-        self.btnCSV.clicked.connect(self.evt_btn_csv_clicked)
-        self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
+        self.btnCSV.clicked.connect(self.export_csv)
+        self.btnPDF.clicked.connect(self.export_pdf)
 
         # Event handlers for the event tab
         self.tblEvents.itemDoubleClicked.connect(self.edit_event_dialog)
@@ -271,7 +271,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
 # Summary Tab
 
-    def edit_patient(self):
+    def edit_patient_dialog(self):
         """Creates a dialog window to edit patient information"""
         self.list_patient_indication_name = []
         query = QSqlQuery()
@@ -402,7 +402,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             dlgAnalytics.show()
             dlgAnalytics.exec_()
 
-    def evt_btn_csv_clicked(self):
+    def export_csv(self):
         """Save the result table widget to a csv file"""
         column_header = []
         for col in range(1, self.tblResult.columnCount()):
@@ -420,7 +420,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                         data.append(item)
                     writer.writerow(data)
 
-    def evt_btn_pdf_clicked(self):
+    def export_pdf(self):
         """Save a patient summary report to a pdf"""
         html = self.create_html()
         document = QTextDocument()
@@ -567,18 +567,24 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def check_status(self):
         """Check for inactive patient status. If patient is inactive, the buttons to add, edit and delete
-        results will be disabled"""
+        results and events will be disabled"""
         if self.ledStatus.text() == "Inactive":
             self.btnAddResult.setDisabled(True)
             self.btnEditResult.setDisabled(True)
             self.btnDeleteResult.setDisabled(True)
+            self.btnAddEvent.setDisabled(True)
+            self.btnEditEvent.setDisabled(True)
+            self.btnDeleteEvent.setDisabled(True)
             self.lblNotice.setText("This patient's status is currently INACTIVE. Only ACTIVE patients can have "
-                                   "results added, edited, \nand deleted.")
+                                   "results and events added,\n edited, and deleted.")
         else:
             self.lblNotice.setText("")
             self.btnAddResult.setDisabled(False)
             self.btnEditResult.setDisabled(False)
             self.btnDeleteResult.setDisabled(False)
+            self.btnAddEvent.setDisabled(False)
+            self.btnEditEvent.setDisabled(False)
+            self.btnDeleteEvent.setDisabled(False)
 
     def query_get_patient_summary_info(self):
         """Query a request for patient information. Returns a list of patient information and patient indications."""

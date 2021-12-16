@@ -88,11 +88,11 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
             message_box_critical(error_message)
         else:
             if self.lblHeader.text() == "New Patient":
-                self.query_update_patient_table()
-                action = "updated"
-            else:
                 self.query_insert_patient_table()
                 action = "added"
+            else:
+                self.query_update_patient_table()
+                action = "updated"
 
             # Insert/update the patient_indication linking table from the database
             patient_indication_id = self.query_get_patient_indication_ids()
@@ -248,7 +248,7 @@ class DlgNewUpdatePatient(QDialog, Ui_DlgNewPatient):
         query.bindValue(":dob", self.ledDOB.text())
         if self.rbtnStatusActive.isChecked():
             query.bindValue(":status", "A")
-        else:
+        elif self.rbtnStatusInactive.isChecked():
             query.bindValue(":status", "I")
         query.bindValue(":inr_goal_from", "{:.1f}".format(Decimal(self.ledGoalFrom.text())))
         query.bindValue(":inr_goal_to", "{:.1f}".format(Decimal(self.ledGoalTo.text())))

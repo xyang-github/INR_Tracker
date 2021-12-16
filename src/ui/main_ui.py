@@ -59,33 +59,33 @@ class Ui_dlgMain(object):
         font.setFamily("bodyText")
         dlgMain.setFont(font)
         dlgMain.setStyleSheet("QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 20px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel#lblTitle {\n"
-"    color: #5E60CE;\n"
-"    margin-bottom: 5px;\n"
-"    font-family: \"Righteous\";\n"
-"    font-size: 48px;\n"
-"    font-weight: bold;\n"
-"}")
+                              "    background-color: #00b4d8;\n"
+                              "    color: white;\n"
+                              "    border-radius: 8px;\n"
+                              "    font-family: \"Readex Pro\";\n"
+                              "    font: 12px;\n"
+                              "}\n"
+                              "\n"
+                              "QPushButton::hover{\n"
+                              "    border: 3px solid #0077b6;\n"
+                              "}\n"
+                              "\n"
+                              "QLineEdit {\n"
+                              "    border: 2px  solid gray;\n"
+                              "    border-radius: 20px;\n"
+                              "    padding: 10px;\n"
+                              "    font-family:  \"Readex Pro\";\n"
+                              "    font: 12px;\n"
+                              "\n"
+                              "}\n"
+                              "\n"
+                              "QLabel#lblTitle {\n"
+                              "    color: #5E60CE;\n"
+                              "    margin-bottom: 5px;\n"
+                              "    font-family: \"Righteous\";\n"
+                              "    font-size: 48px;\n"
+                              "    font-weight: bold;\n"
+                              "}")
         self.centralwidget = QtWidgets.QWidget(dlgMain)
         palette = QtGui.QPalette()
         self.centralwidget.setPalette(palette)
@@ -190,7 +190,7 @@ class Ui_dlgMain(object):
         self.ledMRN.setFont(font)
         self.ledMRN.setText("")
         self.ledMRN.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.ledMRN.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.ledMRN.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.ledMRN.setObjectName("ledMRN")
         self.lytMiddle.addWidget(self.ledMRN)
         self.btnSearch = QtWidgets.QPushButton(self.layoutWidget1)
@@ -275,9 +275,9 @@ class Ui_dlgMain(object):
         self.lblColor = QtWidgets.QLabel(self.centralwidget)
         self.lblColor.setGeometry(QtCore.QRect(10, 90, 671, 141))
         self.lblColor.setStyleSheet("QLabel#lblColor {\n"
-"    border: 4px solid #5E60CE;\n"
-"    border-radius: 10px;\n"
-"}")
+                                    "    border: 4px solid #5E60CE;\n"
+                                    "    border-radius: 10px;\n"
+                                    "}")
         self.lblColor.setText("")
         self.lblColor.setObjectName("lblColor")
         self.lblColor.lower()
@@ -337,11 +337,13 @@ class Ui_dlgMain(object):
         self.actionINR_Tracker_Help.setShortcut(_translate("dlgMain", "Ctrl+H"))
         self.actionAdd_New_Patient.setText(_translate("dlgMain", "Add New Patient"))
         self.actionAdd_New_Patient.setShortcut(_translate("dlgMain", "Ctrl+N"))
-from resource.resource_rc import *
 
+
+from resource.resource_rc import *
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     dlgMain = QtWidgets.QMainWindow()
     ui = Ui_dlgMain()

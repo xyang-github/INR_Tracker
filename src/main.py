@@ -1,4 +1,5 @@
 import sys
+import dateutil
 from dateutil.relativedelta import relativedelta
 from PyQt5.QtSql import *
 from ui.main_ui import *
