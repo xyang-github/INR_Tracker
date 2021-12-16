@@ -1,6 +1,5 @@
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog
-
 from src.ui.editindication import Ui_DlgEditIndication
 from src.validate import validate_new_indication
 from src.message_boxes.format_msg import message_box_critical
@@ -17,10 +16,10 @@ class DlgEditIndication(QDialog, Ui_DlgEditIndication):
         self.ledIndication.setText(self.original_indication)
 
         # Event handlers for push buttons
-        self.btnOk.clicked.connect(self.btn_ok_clicked)
+        self.btnOk.clicked.connect(self.change_indication)
         self.btnExit.clicked.connect(self.close)
 
-    def btn_ok_clicked(self):
+    def change_indication(self):
         """Update the list widget item and the database"""
         new_indication = self.ledIndication.text().lower()
         error_message = validate_new_indication(new_indication)

@@ -11,14 +11,14 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         self.setupUi(self)
 
         # Event handlers for push buttons
-        self.btnAdd.clicked.connect(self.evt_btn_add_clicked)
-        self.btnEdit.clicked.connect(self.evt_btn_edit_clicked)
-        self.btnDelete.clicked.connect(self.evt_btn_delete_clicked)
+        self.btnAddIndication.clicked.connect(self.add_indication)
+        self.btnEditIndication.clicked.connect(self.edit_indication_dialog)
+        self.btnDeleteIndication.clicked.connect(self.delete_indication)
         self.btnExit.clicked.connect(self.close)
 
         self.populate_indication_list()
 
-    def evt_btn_add_clicked(self):
+    def add_indication(self):
         """Add a new indication to the indication list widget"""
         self.new_indication = self.ledNewIndication.text().lower().strip(" ")
 
@@ -41,7 +41,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             self.lstIndications.sortItems()
             self.ledNewIndication.setText("")
 
-    def evt_btn_edit_clicked(self):
+    def edit_indication_dialog(self):
         """Creates a dialog box to rename a selected indication"""
         error_message = self.validate_if_selected()
 
@@ -54,7 +54,7 @@ class DlgIndications(QDialog, Ui_DlgIndications):
             edit_dialog.exec_()
             self.populate_indication_list()
 
-    def evt_btn_delete_clicked(self):
+    def delete_indication(self):
         """Delete selected list item widget from the database"""
         error_message = self.validate_if_selected()
 
@@ -63,8 +63,8 @@ class DlgIndications(QDialog, Ui_DlgIndications):
         else:
             self.selected_indication = self.lstIndications.selectedItems()[0].text()
             self.question = message_box_question(f"Are you sure you want to delete the indication: "
-                                                 f"{self.selected_indication}? This will remove the indication from "
-                                                 f"all patients that have this indication.")
+                                                 f"<b>{self.selected_indication}</b>? This will remove the indication "
+                                                 f"from all patients that have this indication.")
             self.question.btnAccept.clicked.connect(self.query_delete_indication)
             self.question.show()
             self.question.exec()
