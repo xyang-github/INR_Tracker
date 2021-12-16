@@ -37,16 +37,16 @@ class DlgMain(QMainWindow, Ui_dlgMain):
             message_box_critical("Could not connect with the database.")
 
         # Event handlers for action and button widgets
-        self.actionExit.triggered.connect(self.evt_action_exit_triggered)
-        self.actionAdd_New_Patient.triggered.connect(self.evt_btn_new_patient_clicked)
-        self.actionINR_Tracker_Help.triggered.connect(self.evt_action_help_triggered)
-        self.btnSearch.clicked.connect(self.evt_btn_search_clicked)
-        self.btnNewPatient.clicked.connect(self.evt_btn_new_patient_clicked)
-        self.btnIndications.clicked.connect(self.evt_btn_indications_clicked)
-        self.btnReports.clicked.connect(self.evt_btn_reports_clicked)
+        self.menuExit.triggered.connect(self.exit_program)
+        self.menuNewPatient.triggered.connect(self.add_new_patient_dialog)
+        self.menuHelp.triggered.connect(self.help_dialog)
+        self.btnSearchPatient.clicked.connect(self.search_patient)
+        self.btnNewPatient.clicked.connect(self.add_new_patient_dialog)
+        self.btnIndications.clicked.connect(self.indication_dialog)
+        self.btnReports.clicked.connect(self.reports_dialog)
 
-    def evt_btn_search_clicked(self):
-        """Searches for a matching patient in the database"""
+    def search_patient(self):
+        """Searches for a matching patient in the database, and creates a patient profile dialog"""
         self.mrn = self.ledMRN.text()
 
         if self.ledMRN.text() == "":
@@ -68,31 +68,32 @@ class DlgMain(QMainWindow, Ui_dlgMain):
 
         self.ledMRN.clear()  # Clear line edit widget after searching
 
-    def evt_action_exit_triggered(self):
+    def exit_program(self):
         """Closes the main application"""
         sys.exit(app.exec_())
 
-    def evt_btn_new_patient_clicked(self):
+    def add_new_patient_dialog(self):
         """Creates a new patient dialog window"""
         dlgNewPatient = DlgNewUpdatePatient()
-        dlgNewPatient.rbtnStatusInactive.setEnabled(False)
+        dlgNewPatient.rbtnStatusInactive.setEnabled(False)  # Cannot add inactive patients
         dlgNewPatient.show()
         dlgNewPatient.exec_()
         dlgNewPatient.populate_indication_list()
 
-    def evt_btn_indications_clicked(self):
+    def indication_dialog(self):
         """Create a dialog window to add/edit/delete indication list"""
         dlgIndications = DlgIndications()
         dlgIndications.show()
         dlgIndications.exec_()
 
-    def evt_btn_reports_clicked(self):
-        """Create a dialog box for the clinic report"""
+    def reports_dialog(self):
+        """Create a dialog window for the clinic report"""
         dlgReport = DlgReport()
         dlgReport.show()
         dlgReport.exec_()
 
-    def evt_action_help_triggered(self):
+    def help_dialog(self):
+        """Create a dialog window for help information"""
         html = self.get_html_help()
 
         dlgHelp = DlgHelp()
@@ -199,7 +200,6 @@ entries. Best practice is to avoid abbreviations of indications.
 <img src="screenshot/clinic report.JPG"><br>
 A clinic report can be generated with certain metrics. The information can also be exported to a PDF format if desired.
         """
-
         return html
 
     def create_indication_table(self):
@@ -212,7 +212,23 @@ A clinic report can be generated with certain metrics. The information can also 
             )
         """
         query = QSqlQuery()
-        query.exec_(command)
+        bOk = query.exec_(command)
+        if bOk:
+            default_indications = [
+                "atrial fibrillation",
+                "aortic valve replacement",
+                "mitral valve replacement",
+                "pulmonary embolism, treatment",
+                "pulmonary embolism, prophylaxis",
+                "venous thromboembolism, treatment",
+                "venous thromboembolism, prophylaxis"
+            ]
+            for indication in default_indications:
+                query = QSqlQuery()
+                command = "INSERT INTO indication ('indication_name') VALUES (:indication)"
+                query.prepare(command)
+                query.bindValue(":indication", indication)
+                query.exec()
 
     def create_inr_table(self):
         """Create the 'inr' table needed in the database"""
@@ -277,7 +293,22 @@ A clinic report can be generated with certain metrics. The information can also 
         );
         """
         query = QSqlQuery()
-        query.exec_(command)
+        bOk = query.exec_(command)
+        if bOk:
+            default_events = [
+                "bleeding, clinically-significant",
+                "stroke/thromboembolism",
+                "emergency/urgent department visit",
+                "hospitalization",
+                "death"
+            ]
+
+            for event in default_events:
+                query = QSqlQuery()
+                command = "INSERT INTO event ('event_name') VALUES (:event)"
+                query.prepare(command)
+                query.bindValue(":event", event)
+                query.exec()
 
     def create_patient_event_table(self):
         """Create the 'patient_event' table needed in the database"""
