@@ -1,10 +1,8 @@
 import datetime
-
 import dateutil
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
-
 from src.ui.report import *
 from src.clinic.patient_list import *
 
@@ -18,27 +16,29 @@ class DlgReport(QDialog, Ui_DlgReport):
         self.get_html_clinic_report()
 
         # Event handlers for push buttons
-        self.btnPDF.clicked.connect(self.evt_btn_pdf_clicked)
-        self.btnPatientList.clicked.connect(self.evt_btn_patient_list_clicked)
+        self.btnPDF.clicked.connect(self.export_pdf)
+        self.btnPatientList.clicked.connect(self.patient_list_dialog)
         self.btnExit.clicked.connect(self.close)
 
         # Event handlers for radio buttons
-        self.rbtAll.clicked.connect(lambda toggle="All": self.get_html_clinic_report(toggle="All"))
-        self.rbtActive.clicked.connect(lambda toggle="Active": self.get_html_clinic_report(toggle="Active"))
-        self.rbtInactive.clicked.connect(lambda toggle="Inactive": self.get_html_clinic_report(toggle="Inactive"))
+        self.rbtnAllPatients.clicked.connect(lambda toggle="All": self.get_html_clinic_report(toggle="All"))
+        self.rbtnActivePatients.clicked.connect(lambda toggle="Active": self.get_html_clinic_report(toggle="Active"))
+        self.rbtnInactivePatients.clicked.connect(
+            lambda toggle="Inactive": self.get_html_clinic_report(toggle="Inactive")
+        )
 
-    def evt_btn_pdf_clicked(self):
+    def export_pdf(self):
         """Create and save a PDF document"""
         header = f"""
         <h1 style="text-align: center;">Clinic Report</h1>
         <h3 style="text-align: center;">Date: {QDate.currentDate().toString("yyyy-MM-dd")}<br></h3>
         """
 
-        if self.rbtAll.isChecked():
+        if self.rbtnAllPatients.isChecked():
             header += "<h3 style='text-align: center;'>All Patients</h3>"
-        if self.rbtActive.isChecked():
+        if self.rbtnActivePatients.isChecked():
             header += "<h3 style='text-align: center;'>Active Patients Only</h3>"
-        if self.rbtInactive.isChecked():
+        if self.rbtnInactivePatients.isChecked():
             header += "<h3 style='text-align: center;'>Inactive Patients Only</h3>"
 
         document = QTextDocument()
@@ -46,7 +46,8 @@ class DlgReport(QDialog, Ui_DlgReport):
         printer = QPrinter()
         document.print_(printer)
 
-    def evt_btn_patient_list_clicked(self):
+    def patient_list_dialog(self):
+        """Create a dialog window to display a patient list"""
         dlgPatientList = DlgPatientList()
         dlgPatientList.show()
         dlgPatientList.exec()
@@ -54,7 +55,7 @@ class DlgReport(QDialog, Ui_DlgReport):
     def get_html_clinic_report(self, toggle="Active"):
         """Create and return an HTML string for the clinic report"""
 
-        # Retrieve total number of active patients
+        # Retrieve number of active patients
         query = QSqlQuery()
         query.prepare("SELECT COUNT(*) AS total FROM patient WHERE status = :status")
         query.bindValue(":status", "A")
@@ -62,7 +63,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         query.next()
         total_actives = query.value('total')
 
-        # Retrieve total number of inactive patients
+        # Retrieve number of inactive patients
         query = QSqlQuery()
         query.prepare("SELECT COUNT(*) AS total FROM patient WHERE status = :status")
         query.bindValue(":status", "I")
@@ -96,12 +97,6 @@ class DlgReport(QDialog, Ui_DlgReport):
         &nbsp;<br>
         """
 
-        # Retrieve total number of indications
-        query = QSqlQuery()
-        query.exec("SELECT COUNT(*) AS total FROM indication")
-        query.next()
-        total_indications = query.value('total')
-
         # Retrieve breakdown of indications
         list_indications = []
         if toggle == "All":
@@ -111,7 +106,9 @@ class DlgReport(QDialog, Ui_DlgReport):
         if toggle == "Inactive":
             query = self.query_indications_inactive_patients()
 
+        total = 0
         while query.next():
+            total += query.value('total')
             list_indications.append((query.value('indication_name'), query.value('total')))
 
         list_indications.sort()
@@ -123,7 +120,7 @@ class DlgReport(QDialog, Ui_DlgReport):
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
                 <tr>
                     <td style="width: 150px"><strong>Total Indications:</strong></td>
-                    <td>{total_indications}</th>
+                    <td>{total}</th>
                 </tr>
         """
         for indication in list_indications:
@@ -139,12 +136,6 @@ class DlgReport(QDialog, Ui_DlgReport):
         &nbsp;<br>
         """
 
-        # Retrieve total number of goals
-        query = QSqlQuery()
-        query.exec("SELECT COUNT(DISTINCT inr_goal_from || '-' || inr_goal_to) AS total from patient")
-        query.next()
-        total_goals = query.value('total')
-
         # Retrieve breakdown of INR goals
         list_goals = []
         if toggle == "All":
@@ -154,7 +145,9 @@ class DlgReport(QDialog, Ui_DlgReport):
         if toggle == "Inactive":
             query = self.query_goal_inactive_patients()
 
+        total = 0
         while query.next():
+            total += query.value('total')
             list_goals.append((query.value('goal'), query.value('total')))
 
         list_goals.sort()
@@ -165,7 +158,7 @@ class DlgReport(QDialog, Ui_DlgReport):
             <table cellpadding=5 cellspacing=5 style="border: none; border-collapse: collapse">
                 <tr>
                     <td style="width: 150px"><strong>Total Goals:</strong></th>
-                    <td>{total_goals}</th>
+                    <td>{total}</th>
                 </tr>
         """
         for goal in list_goals:
@@ -187,7 +180,6 @@ class DlgReport(QDialog, Ui_DlgReport):
 
         # Retrieve clinical events in the past 6 months, 12 months, and all time for ALL patients
         date_range = [6, 12, 'all']
-
         if toggle == "All":
             for date in date_range:
                 if date == 'all':
@@ -337,10 +329,11 @@ class DlgReport(QDialog, Ui_DlgReport):
         self.populate_clinic_report()
 
     def populate_clinic_report(self):
+        """Set the html string as output for the text edit widget"""
         self.tedReport.setHtml(self.html)
 
     def query_indications_all_patients(self):
-        """Create and return a query for all patients"""
+        """Create and return a query for indications of all patients"""
         query = QSqlQuery()
         query.exec("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
                    "JOIN patient_indication pi ON i.indication_id = pi.indication_id GROUP BY indication_name "
@@ -349,7 +342,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         return query
 
     def query_indications_inactive_patients(self):
-        """Create and return a query for inactive patients only"""
+        """Create and return a query for indications of inactive patients only"""
         query = QSqlQuery()
         query.prepare("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
                    "JOIN patient_indication pi ON i.indication_id = pi.indication_id "
@@ -360,7 +353,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         return query
 
     def query_indications_active_patients(self):
-        """Create and return a query for active patients only"""
+        """Create and return a query for indications of active patients only"""
         query = QSqlQuery()
         query.prepare("SELECT COUNT(i.indication_id) AS total, indication_name FROM indication i "
                    "JOIN patient_indication pi ON i.indication_id = pi.indication_id "
@@ -371,14 +364,14 @@ class DlgReport(QDialog, Ui_DlgReport):
         return query
 
     def query_goal_all_patients(self):
-        """Create and return a query for all patients"""
+        """Create and return a query for goals of all patients"""
         query = QSqlQuery()
         query.exec("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, (inr_goal_from || '-' || inr_goal_to) "
                    "AS goal FROM patient GROUP BY goal")
         return query
 
     def query_goal_active_patients(self):
-        """Create and return a query for active patients only"""
+        """Create and return a query for goals of active patients only"""
         query = QSqlQuery()
         query.prepare("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, "
                       "(inr_goal_from || '-' || inr_goal_to) AS goal FROM patient WHERE status = :status "
@@ -388,7 +381,7 @@ class DlgReport(QDialog, Ui_DlgReport):
         return query
 
     def query_goal_inactive_patients(self):
-        """Create and return a query for inactive patients only"""
+        """Create and return a query for goals of inactive patients only"""
         query = QSqlQuery()
         query.prepare("SELECT COUNT(inr_goal_from || '-' || inr_goal_to) AS total, "
                       "(inr_goal_from || '-' || inr_goal_to) AS goal FROM patient WHERE status = :status "
