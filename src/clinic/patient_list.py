@@ -1,34 +1,36 @@
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem
-
 from src.ui.patientlist import Ui_DlgPatients
 
 
 class DlgPatientList(QDialog, Ui_DlgPatients):
     """Dialog window for the patient list"""
+
     def __init__(self):
         super(DlgPatientList, self).__init__()
         self.setupUi(self)
+        self.tblPatientList.horizontalHeader().setStretchLastSection(True)
+        self.tblPatientList.setSortingEnabled(True)
 
-        self.query_all_patients()
+        self.query_get_all_patients()
 
-        # Event handler for push button
-        self.btnExit.clicked.connect(self.close)
-        self.rbtAll.clicked.connect(self.query_all_patients)
+        # Event handler for radio and push buttons
+        self.rbtAll.clicked.connect(self.query_get_all_patients)
         self.rbtActive.clicked.connect(self.query_active_patients)
         self.rbtInactive.clicked.connect(self.query_inactive_patients)
+        self.btnExit.clicked.connect(self.close)
 
-    def query_all_patients(self):
+    def query_get_all_patients(self):
         """Send a query to retrieve all patients"""
         query = QSqlQuery()
-        bOk = query.exec("SELECT patient_id, lname, fname FROM patient")
+        bOk = query.exec("SELECT patient_id, lname, fname FROM patient ORDER BY lname, fname")
         if bOk:
             self.populate_patient_list_table(query)
 
     def query_active_patients(self):
         """Send a query to retrieve only active patients"""
         query = QSqlQuery()
-        query.prepare("SELECT patient_id, lname, fname FROM patient WHERE status = :status")
+        query.prepare("SELECT patient_id, lname, fname FROM patient WHERE status = :status ORDER BY lname, fname")
         query.bindValue(":status", "A")
         bOk = query.exec()
         if bOk:
@@ -37,7 +39,7 @@ class DlgPatientList(QDialog, Ui_DlgPatients):
     def query_inactive_patients(self):
         """Send a query to retrieve only inactive patients"""
         query = QSqlQuery()
-        query.prepare("SELECT patient_id, lname, fname FROM patient WHERE status = :status")
+        query.prepare("SELECT patient_id, lname, fname FROM patient WHERE status = :status ORDER BY lname, fname")
         query.bindValue(":status", "I")
         bOk = query.exec()
         if bOk:
