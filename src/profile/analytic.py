@@ -38,6 +38,7 @@ class DlgAnalytics(QDialog):
                                         f"% Out of range: {round(total_days - total_days_in_ttr)} days")
         self.pie_slice_not_ttr.setLabelColor(QColor("red"))
 
+        # Format each slice
         for slice in self.pie_ttr.slices():
             font = QtGui.QFont()
             font.setBold(True)
@@ -75,8 +76,6 @@ class DlgAnalytics(QDialog):
         INR measurements over time. Clinical judgement should be used when evaluating the significance of TTR in 
         clinical decision making.</em>
         </div>
-    
-        
         """
 
         text_edit = QTextEdit(description)
