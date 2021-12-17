@@ -637,7 +637,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def add_event_dialog(self):
         dlgAddEvent = DlgAddEditEvent(self.mrn)
         dlgAddEvent.show()
-        dlgAddEvent.btnOK_event.clicked.connect(dlgAddEvent.add_to_database)
+        dlgAddEvent.btnOK.clicked.connect(dlgAddEvent.add_to_database)
         dlgAddEvent.exec()
         self.populate_event_table()
 
@@ -685,12 +685,12 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         self.dlgEditEvent.dteDate_event.setReadOnly(True)
         self.dlgEditEvent.ledNewEvent.setPlaceholderText("Disabled when editing entry.")
         self.dlgEditEvent.ledNewEvent.setReadOnly(True)
-        self.dlgEditEvent.btnAddEvent.setDisabled(True)
-        self.dlgEditEvent.btnRemoveEvent.setDisabled(True)
-        self.dlgEditEvent.btnNewEvent.setDisabled(True)
+        self.dlgEditEvent.btnAddToEventList.setDisabled(True)
+        self.dlgEditEvent.btnAddToPatient.setDisabled(True)
+        self.dlgEditEvent.btnRemoveFromPatient.setDisabled(True)
 
         # Event handler for push button when editing an event entry
-        self.dlgEditEvent.btnOK_event.clicked.connect(self.evt_btn_update_event_clicked)
+        self.dlgEditEvent.btnOK.clicked.connect(self.evt_btn_update_event_clicked)
 
         self.dlgEditEvent.show()
         self.dlgEditEvent.exec()

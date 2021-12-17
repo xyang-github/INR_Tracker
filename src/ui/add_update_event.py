@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgAddEditEvent(object):
     def setupUi(self, DlgAddEditEvent):
         DlgAddEditEvent.setObjectName("DlgAddEditEvent")
-        DlgAddEditEvent.resize(614, 618)
+        DlgAddEditEvent.resize(622, 621)
         DlgAddEditEvent.setStyleSheet("QDialog {\n"
 "    background-color: #e2f2ff;\n"
 "}\n"
@@ -23,7 +23,7 @@ class Ui_DlgAddEditEvent(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -35,35 +35,35 @@ class Ui_DlgAddEditEvent(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 10px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
 "\n"
 "QLabel {\n"
 "    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
+"    font-family: \"Source Sans Pro\";\n"
 "    font-size: 16px;\n"
 "    font-weight: bold;\n"
 "}")
-        self.widget = QtWidgets.QWidget(DlgAddEditEvent)
-        self.widget.setGeometry(QtCore.QRect(10, 11, 591, 596))
-        self.widget.setObjectName("widget")
-        self.lytMain = QtWidgets.QVBoxLayout(self.widget)
+        self.layoutWidget = QtWidgets.QWidget(DlgAddEditEvent)
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 11, 601, 596))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
         self.lytMain.setObjectName("lytMain")
         self.lytDate = QtWidgets.QHBoxLayout()
         self.lytDate.setObjectName("lytDate")
-        self.lblDate_event = QtWidgets.QLabel(self.widget)
+        self.lblDate_event = QtWidgets.QLabel(self.layoutWidget)
         self.lblDate_event.setObjectName("lblDate_event")
         self.lytDate.addWidget(self.lblDate_event)
-        self.dteDate_event = QtWidgets.QDateEdit(self.widget)
+        self.dteDate_event = QtWidgets.QDateEdit(self.layoutWidget)
         self.dteDate_event.setObjectName("dteDate_event")
         self.lytDate.addWidget(self.dteDate_event)
         spacerItem = QtWidgets.QSpacerItem(800, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.lytDate.addItem(spacerItem)
         self.lytMain.addLayout(self.lytDate)
-        self.labelEvent = QtWidgets.QLabel(self.widget)
+        self.labelEvent = QtWidgets.QLabel(self.layoutWidget)
         self.labelEvent.setObjectName("labelEvent")
         self.lytMain.addWidget(self.labelEvent)
         self.lytBottom = QtWidgets.QHBoxLayout()
@@ -72,18 +72,18 @@ class Ui_DlgAddEditEvent(object):
         self.lytLeft.setObjectName("lytLeft")
         self.lytAddEvent = QtWidgets.QHBoxLayout()
         self.lytAddEvent.setObjectName("lytAddEvent")
-        self.ledNewEvent = QtWidgets.QLineEdit(self.widget)
+        self.ledNewEvent = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledNewEvent.setObjectName("ledNewEvent")
         self.lytAddEvent.addWidget(self.ledNewEvent)
-        self.btnNewEvent = QtWidgets.QPushButton(self.widget)
-        self.btnNewEvent.setMinimumSize(QtCore.QSize(60, 30))
+        self.btnAddToEventList = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnAddToEventList.setMinimumSize(QtCore.QSize(60, 30))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnNewEvent.setIcon(icon)
-        self.btnNewEvent.setObjectName("btnNewEvent")
-        self.lytAddEvent.addWidget(self.btnNewEvent)
+        icon.addPixmap(QtGui.QPixmap(":/img/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnAddToEventList.setIcon(icon)
+        self.btnAddToEventList.setObjectName("btnAddToEventList")
+        self.lytAddEvent.addWidget(self.btnAddToEventList)
         self.lytLeft.addLayout(self.lytAddEvent)
-        self.lstCurrentEvent = QtWidgets.QListWidget(self.widget)
+        self.lstCurrentEvent = QtWidgets.QListWidget(self.layoutWidget)
         self.lstCurrentEvent.setObjectName("lstCurrentEvent")
         self.lytLeft.addWidget(self.lstCurrentEvent)
         self.lytBottom.addLayout(self.lytLeft)
@@ -91,46 +91,54 @@ class Ui_DlgAddEditEvent(object):
         self.lytEventButtons.setObjectName("lytEventButtons")
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.lytEventButtons.addItem(spacerItem1)
-        self.btnAddEvent = QtWidgets.QPushButton(self.widget)
-        self.btnAddEvent.setMinimumSize(QtCore.QSize(40, 0))
-        self.btnAddEvent.setObjectName("btnAddEvent")
-        self.lytEventButtons.addWidget(self.btnAddEvent)
-        self.btnRemoveEvent = QtWidgets.QPushButton(self.widget)
-        self.btnRemoveEvent.setObjectName("btnRemoveEvent")
-        self.lytEventButtons.addWidget(self.btnRemoveEvent)
+        self.btnAddToPatient = QtWidgets.QPushButton(self.layoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btnAddToPatient.sizePolicy().hasHeightForWidth())
+        self.btnAddToPatient.setSizePolicy(sizePolicy)
+        self.btnAddToPatient.setMinimumSize(QtCore.QSize(40, 20))
+        self.btnAddToPatient.setText("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/img/icon/add_to.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnAddToPatient.setIcon(icon1)
+        self.btnAddToPatient.setIconSize(QtCore.QSize(24, 24))
+        self.btnAddToPatient.setObjectName("btnAddToPatient")
+        self.lytEventButtons.addWidget(self.btnAddToPatient)
+        self.btnRemoveFromPatient = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnRemoveFromPatient.setMinimumSize(QtCore.QSize(0, 20))
+        self.btnRemoveFromPatient.setText("")
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/img/icon/remove_from.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnRemoveFromPatient.setIcon(icon2)
+        self.btnRemoveFromPatient.setIconSize(QtCore.QSize(24, 24))
+        self.btnRemoveFromPatient.setObjectName("btnRemoveFromPatient")
+        self.lytEventButtons.addWidget(self.btnRemoveFromPatient)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.lytEventButtons.addItem(spacerItem2)
         self.lytBottom.addLayout(self.lytEventButtons)
-        self.lstPatientEvent = QtWidgets.QListWidget(self.widget)
+        self.lstPatientEvent = QtWidgets.QListWidget(self.layoutWidget)
         self.lstPatientEvent.setObjectName("lstPatientEvent")
         self.lytBottom.addWidget(self.lstPatientEvent)
         self.lytMain.addLayout(self.lytBottom)
-        self.lblComment = QtWidgets.QLabel(self.widget)
+        self.lblComment = QtWidgets.QLabel(self.layoutWidget)
         self.lblComment.setObjectName("lblComment")
         self.lytMain.addWidget(self.lblComment)
-        self.txtComment_event = QtWidgets.QTextEdit(self.widget)
+        self.txtComment_event = QtWidgets.QTextEdit(self.layoutWidget)
         self.txtComment_event.setTabChangesFocus(False)
         self.txtComment_event.setObjectName("txtComment_event")
         self.lytMain.addWidget(self.txtComment_event)
         self.lytButton = QtWidgets.QHBoxLayout()
         self.lytButton.setObjectName("lytButton")
-        self.btnOK_event = QtWidgets.QPushButton(self.widget)
-        self.btnOK_event.setObjectName("btnOK_event")
-        self.lytButton.addWidget(self.btnOK_event)
-        self.btnCancel_event = QtWidgets.QPushButton(self.widget)
-        self.btnCancel_event.setObjectName("btnCancel_event")
-        self.lytButton.addWidget(self.btnCancel_event)
+        self.btnOK = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnOK.setMinimumSize(QtCore.QSize(0, 25))
+        self.btnOK.setObjectName("btnOK")
+        self.lytButton.addWidget(self.btnOK)
+        self.btnCancelDialog = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnCancelDialog.setMinimumSize(QtCore.QSize(0, 25))
+        self.btnCancelDialog.setObjectName("btnCancelDialog")
+        self.lytButton.addWidget(self.btnCancelDialog)
         self.lytMain.addLayout(self.lytButton)
-        self.lblDate_event.raise_()
-        self.dteDate_event.raise_()
-        self.ledNewEvent.raise_()
-        self.btnNewEvent.raise_()
-        self.lstCurrentEvent.raise_()
-        self.btnRemoveEvent.raise_()
-        self.lstPatientEvent.raise_()
-        self.btnAddEvent.raise_()
-        self.txtComment_event.raise_()
-        self.lblComment.raise_()
 
         self.retranslateUi(DlgAddEditEvent)
         QtCore.QMetaObject.connectSlotsByName(DlgAddEditEvent)
@@ -141,17 +149,16 @@ class Ui_DlgAddEditEvent(object):
         self.lblDate_event.setText(_translate("DlgAddEditEvent", "Date"))
         self.labelEvent.setText(_translate("DlgAddEditEvent", "Clinical Event"))
         self.ledNewEvent.setPlaceholderText(_translate("DlgAddEditEvent", "Type new clinical event here"))
-        self.btnNewEvent.setToolTip(_translate("DlgAddEditEvent", "Add new indication to list of indications in the database"))
-        self.btnNewEvent.setText(_translate("DlgAddEditEvent", "Add"))
-        self.btnAddEvent.setToolTip(_translate("DlgAddEditEvent", "Add indication to patient\'s profile"))
-        self.btnAddEvent.setText(_translate("DlgAddEditEvent", "-->"))
-        self.btnRemoveEvent.setToolTip(_translate("DlgAddEditEvent", "Remove indication from patient\'s profile"))
-        self.btnRemoveEvent.setText(_translate("DlgAddEditEvent", "<--"))
+        self.btnAddToEventList.setToolTip(_translate("DlgAddEditEvent", "Add new indication to list of indications in the database"))
+        self.btnAddToEventList.setText(_translate("DlgAddEditEvent", "Add"))
+        self.btnAddToPatient.setToolTip(_translate("DlgAddEditEvent", "Add indication to patient\'s profile"))
+        self.btnRemoveFromPatient.setToolTip(_translate("DlgAddEditEvent", "Remove indication from patient\'s profile"))
         self.lblComment.setText(_translate("DlgAddEditEvent", "Comment"))
         self.txtComment_event.setToolTip(_translate("DlgAddEditEvent", "Add clinically relevant comments"))
         self.txtComment_event.setPlaceholderText(_translate("DlgAddEditEvent", "Type any clinically relevant information pertaining to the result."))
-        self.btnOK_event.setText(_translate("DlgAddEditEvent", "OK"))
-        self.btnCancel_event.setText(_translate("DlgAddEditEvent", "Cancel"))
+        self.btnOK.setText(_translate("DlgAddEditEvent", "OK"))
+        self.btnCancelDialog.setText(_translate("DlgAddEditEvent", "Cancel"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":

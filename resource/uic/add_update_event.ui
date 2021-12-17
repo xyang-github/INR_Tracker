@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>618</height>
+    <width>622</width>
+    <height>621</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@ QPushButton {
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -34,24 +34,24 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 10px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
 
 QLabel {
 	color: #5E60CE;
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;Source Sans Pro&quot;;
 	font-size: 16px;
 	font-weight: bold;
 }</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>11</y>
-     <width>591</width>
+     <width>601</width>
      <height>596</height>
     </rect>
    </property>
@@ -107,7 +107,7 @@ QLabel {
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnNewEvent">
+           <widget class="QPushButton" name="btnAddToEventList">
             <property name="minimumSize">
              <size>
               <width>60</width>
@@ -121,8 +121,8 @@ QLabel {
              <string>Add</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
             </property>
            </widget>
           </item>
@@ -149,28 +149,60 @@ QLabel {
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="btnAddEvent">
+         <widget class="QPushButton" name="btnAddToPatient">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>40</width>
-            <height>0</height>
+            <height>20</height>
            </size>
           </property>
           <property name="toolTip">
            <string>Add indication to patient's profile</string>
           </property>
           <property name="text">
-           <string>--&gt;</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/add_to.png</normaloff>:/img/icon/add_to.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnRemoveEvent">
+         <widget class="QPushButton" name="btnRemoveFromPatient">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="toolTip">
            <string>Remove indication from patient's profile</string>
           </property>
           <property name="text">
-           <string>&lt;--</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/remove_from.png</normaloff>:/img/icon/remove_from.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -217,14 +249,26 @@ QLabel {
     <item>
      <layout class="QHBoxLayout" name="lytButton">
       <item>
-       <widget class="QPushButton" name="btnOK_event">
+       <widget class="QPushButton" name="btnOK">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
         <property name="text">
          <string>OK</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnCancel_event">
+       <widget class="QPushButton" name="btnCancelDialog">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
         <property name="text">
          <string>Cancel</string>
         </property>
@@ -234,20 +278,9 @@ QLabel {
     </item>
    </layout>
   </widget>
-  <zorder>lblDate_event</zorder>
-  <zorder>dteDate_event</zorder>
-  <zorder>ledNewEvent</zorder>
-  <zorder>btnNewEvent</zorder>
-  <zorder>lstCurrentEvent</zorder>
-  <zorder>btnRemoveEvent</zorder>
-  <zorder>lstPatientEvent</zorder>
-  <zorder>btnAddEvent</zorder>
-  <zorder>txtComment_event</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>lblComment</zorder>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>
