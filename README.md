@@ -1,11 +1,11 @@
 # INR Tracker
 
-<img src = "/resource/main.jpg"><br>
+<img src = "resource/screenshot/main.JPG"><br>
 INR Tracker is a comprehensive management application for clinicians working or managing an anticoagulation clinic.
 
 <hr>
 
-<h2> About The Project</h2>
+<h2> About the Project</h2>
 In an anticoagulation clinic, clinicians track the <b>international normalized ratio</b> (INR) to determine effectiveness of 
 warfarin. Warfarin is a blood thinner to prevent the formation of life-threatening blood clots. 
 Most patients are on warfarin indefinitely, and will require routine monitoring of their INR with a frequency dictated 
