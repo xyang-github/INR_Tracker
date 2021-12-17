@@ -82,7 +82,7 @@
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -94,17 +94,18 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 20px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
 
 QLabel {
-	color: #5E60CE;
-	font-family: &quot;Raleway&quot;;
-	font-size: 16px;
+	color: #00b4d8;
+	font-family: &quot;Source Sans Pro&quot;;
+	font-size: 24px;
 	font-weight: bold;
-	margin-top: 10px;
+	border: 2px solid #00b4d8;
+	border-radius: 10px;
 }
 </string>
   </property>
@@ -122,7 +123,7 @@ QLabel {
      <widget class="QLabel" name="lblHeader">
       <property name="font">
        <font>
-        <family>Raleway</family>
+        <family>Source Sans Pro</family>
         <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -157,8 +158,8 @@ QLabel {
          <string>Add</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+         <iconset resource="../resource.qrc">
+          <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
         </property>
        </widget>
       </item>
@@ -184,8 +185,8 @@ QLabel {
          <string>Edit</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/icon/edit.png</normaloff>:/icon/edit.png</iconset>
+         <iconset resource="../resource.qrc">
+          <normaloff>:/img/icon/edit.png</normaloff>:/img/icon/edit.png</iconset>
         </property>
        </widget>
       </item>
@@ -201,8 +202,8 @@ QLabel {
          <string>Delete</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/icon/delete.png</normaloff>:/icon/delete.png</iconset>
+         <iconset resource="../resource.qrc">
+          <normaloff>:/img/icon/delete.png</normaloff>:/img/icon/delete.png</iconset>
         </property>
        </widget>
       </item>
@@ -225,7 +226,7 @@ QLabel {
   </widget>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -39,7 +39,7 @@ class Ui_DlgEvents(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -51,17 +51,18 @@ class Ui_DlgEvents(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 20px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
 "\n"
 "QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 16px;\n"
+"    color: #00b4d8;\n"
+"    font-family: \"Source Sans Pro\";\n"
+"    font-size: 24px;\n"
 "    font-weight: bold;\n"
-"    margin-top: 10px;\n"
+"    border: 2px solid #00b4d8;\n"
+"    border-radius: 10px;\n"
 "}\n"
 "")
         self.layoutWidget = QtWidgets.QWidget(DlgEvents)
@@ -72,7 +73,7 @@ class Ui_DlgEvents(object):
         self.lytMain.setObjectName("lytMain")
         self.lblHeader = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -80,21 +81,21 @@ class Ui_DlgEvents(object):
         self.lblHeader.setAlignment(QtCore.Qt.AlignCenter)
         self.lblHeader.setObjectName("lblHeader")
         self.lytMain.addWidget(self.lblHeader)
-        self.lytNewIndication = QtWidgets.QHBoxLayout()
-        self.lytNewIndication.setObjectName("lytNewIndication")
+        self.lytNewEvent = QtWidgets.QHBoxLayout()
+        self.lytNewEvent.setObjectName("lytNewEvent")
         self.ledNewEvent = QtWidgets.QLineEdit(self.layoutWidget)
-        self.ledNewEvent.setObjectName("ledNewIndication")
-        self.lytNewIndication.addWidget(self.ledNewEvent)
+        self.ledNewEvent.setObjectName("ledNewEvent")
+        self.lytNewEvent.addWidget(self.ledNewEvent)
         self.btnAddEvent = QtWidgets.QPushButton(self.layoutWidget)
         self.btnAddEvent.setMinimumSize(QtCore.QSize(60, 30))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/img/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnAddEvent.setIcon(icon)
         self.btnAddEvent.setObjectName("btnAddEvent")
-        self.lytNewIndication.addWidget(self.btnAddEvent)
-        self.lytMain.addLayout(self.lytNewIndication)
+        self.lytNewEvent.addWidget(self.btnAddEvent)
+        self.lytMain.addLayout(self.lytNewEvent)
         self.lstEvents = QtWidgets.QListWidget(self.layoutWidget)
-        self.lstEvents.setObjectName("lstIndications")
+        self.lstEvents.setObjectName("lstEvents")
         self.lytMain.addWidget(self.lstEvents)
         self.lytBottomButtons = QtWidgets.QHBoxLayout()
         self.lytBottomButtons.setObjectName("lytBottomButtons")
@@ -102,14 +103,14 @@ class Ui_DlgEvents(object):
         self.btnEditEvent.setMinimumSize(QtCore.QSize(0, 30))
         self.btnEditEvent.setFocusPolicy(QtCore.Qt.NoFocus)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icon/edit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/img/icon/edit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnEditEvent.setIcon(icon1)
         self.btnEditEvent.setObjectName("btnEditEvent")
         self.lytBottomButtons.addWidget(self.btnEditEvent)
         self.btnDeleteEvent = QtWidgets.QPushButton(self.layoutWidget)
         self.btnDeleteEvent.setMinimumSize(QtCore.QSize(0, 30))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(":/img/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnDeleteEvent.setIcon(icon2)
         self.btnDeleteEvent.setObjectName("btnDeleteEvent")
         self.lytBottomButtons.addWidget(self.btnDeleteEvent)
