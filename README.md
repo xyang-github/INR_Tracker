@@ -22,6 +22,8 @@ and deriving meaningful metrics from that data. </b>
 I hope to continue to add new features to this application, with the 
 goal of improving clinician experience and improving overall patient care.
 
+Refer to the wiki page for screenshots and explanation of features.
+
 <hr>
 
 <h2>Technologies and Development</h2>
