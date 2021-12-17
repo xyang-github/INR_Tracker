@@ -22,7 +22,7 @@ QPushButton {
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -37,18 +37,21 @@ QLineEdit {
 
 QLabel {
 	color: #5E60CE;
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;Source Sans Pro&quot;;
 	font-size: 16px;
+	font-weight: bold;
 }
 
 QLabel#lblHeader {
-	font-family: &quot;Raleway&quot;;
-	font-size: 36px;	
+	font-family: &quot;Source Sans Pro&quot;;
+	font-size: 24px;	
 	font-weight: bold;
-	margin: 0;
+	color: #00b4d8;
+	border: 2px solid #00b4d8;
+	border-radius: 10px;
 }</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -70,6 +73,19 @@ QLabel#lblHeader {
     </item>
     <item>
      <layout class="QHBoxLayout" name="lytRadioButton">
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item>
        <widget class="QRadioButton" name="rbtAll">
         <property name="styleSheet">
@@ -112,6 +128,19 @@ QLabel#lblHeader {
         </attribute>
        </widget>
       </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </item>
     <item>
@@ -133,7 +162,7 @@ QLabel#lblHeader {
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget">
+     <widget class="QTableWidget" name="tblPatientList">
       <column>
        <property name="text">
         <string>MRN</string>
@@ -210,7 +239,7 @@ QLabel#lblHeader {
   </widget>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
  <buttongroups>

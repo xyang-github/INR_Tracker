@@ -39,7 +39,7 @@ class Ui_DlgReport(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -51,27 +51,28 @@ class Ui_DlgReport(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 10px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
 "\n"
 "QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 36px;    \n"
+"    color: #00b4d8;\n"
+"    font-family: \"Source Sans Pro\";\n"
+"    font-size: 24px;    \n"
 "    font-weight: bold;\n"
-"    margin: 0;\n"
+"    border: 2px solid #00b4d8;\n"
+"    border-radius: 10px;\n"
 "}")
-        self.widget = QtWidgets.QWidget(DlgReport)
-        self.widget.setGeometry(QtCore.QRect(11, 11, 411, 621))
-        self.widget.setObjectName("widget")
-        self.lytMain = QtWidgets.QVBoxLayout(self.widget)
+        self.layoutWidget = QtWidgets.QWidget(DlgReport)
+        self.layoutWidget.setGeometry(QtCore.QRect(11, 11, 411, 621))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
         self.lytMain.setObjectName("lytMain")
-        self.lblHeader = QtWidgets.QLabel(self.widget)
+        self.lblHeader = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -83,42 +84,42 @@ class Ui_DlgReport(object):
         self.lytRbtn.setObjectName("lytRbtn")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.lytRbtn.addItem(spacerItem)
-        self.rbtnAllPatients = QtWidgets.QRadioButton(self.widget)
+        self.rbtnAllPatients = QtWidgets.QRadioButton(self.layoutWidget)
         self.rbtnAllPatients.setObjectName("rbtAll")
         self.buttonGroup = QtWidgets.QButtonGroup(DlgReport)
         self.buttonGroup.setObjectName("buttonGroup")
         self.buttonGroup.addButton(self.rbtnAllPatients)
         self.lytRbtn.addWidget(self.rbtnAllPatients)
-        self.rbtnActivePatients = QtWidgets.QRadioButton(self.widget)
+        self.rbtnActivePatients = QtWidgets.QRadioButton(self.layoutWidget)
         self.rbtnActivePatients.setChecked(True)
         self.rbtnActivePatients.setObjectName("rbtActive")
         self.buttonGroup.addButton(self.rbtnActivePatients)
         self.lytRbtn.addWidget(self.rbtnActivePatients)
-        self.rbtnInactivePatients = QtWidgets.QRadioButton(self.widget)
+        self.rbtnInactivePatients = QtWidgets.QRadioButton(self.layoutWidget)
         self.rbtnInactivePatients.setObjectName("rbtInactive")
         self.buttonGroup.addButton(self.rbtnInactivePatients)
         self.lytRbtn.addWidget(self.rbtnInactivePatients)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.lytRbtn.addItem(spacerItem1)
         self.lytMain.addLayout(self.lytRbtn)
-        self.tedReport = QtWidgets.QTextEdit(self.widget)
+        self.tedReport = QtWidgets.QTextEdit(self.layoutWidget)
         self.tedReport.setReadOnly(True)
         self.tedReport.setObjectName("tedReport")
         self.lytMain.addWidget(self.tedReport)
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
-        self.btnPatientList = QtWidgets.QPushButton(self.widget)
+        self.btnPatientList = QtWidgets.QPushButton(self.layoutWidget)
         self.btnPatientList.setMinimumSize(QtCore.QSize(0, 30))
         self.btnPatientList.setObjectName("btnPatientList")
         self.lytButtons.addWidget(self.btnPatientList)
-        self.btnPDF = QtWidgets.QPushButton(self.widget)
+        self.btnPDF = QtWidgets.QPushButton(self.layoutWidget)
         self.btnPDF.setMinimumSize(QtCore.QSize(0, 30))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/img/icon/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnPDF.setIcon(icon)
         self.btnPDF.setObjectName("btnPDF")
         self.lytButtons.addWidget(self.btnPDF)
-        self.btnExit = QtWidgets.QPushButton(self.widget)
+        self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
         self.btnExit.setMinimumSize(QtCore.QSize(0, 30))
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
@@ -137,6 +138,7 @@ class Ui_DlgReport(object):
         self.btnPatientList.setText(_translate("DlgReport", "Patient List"))
         self.btnPDF.setText(_translate("DlgReport", "Export to PDF"))
         self.btnExit.setText(_translate("DlgReport", "Exit"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":

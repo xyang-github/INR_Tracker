@@ -82,7 +82,7 @@
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -94,20 +94,21 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 10px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
 
 QLabel {
-	color: #5E60CE;
-	font-family: &quot;Raleway&quot;;
-	font-size: 36px;	
+	color: #00b4d8;
+	font-family: &quot;Source Sans Pro&quot;;
+	font-size: 24px;	
 	font-weight: bold;
-	margin: 0;
+	border: 2px solid #00b4d8;
+	border-radius: 10px;
 }</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>11</x>
@@ -121,7 +122,7 @@ QLabel {
      <widget class="QLabel" name="lblHeader">
       <property name="font">
        <font>
-        <family>Raleway</family>
+        <family>Source Sans Pro</family>
         <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -151,7 +152,7 @@ QLabel {
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="rbtAll">
+       <widget class="QRadioButton" name="rbtnAllPatients">
         <property name="text">
          <string>All</string>
         </property>
@@ -161,7 +162,7 @@ QLabel {
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="rbtActive">
+       <widget class="QRadioButton" name="rbtnActivePatients">
         <property name="text">
          <string>Active</string>
         </property>
@@ -174,7 +175,7 @@ QLabel {
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="rbtInactive">
+       <widget class="QRadioButton" name="rbntInactivePatients">
         <property name="text">
          <string>Inactive</string>
         </property>
@@ -232,8 +233,8 @@ QLabel {
          <string>Export to PDF</string>
         </property>
         <property name="icon">
-         <iconset resource="../resource/resource.qrc">
-          <normaloff>:/icon/export.png</normaloff>:/icon/export.png</iconset>
+         <iconset resource="../resource.qrc">
+          <normaloff>:/img/icon/export.png</normaloff>:/img/icon/export.png</iconset>
         </property>
        </widget>
       </item>
@@ -256,7 +257,7 @@ QLabel {
   </widget>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
  <buttongroups>

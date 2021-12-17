@@ -39,7 +39,7 @@ class Ui_DlgIndications(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -51,17 +51,19 @@ class Ui_DlgIndications(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 20px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
 "\n"
 "QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 16px;\n"
+"    color: #00b4d8;\n"
+"    font-family: \"Source Sans Pro\";\n"
+"    font-size: 24px;\n"
 "    font-weight: bold;\n"
-"    margin-top: 10px;\n"
+"    border: 2px solid #00b4d8;\n"
+"    border-radius: 10px;\n"
+"\n"
 "}\n"
 "")
         self.layoutWidget = QtWidgets.QWidget(DlgIndications)
@@ -72,7 +74,7 @@ class Ui_DlgIndications(object):
         self.lytMain.setObjectName("lytMain")
         self.lblHeader = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -88,9 +90,9 @@ class Ui_DlgIndications(object):
         self.btnAddIndication = QtWidgets.QPushButton(self.layoutWidget)
         self.btnAddIndication.setMinimumSize(QtCore.QSize(60, 30))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/img/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnAddIndication.setIcon(icon)
-        self.btnAddIndication.setObjectName("btnAdd")
+        self.btnAddIndication.setObjectName("btnAddIndication")
         self.lytNewIndication.addWidget(self.btnAddIndication)
         self.lytMain.addLayout(self.lytNewIndication)
         self.lstIndications = QtWidgets.QListWidget(self.layoutWidget)
@@ -102,16 +104,16 @@ class Ui_DlgIndications(object):
         self.btnEditIndication.setMinimumSize(QtCore.QSize(0, 30))
         self.btnEditIndication.setFocusPolicy(QtCore.Qt.NoFocus)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icon/edit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/img/icon/edit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnEditIndication.setIcon(icon1)
-        self.btnEditIndication.setObjectName("btnEdit")
+        self.btnEditIndication.setObjectName("btnEditIndication")
         self.lytBottomButtons.addWidget(self.btnEditIndication)
         self.btnDeleteIndication = QtWidgets.QPushButton(self.layoutWidget)
         self.btnDeleteIndication.setMinimumSize(QtCore.QSize(0, 30))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(":/img/icon/delete.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnDeleteIndication.setIcon(icon2)
-        self.btnDeleteIndication.setObjectName("btnDelete")
+        self.btnDeleteIndication.setObjectName("btnDeleteIndication")
         self.lytBottomButtons.addWidget(self.btnDeleteIndication)
         self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
         self.btnExit.setMinimumSize(QtCore.QSize(0, 30))
@@ -131,6 +133,7 @@ class Ui_DlgIndications(object):
         self.btnEditIndication.setText(_translate("DlgIndications", "Edit"))
         self.btnDeleteIndication.setText(_translate("DlgIndications", "Delete"))
         self.btnExit.setText(_translate("DlgIndications", "Exit"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":
