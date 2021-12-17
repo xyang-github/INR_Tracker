@@ -1,2 +1,3 @@
 /.idea/.gitignore
 !/data/inr_tracker.db
+!/.idea/
