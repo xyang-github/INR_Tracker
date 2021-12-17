@@ -1,15 +1,17 @@
 <RCC>
-  <qresource prefix="font">
-    <file>Raleway-Regular.ttf</file>
-    <file>ReadexPro-Medium.ttf</file>
-    <file>Righteous-Regular.ttf</file>
+  <qresource prefix="img">
+    <file>icon/add_to.png</file>
+    <file>icon/remove_from.png</file>
+    <file>icon/add.png</file>
+    <file>icon/delete.png</file>
+    <file>icon/edit.png</file>
+    <file>icon/export.png</file>
+    <file>icon/report.png</file>
+    <file>icon/search.png</file>
   </qresource>
-  <qresource prefix="icon">
-    <file>delete.png</file>
-    <file>edit.png</file>
-    <file>export.png</file>
-    <file>report.png</file>
-    <file>search.png</file>
-    <file>add.png</file>
+  <qresource prefix="tff">
+    <file>font/SourceSansPro-Regular.ttf</file>
+    <file>font/Raleway-Regular.ttf</file>
+    <file>font/Righteous-Regular.ttf</file>
   </qresource>
 </RCC>
