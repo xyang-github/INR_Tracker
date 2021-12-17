@@ -1,6 +1,6 @@
 # INR Tracker
 
-<img src = "/resource/main.jpg"><br>
+<img src = "resource/screenshot/main.JPG"><br>
 INR Tracker is a comprehensive management application for clinicians working or managing an anticoagulation clinic.
 
 <hr>
