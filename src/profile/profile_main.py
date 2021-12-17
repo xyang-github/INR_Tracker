@@ -637,7 +637,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def add_event_dialog(self):
         dlgAddEvent = DlgAddEditEvent(self.mrn)
         dlgAddEvent.show()
-        dlgAddEvent.btnOK_event.clicked.connect(dlgAddEvent.evt_btn_ok_event_clicked)
+        dlgAddEvent.btnOK_event.clicked.connect(dlgAddEvent.add_to_database)
         dlgAddEvent.exec()
         self.populate_event_table()
 

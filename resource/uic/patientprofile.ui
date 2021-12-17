@@ -78,11 +78,12 @@
    <string>Patient Profile</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton {
+   <string notr="true">
+QPushButton {
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -94,7 +95,7 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 20px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
@@ -108,7 +109,7 @@ QLabel {
 }
 
 QLabel#lblNotice {
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font-size: 12px;	
 	font-weight: normal;
 	color: black;
@@ -201,7 +202,7 @@ QTabBar::tab::hover{
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Summary">
       <property name="focusPolicy">
@@ -368,22 +369,50 @@ QTabBar::tab::hover{
       <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>70</x>
-         <y>460</y>
-         <width>521</width>
-         <height>23</height>
+         <x>30</x>
+         <y>450</y>
+         <width>621</width>
+         <height>31</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="lytButtons">
         <item>
-         <widget class="QPushButton" name="btnExit">
+         <widget class="QPushButton" name="btnEditPatient">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>85</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="text">
-           <string>Exit</string>
+           <string>Edit Patient</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/edit.png</normaloff>:/img/icon/edit.png</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btnAnalytics">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>85</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="text">
            <string>Analytics</string>
           </property>
@@ -391,22 +420,66 @@ QTabBar::tab::hover{
         </item>
         <item>
          <widget class="QPushButton" name="btnPDF">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>85</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="text">
            <string>Export to PDF</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/export.png</normaloff>:/img/icon/export.png</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btnCSV">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>85</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="text">
            <string>Export to CSV</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/export.png</normaloff>:/img/icon/export.png</iconset>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnEditPatient">
+         <widget class="QPushButton" name="btnExitProfile">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>85</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="text">
-           <string>Edit Patient</string>
+           <string>Exit</string>
           </property>
          </widget>
         </item>
@@ -515,7 +588,7 @@ QTabBar::tab::hover{
         <item>
          <layout class="QVBoxLayout" name="lytResultRight">
           <item>
-           <widget class="QPushButton" name="btnAdd">
+           <widget class="QPushButton" name="btnAddResult">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -526,13 +599,13 @@ QTabBar::tab::hover{
              <string>Add</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnEdit">
+           <widget class="QPushButton" name="btnEditResult">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -543,8 +616,8 @@ QTabBar::tab::hover{
              <string>Edit</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/edit.png</normaloff>:/icon/edit.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/edit.png</normaloff>:/img/icon/edit.png</iconset>
             </property>
             <property name="autoDefault">
              <bool>false</bool>
@@ -552,7 +625,7 @@ QTabBar::tab::hover{
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnDelete">
+           <widget class="QPushButton" name="btnDeleteResult">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -563,8 +636,8 @@ QTabBar::tab::hover{
              <string>Delete</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/delete.png</normaloff>:/icon/delete.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/delete.png</normaloff>:/img/icon/delete.png</iconset>
             </property>
            </widget>
           </item>
@@ -632,7 +705,7 @@ QTabBar::tab::hover{
         <string>Last name, First name</string>
        </property>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -682,7 +755,7 @@ QTabBar::tab::hover{
         <item>
          <layout class="QVBoxLayout" name="lytButtons_events">
           <item>
-           <widget class="QPushButton" name="btnAdd_event">
+           <widget class="QPushButton" name="btnAddEvent">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -693,13 +766,13 @@ QTabBar::tab::hover{
              <string>Add</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnEdit_event">
+           <widget class="QPushButton" name="btnEditEvent">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -710,8 +783,8 @@ QTabBar::tab::hover{
              <string>Edit</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/edit.png</normaloff>:/icon/edit.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/edit.png</normaloff>:/img/icon/edit.png</iconset>
             </property>
             <property name="autoDefault">
              <bool>false</bool>
@@ -719,7 +792,7 @@ QTabBar::tab::hover{
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnDelete_event">
+           <widget class="QPushButton" name="btnDeleteEvent">
             <property name="minimumSize">
              <size>
               <width>75</width>
@@ -730,8 +803,8 @@ QTabBar::tab::hover{
              <string>Delete</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/delete.png</normaloff>:/icon/delete.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/delete.png</normaloff>:/img/icon/delete.png</iconset>
             </property>
            </widget>
           </item>
@@ -758,12 +831,8 @@ QTabBar::tab::hover{
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btnEditPatient</tabstop>
-  <tabstop>btnCSV</tabstop>
-  <tabstop>btnPDF</tabstop>
-  <tabstop>btnAnalytics</tabstop>
-  <tabstop>btnExit</tabstop>
-  <tabstop>btnEdit</tabstop>
+  <tabstop>btnExitProfile</tabstop>
+  <tabstop>btnEditResult</tabstop>
   <tabstop>ledFirstName</tabstop>
   <tabstop>ledLastName</tabstop>
   <tabstop>ledDOB</tabstop>
@@ -771,11 +840,11 @@ QTabBar::tab::hover{
   <tabstop>ledGoal</tabstop>
   <tabstop>ledStatus</tabstop>
   <tabstop>tblResult</tabstop>
-  <tabstop>btnAdd</tabstop>
-  <tabstop>btnDelete</tabstop>
+  <tabstop>btnAddResult</tabstop>
+  <tabstop>btnDeleteResult</tabstop>
  </tabstops>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>
