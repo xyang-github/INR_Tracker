@@ -1,3 +1,4 @@
+import sys
 import dateutil
 from dateutil.relativedelta import relativedelta
 from PyQt5.QtSql import *
@@ -114,100 +115,151 @@ class DlgMain(QMainWindow, Ui_dlgMain):
     def get_html_help(self):
         """Create and return an HTML string for the help document"""
         html = """
+<center><img src="../resource/screenshot/main.JPG"></center>
 
-<h2>INR Tracker</h2><br>
-<img src="screenshot/main.JPG"><br>
+    <h2>Introduction</h2>
+    <p>INR Tracker is a comprehensive desktop application intended to assist with the management of anticoagulation clinics.
+Specifically, for patients on warfarin. Overall, this application can create patient profiles, tracking of INR results,
+    record clinically significant events, and to derive metrics from data.</p>
 
-INR Tracker is a desktop application intended to assist with the management of Anticoagulation Clinics (specifically 
-for patients on warfarin). Overall, this application can create patient profiles, allow the input of INR results and 
-to produce analytics from those results. All information is stored into a relational database, which allows editing 
-and deleting of information.<br><br>
+    <p>All information is stored locally in a relational database called <b>inr_tracker.db</b>. <i>Deleting or moving
+        this file will erase all records.</i></p>
 
-Each patient has an <b>identifier</b>, which will be referred to as a medical record number (MRN). The MRN is added 
-upon creation of a new patient profile. The MRN cannot be changed later. If an MRN is on record, the patient profile 
-will be displayed.
-
-<hr>
-
-<h2>Patient Profile - Summary Tab</h2><br>
-<img src="screenshot/patient profile.JPG"><br>
-The patient profile is organized within two tabs: the <b>Summary</b> and <b>Results</b> tab. The summary tab will 
-display general information, including options to edit the patient profile, export patient information to CSV or PDF, 
-and producing patient specific analytics. 
+<p>Each patient has an <b>identifier</b>, which will be referred to as a medical record number (MRN). The MRN is added
+upon creation of a new patient profile. The MRN cannot be changed later. If an MRN is on record, the patient profile
+    will be displayed.</p>
 
 <hr>
 
-<h2>Patient Profile - Updating</h2><br>
-<img src="screenshot/edit profile.JPG"><br>
-The patient profile can also be edited, with the exception of the medical record number. Note that changing the status 
-to inactive will disable the ability to add, edit or delete results. The indication can be changed here, and new 
-indications can be added to the database. The INR goal can also be changed here as well.
+<h2>Creating a new patient profile</h2>
 
-<hr>
-
-<h2>Patient Profile - Results Tab</h2><br>
-<img src="screenshot/patient results.JPG"><br>
-The Results tab will display a table of results in the database. The information displayed are Date, INR, Goal, 
-Total Dose (in milligrams) and Comment. The INR column will be colored depending on if the INR is within goal, 
-supratherapeutic or subtherapeutic. The goal defaults to the INR goal established in the patient profile, but a 
-different goal can be specified for any specific result. <br>
-
-A single click in the Comment column will display the comment in a pop-up dialog window if the cell is not empty.
-<br><br>
-A double click on any of the other columns (or an empty Comment column) will automatically produce a dialog window to 
-update the result.
-
-
-<hr>
-
-<h2>Add/Update Result</h2><br>
-<img src="screenshot/add result.JPG"><br>
+<center><img src="../resource/screenshot/new patient.jpg"></center>
 <ul>
-    <li>When adding a result to the patient’s profile, a dialog window will appear. The date is defaulted to the 
-    current date, but can be changed.</li>
-    <li>Clicking the “No Changes” dialog box will prepopulate the dose with the most recent regimen on file. </li>
-    <li>The INR goal will also default to the goal that has been entered for the patient, but a new INR can be 
-    specified in certain cases (e.g. a lower goal for a procedure). </li>
-    <li>A comment can be entered as well.</li>
+    <li>From the main window, click on the "New Patient" button. A New Patient dialog will appear.</li>
+    <li>Enter the requested information: medical record number, first name, last name, date of birth (YYYY-MM-DD),
+        indications and INR goal. Note that the anticoagulation status can only be Active for new patients.</li>
+    <li>New indications can be entered where prompted, or from the main menu.</li>
+    <li>Invalid entries in any of the text boxes, or failure to enter at least one indication, will cause an error
+        message to appear.</li>
 </ul>
 
+<h2>Patient Profile - Summary Tab</h2>
+<center><img src="../resource/screenshot/patient profile.JPG"></center>
+
+<ul>
+    <li>From the main window, a medical record number can be entered and searched for. If a matching record is found, the patient profile will appear.</li>
+    <li>Patient profiles are organized into tabs:
+    <ul>
+        <li>Summary - display a summary of information; contains various patient functions</li>
+        <li>Results - display, add, edit and delete INR results</li>
+        <li>Events - display, add, edit and delete clinically significant events</li>
+    </ul></li>
+</ul>
+
+<p>Other functionalities include the following:</p>
+<ul>
+    <li>Edit Patient</li>
+    <li>Analytics</li>
+    <li>Export to PDF</li>
+    <li>Export to CSV</li>
+</ul>
 
 <hr>
 
-<h2>Patient Analytics</h2><br>
-<img src="screenshot/patient analytics.JPG"><br>
-Analytics can be produced if patient has at least two results on record. The TTR is calculated using the Rosendaal 
-linear interpolation method. Other information includes total days on record, days within range, percent of days 
-within range, total number of tests, number of tests in range, and percent of test in range.
+<h2>Patient Profile - Editing</h2>
+<center><img src="../resource/screenshot/patient_profile_edit.JPG"></center>
+<p>
+    The patient profile can also be edited, <b>with the exception of the medical record number</b>. Changing the status
+to inactive will disable the ability to add, edit or delete results and events. Note that the INR goal in the patient
+profile should not be changed for temporary changes in the goal (e.g. a lower goal for an upcoming procedure).
+Instead, a different INR goal can be provided when entering or editing a result.
+</p>
 
 <hr>
 
-<h2>Patient Summary PDF</h2><br>
-<img src="screenshot/patient pdf.JPG" width=500><br>
-A summary report can be saved for each patient. The purpose of this function is to be able to provide relevant 
-anticoagulation information to medical facilities requesting for such information.
+<h2>Patient Analytics</h2>
+<center><img src="../resource/screenshot/patient analytics.JPG"></center>
+<p>
+Analytics can be produced if patient has at least two results on record. The TTR is calculated using the Rosendaal
+linear interpolation method. Other information includes total days on record, days within range, percent of days
+within range, total number of tests, number of tests in range, and percent of test in range. The number of clinical
+events is also displayed for the past 6 months, 12 months, and all time.
+</p>
 
 <hr>
 
-<h2>New Patient Profile</h2><br>
-<img src="screenshot/new patient.JPG"><br>
-A new patient profile can be entered from the main menu. The Status is referring to a patient’s anticoagulation 
-status. Examples of an inactive patient can include those who have finished treatment for an acute VTE, or those that 
-have transferred care to another facility. By default, you can only create a patient profile with an active status. 
-Note that the date of birth has to be entered in the YYYY-MM-DD format.
+<h2>Export To PDF</h2>
+<center><img src="../resource/screenshot/patient pdf.JPG"></center>
+<p>
+A summary report can be saved for each patient. This report can be provided at the request of medical facilities
+    requesting for records.
+</p>
 
 <hr>
 
-<h2>Indications</h2><br>
-<img src="screenshot/indication.JPG"><br>
-The list of indications on record can also be edited. Note that validation methods are in place to prevent duplicate 
-entries. Best practice is to avoid abbreviations of indications.
+<h2>Patient Profile - Results Tab</h2>
+<center><img src="../resource/screenshot/patient results.JPG"></center>
+<p>The Results tab will display a table of results in the database. The information displayed are Date, INR, Goal,
+    Total Dose (in milligrams) and Comment. </p>
+
+<p>The INR column will be colored depending if the result is within goal,
+    supratherapeutic or subtherapeutic. The goal defaults to the INR goal established in the patient profile, but a
+    different goal can be specified for any specific result.</p>
+
+<p>A single click in the Comment column will display the comment in a pop-up dialog window if the cell is not empty.
+</p>
+
+<p>A double click on any of the other columns (or an empty Comment column) will automatically produce a dialog window to
+    update the result.</p>
 
 <hr>
 
-<h2>Clinic Summary</h2><br>
-<img src="screenshot/clinic report.JPG"><br>
-A clinic report can be generated with certain metrics. The information can also be exported to a PDF format if desired.
+<h2>Add/Update Result</h2>
+<center><img src="../resource/screenshot/add result.JPG">
+<img src="../resource/screenshot/edit result.jpg"></center>
+<ul>
+    <li>When adding a result to the patient’s profile, a dialog window will appear. The date is defaulted to the
+        current date, but can be changed.</li>
+    <li>Clicking the “No Changes” checkbox will pre-populate the dose with the most recent regimen on file. </li>
+    <li>The INR goal will also default to the goal that has been entered for the patient, but a new INR can be
+        specified in certain cases (e.g. a lower goal for a procedure). </li>
+    <li>A comment can be entered.</li>
+</ul>
+
+<hr>
+
+<h2>Patient Profile - Events Tab</h2>
+<center>
+<img src="../resource/screenshot/event.JPG">
+<img src="../resource/screenshot/add event.jpg">
+<img src="../resource/screenshot/edit event.jpg"></center>
+
+<p>The Events tab will display a table of events in the database. The information displayed are Date, Clinical Event,
+    and Comment.</p>
+<p>If more than one event is entered per date, the comment will only appear once instead of for each individual event.
+    When editing events, only the comment can be changed. If anything else needs to be changed, it is best to delete
+    the event and re-enter with the updated information.</p>
+
+<hr>
+
+<h2>Indications</h2>
+<center><img src="../resource/screenshot/indication.JPG"></center>
+<p>Displays all the indications entered. Indications can be added, edited or deleted from this window. It is best to avoid
+    abbreviations (e.g. afib, dvt, pe). It is best to denote treatment versus prophylaxis in parentheses. For example:
+    "pulmonary embolism (treatment)" and "pulmonary embolism (prophylaxis)."</p>
+
+<hr>
+
+<h2>Events</h2>
+<center><img src="../resource/screenshot/event_list"></center>
+<p>Displays all the events entered. Events can be added, edited or deleted from this window.</p>
+
+<hr>
+
+<h2>Clinic Summary</h2>
+<center><img src="../resource/screenshot/clinic report.JPG"></center>
+<p>A clinic report can be generated with certain metrics. These metrics can be toggled between All patients, Active 
+    patients and Inactive patients. The information can also be exported to a PDF format if desired.</p>
         """
         return html
 

@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>543</width>
-    <height>756</height>
+    <width>853</width>
+    <height>853</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>853</width>
+    <height>853</height>
+   </size>
   </property>
   <property name="palette">
    <palette>
@@ -113,7 +125,7 @@ QPushButton {
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -125,32 +137,39 @@ QTextBrowser {
 	border: 2px  solid gray;
 	border-radius: 10px;
 	padding: 5px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
 
 
 QLabel#lblHeader {
-	color: #5E60CE;
-	font-family: &quot;Raleway&quot;;
-	font-size: 36px;	
+	color: #00b4d8;
+	font-size: 24px;	
 	font-weight: bold;
-	margin: 0;
+	font-family: &quot;Source Sans Pro&quot;;
+	border: 2px solid #00b4d8;
+	border-radius: 10px;
 }</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>20</y>
-     <width>521</width>
-     <height>721</height>
+     <width>831</width>
+     <height>821</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="lytMain">
     <item>
      <widget class="QLabel" name="lblHeader">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
        <string>Help</string>
       </property>
@@ -196,7 +215,7 @@ QLabel#lblHeader {
   </widget>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -14,7 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgHelp(object):
     def setupUi(self, DlgHelp):
         DlgHelp.setObjectName("DlgHelp")
-        DlgHelp.resize(843, 856)
+        DlgHelp.resize(853, 853)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(DlgHelp.sizePolicy().hasHeightForWidth())
+        DlgHelp.setSizePolicy(sizePolicy)
+        DlgHelp.setMinimumSize(QtCore.QSize(853, 853))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -52,7 +58,7 @@ class Ui_DlgHelp(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -64,37 +70,39 @@ class Ui_DlgHelp(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 10px;\n"
 "    padding: 5px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
 "\n"
 "\n"
 "QLabel#lblHeader {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 36px;    \n"
+"    color: #00b4d8;\n"
+"    font-size: 24px;    \n"
 "    font-weight: bold;\n"
-"    margin: 0;\n"
+"    font-family: \"Source Sans Pro\";\n"
+"    border: 2px solid #00b4d8;\n"
+"    border-radius: 10px;\n"
 "}")
-        self.widget = QtWidgets.QWidget(DlgHelp)
-        self.widget.setGeometry(QtCore.QRect(10, 20, 821, 821))
-        self.widget.setObjectName("widget")
-        self.lytMain = QtWidgets.QVBoxLayout(self.widget)
+        self.layoutWidget = QtWidgets.QWidget(DlgHelp)
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 20, 831, 821))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
         self.lytMain.setObjectName("lytMain")
-        self.lblHeader = QtWidgets.QLabel(self.widget)
+        self.lblHeader = QtWidgets.QLabel(self.layoutWidget)
+        self.lblHeader.setMinimumSize(QtCore.QSize(0, 0))
         self.lblHeader.setAlignment(QtCore.Qt.AlignCenter)
         self.lblHeader.setObjectName("lblHeader")
         self.lytMain.addWidget(self.lblHeader)
-        self.tbrDocument = QtWidgets.QTextBrowser(self.widget)
+        self.tbrDocument = QtWidgets.QTextBrowser(self.layoutWidget)
         self.tbrDocument.setObjectName("tbrDocument")
         self.lytMain.addWidget(self.tbrDocument)
         self.lytButton = QtWidgets.QHBoxLayout()
         self.lytButton.setObjectName("lytButton")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.lytButton.addItem(spacerItem)
-        self.btnExit = QtWidgets.QPushButton(self.widget)
+        self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
         self.btnExit.setMinimumSize(QtCore.QSize(60, 30))
         self.btnExit.setObjectName("btnExit")
         self.lytButton.addWidget(self.btnExit)
@@ -108,6 +116,7 @@ class Ui_DlgHelp(object):
         DlgHelp.setWindowTitle(_translate("DlgHelp", "Help"))
         self.lblHeader.setText(_translate("DlgHelp", "Help"))
         self.btnExit.setText(_translate("DlgHelp", "Exit"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":
