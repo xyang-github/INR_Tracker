@@ -53,7 +53,7 @@ class Ui_DlgEditEvent(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -65,7 +65,7 @@ class Ui_DlgEditEvent(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 20px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}")
@@ -81,11 +81,11 @@ class Ui_DlgEditEvent(object):
         self.lytButtons = QtWidgets.QHBoxLayout()
         self.lytButtons.setObjectName("lytButtons")
         self.btnOk = QtWidgets.QPushButton(self.layoutWidget)
-        self.btnOk.setMinimumSize(QtCore.QSize(0, 20))
+        self.btnOk.setMinimumSize(QtCore.QSize(0, 25))
         self.btnOk.setObjectName("btnOk")
         self.lytButtons.addWidget(self.btnOk)
         self.btnExit = QtWidgets.QPushButton(self.layoutWidget)
-        self.btnExit.setMinimumSize(QtCore.QSize(0, 20))
+        self.btnExit.setMinimumSize(QtCore.QSize(0, 25))
         self.btnExit.setObjectName("btnExit")
         self.lytButtons.addWidget(self.btnExit)
         self.lytMain.addLayout(self.lytButtons)
