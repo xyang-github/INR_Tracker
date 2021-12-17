@@ -82,7 +82,7 @@
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -94,7 +94,7 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 10px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
@@ -108,14 +108,17 @@ QLabel {
 }
 
 QLabel#lblHeader {
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;SourceSansPro&quot;;
 	font-size: 36px;	
 	font-weight: bold;
+	color: #00b4d8;
 	margin: 0;
+	border: 2px solid 00b4d8;
+	border-radius: 10px;
 }
 </string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>11</x>
@@ -129,7 +132,7 @@ QLabel#lblHeader {
      <widget class="QLabel" name="lblHeader">
       <property name="font">
        <font>
-        <family>Raleway</family>
+        <family>SourceSansPro</family>
         <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -342,7 +345,7 @@ QLabel#lblHeader {
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnNewIndication">
+           <widget class="QPushButton" name="btnNewIndicationToDatabase">
             <property name="minimumSize">
              <size>
               <width>60</width>
@@ -356,8 +359,8 @@ QLabel#lblHeader {
              <string>Add</string>
             </property>
             <property name="icon">
-             <iconset resource="../resource/resource.qrc">
-              <normaloff>:/icon/add.png</normaloff>:/icon/add.png</iconset>
+             <iconset resource="../resource.qrc">
+              <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
             </property>
            </widget>
           </item>
@@ -384,7 +387,7 @@ QLabel#lblHeader {
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="btnAddIndication">
+         <widget class="QPushButton" name="btnAddIndicationToPatientList">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -395,17 +398,37 @@ QLabel#lblHeader {
            <string>Add indication to patient's profile</string>
           </property>
           <property name="text">
-           <string>--&gt;</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/add_to.png</normaloff>:/img/icon/add_to.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnRemoveIndication">
+         <widget class="QPushButton" name="btnRemoveIndicationFromPatientList">
           <property name="toolTip">
            <string>Remove indication from patient's profile</string>
           </property>
           <property name="text">
-           <string>&lt;--</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/img/icon/remove_from.png</normaloff>:/img/icon/remove_from.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -555,7 +578,7 @@ QLabel#lblHeader {
   </widget>
  </widget>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>

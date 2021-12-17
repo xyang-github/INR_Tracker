@@ -56,8 +56,9 @@ class Ui_dlgMain(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
-"    font: 12px;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 12px;\n"
+"    \n"
 "}\n"
 "\n"
 "QPushButton::hover{\n"
@@ -68,8 +69,8 @@ class Ui_dlgMain(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 20px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
-"    font: 12px;\n"
+"    font-family: \"Raleway\";\n"
+"    font-size: 12px;\n"
 "\n"
 "}\n"
 "\n"
@@ -95,13 +96,10 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
         font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
         self.btnNewPatient.setFont(font)
         self.btnNewPatient.setStyleSheet("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/img/icon/add.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnNewPatient.setIcon(icon)
         self.btnNewPatient.setIconSize(QtCore.QSize(25, 25))
         self.btnNewPatient.setObjectName("btnNewPatient")
@@ -111,9 +109,6 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
         font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
         self.btnIndications.setFont(font)
         self.btnIndications.setStyleSheet("")
         self.btnIndications.setIcon(icon)
@@ -125,9 +120,6 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
         font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
         self.btnEvents.setFont(font)
         self.btnEvents.setStyleSheet("")
         self.btnEvents.setIcon(icon)
@@ -137,7 +129,7 @@ class Ui_dlgMain(object):
         self.btnReports = QtWidgets.QPushButton(self.layoutWidget)
         self.btnReports.setMinimumSize(QtCore.QSize(0, 30))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icon/report.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/img/icon/report.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnReports.setIcon(icon1)
         self.btnReports.setIconSize(QtCore.QSize(20, 20))
         self.btnReports.setObjectName("btnReports")
@@ -192,9 +184,6 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
         font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
         self.ledMRN.setFont(font)
         self.ledMRN.setText("")
         self.ledMRN.setEchoMode(QtWidgets.QLineEdit.Password)
@@ -267,14 +256,11 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
         font.setPointSize(-1)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
         self.btnSearchPatient.setFont(font)
         self.btnSearchPatient.setStyleSheet("")
         self.btnSearchPatient.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icon/search.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(":/img/icon/search.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnSearchPatient.setIcon(icon2)
         self.btnSearchPatient.setIconSize(QtCore.QSize(24, 24))
         self.btnSearchPatient.setFlat(False)
@@ -311,8 +297,8 @@ class Ui_dlgMain(object):
         self.menuHelpDialog.setObjectName("menuHelpDialog")
         self.menuNewPatient = QtWidgets.QAction(dlgMain)
         self.menuNewPatient.setObjectName("menuNewPatient")
-        self.menuNewPatient = QtWidgets.QAction(dlgMain)
-        self.menuNewPatient.setObjectName("menuNewPatient_2")
+        self.menuNewPatient_2 = QtWidgets.QAction(dlgMain)
+        self.menuNewPatient_2.setObjectName("menuNewPatient_2")
         self.menuIndications = QtWidgets.QAction(dlgMain)
         self.menuIndications.setObjectName("menuIndications")
         self.menuEvents = QtWidgets.QAction(dlgMain)
@@ -321,7 +307,7 @@ class Ui_dlgMain(object):
         self.menuReports.setObjectName("menuReports")
         self.menuFile.addAction(self.menuExit)
         self.menuHelp.addAction(self.menuHelpDialog)
-        self.menuAction.addAction(self.menuNewPatient)
+        self.menuAction.addAction(self.menuNewPatient_2)
         self.menuAction.addAction(self.menuIndications)
         self.menuAction.addAction(self.menuEvents)
         self.menuAction.addAction(self.menuReports)
@@ -366,8 +352,8 @@ class Ui_dlgMain(object):
         self.menuHelpDialog.setShortcut(_translate("dlgMain", "Ctrl+H"))
         self.menuNewPatient.setText(_translate("dlgMain", "Add New Patient"))
         self.menuNewPatient.setShortcut(_translate("dlgMain", "Ctrl+N"))
-        self.menuNewPatient.setText(_translate("dlgMain", "New Patient"))
-        self.menuNewPatient.setShortcut(_translate("dlgMain", "Ctrl+N"))
+        self.menuNewPatient_2.setText(_translate("dlgMain", "New Patient"))
+        self.menuNewPatient_2.setShortcut(_translate("dlgMain", "Ctrl+N"))
         self.menuIndications.setText(_translate("dlgMain", "Indications"))
         self.menuIndications.setShortcut(_translate("dlgMain", "Ctrl+I"))
         self.menuEvents.setText(_translate("dlgMain", "Events"))

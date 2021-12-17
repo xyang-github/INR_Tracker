@@ -120,8 +120,9 @@
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
-	font: 12px;
+	font-family: &quot;Raleway&quot;;
+	font-size: 12px;
+	
 }
 
 QPushButton::hover{
@@ -132,8 +133,8 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 20px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
-	font: 12px;
+	font-family: &quot;Raleway&quot;;
+	font-size: 12px;
 
 }
 
@@ -173,11 +174,8 @@ QLabel#lblTitle {
        </property>
        <property name="font">
         <font>
-         <family>Readex Pro</family>
+         <family>Raleway</family>
          <pointsize>-1</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="toolTip">
@@ -194,7 +192,7 @@ QLabel#lblTitle {
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
-         <normaloff>:/icons/img/add.png</normaloff>:/icons/img/add.png</iconset>
+         <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -217,11 +215,8 @@ QLabel#lblTitle {
        </property>
        <property name="font">
         <font>
-         <family>Readex Pro</family>
+         <family>Raleway</family>
          <pointsize>-1</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="toolTip">
@@ -238,7 +233,7 @@ QLabel#lblTitle {
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
-         <normaloff>:/icons/img/add.png</normaloff>:/icons/img/add.png</iconset>
+         <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -261,11 +256,8 @@ QLabel#lblTitle {
        </property>
        <property name="font">
         <font>
-         <family>Readex Pro</family>
+         <family>Raleway</family>
          <pointsize>-1</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="toolTip">
@@ -282,7 +274,7 @@ QLabel#lblTitle {
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
-         <normaloff>:/icons/img/add.png</normaloff>:/icons/img/add.png</iconset>
+         <normaloff>:/img/icon/add.png</normaloff>:/img/icon/add.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -314,7 +306,7 @@ QLabel#lblTitle {
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
-         <normaloff>:/icons/img/report.png</normaloff>:/icons/img/report.png</iconset>
+         <normaloff>:/img/icon/report.png</normaloff>:/img/icon/report.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -452,11 +444,8 @@ QLabel#lblTitle {
       <widget class="QLineEdit" name="ledMRN">
        <property name="font">
         <font>
-         <family>Readex Pro</family>
+         <family>Raleway</family>
          <pointsize>-1</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="toolTip">
@@ -667,11 +656,8 @@ QLabel#lblTitle {
        </property>
        <property name="font">
         <font>
-         <family>Readex Pro</family>
+         <family>Raleway</family>
          <pointsize>-1</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="toolTip">
@@ -688,7 +674,7 @@ QLabel#lblTitle {
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
-         <normaloff>:/icons/img/search.png</normaloff>:/icons/img/search.png</iconset>
+         <normaloff>:/img/icon/search.png</normaloff>:/img/icon/search.png</iconset>
        </property>
        <property name="iconSize">
         <size>

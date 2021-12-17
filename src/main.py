@@ -339,5 +339,10 @@ A clinic report can be generated with certain metrics. The information can also 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     dlgMain = DlgMain()
+    font_database = QFontDatabase()
+    font_database.addApplicationFont(":/tff/font/Righteous-Regular.ttf")
+    font_database.addApplicationFont(":/tff/font/Raleway-Regular.ttf")
+    font_database.addApplicationFont(":/tff/font/SourceSansPro-Regular.ttf")
+
     dlgMain.show()
     sys.exit(app.exec_())
