@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgAddResult(object):
     def setupUi(self, DlgAddResult):
         DlgAddResult.setObjectName("DlgAddResult")
-        DlgAddResult.resize(264, 818)
+        DlgAddResult.resize(264, 862)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -39,7 +39,7 @@ class Ui_DlgAddResult(object):
 "    background-color: #00b4d8;\n"
 "    color: white;\n"
 "    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
+"    font-family: \"Raleway\";\n"
 "    font: 12px;\n"
 "}\n"
 "\n"
@@ -51,7 +51,7 @@ class Ui_DlgAddResult(object):
 "    border: 2px  solid gray;\n"
 "    border-radius: 10px;\n"
 "    padding: 10px;\n"
-"    font-family:  \"Readex Pro\";\n"
+"    font-family:  \"Raleway\";\n"
 "    font: 12px;\n"
 "\n"
 "}\n"
@@ -65,26 +65,26 @@ class Ui_DlgAddResult(object):
 "\n"
 "QLabel#lblComment{\n"
 "    color: black;\n"
-"    font-family: \"Raleway\";\n"
+"    font-family: \"Source Sans Pro\";\n"
 "    font-size: 16px;\n"
 "    font-weight: bold;\n"
 "}\n"
 "\n"
 "QLabel#lblGoal{\n"
 "    color: black;\n"
-"    font-family: \"Raleway\";\n"
+"    font-family: \"Source Sans Pro\";\n"
 "    font-size: 16px;\n"
 "    font-weight: bold;\n"
 "}\n"
 "\n"
 "QLabel#lblDoseTitle{\n"
 "    color: black;\n"
-"    font-family: \"Raleway\";\n"
+"    font-family: \"Source Sans Pro\";\n"
 "    font-size: 16px;\n"
 "    font-weight: bold;\n"
 "}")
         self.layoutWidget = QtWidgets.QWidget(DlgAddResult)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 791))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 841))
         self.layoutWidget.setObjectName("layoutWidget")
         self.lytMain = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.lytMain.setContentsMargins(0, 0, 0, 0)
@@ -129,7 +129,7 @@ class Ui_DlgAddResult(object):
         self.lytDose.setObjectName("lytDose")
         self.lblDoseTitle = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -206,7 +206,7 @@ class Ui_DlgAddResult(object):
         self.ledTotal = QtWidgets.QLineEdit(self.layoutWidget)
         self.ledTotal.setMinimumSize(QtCore.QSize(0, 30))
         font = QtGui.QFont()
-        font.setFamily("Readex Pro")
+        font.setFamily("Raleway")
         font.setPointSize(-1)
         font.setBold(False)
         font.setItalic(False)
@@ -226,7 +226,7 @@ class Ui_DlgAddResult(object):
         self.lytGoal.setObjectName("lytGoal")
         self.lblGoal = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -276,7 +276,7 @@ class Ui_DlgAddResult(object):
         self.lytComment.setObjectName("lytComment")
         self.lblComment = QtWidgets.QLabel(self.layoutWidget)
         font = QtGui.QFont()
-        font.setFamily("Raleway")
+        font.setFamily("Source Sans Pro")
         font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
@@ -292,9 +292,11 @@ class Ui_DlgAddResult(object):
         self.lytButton = QtWidgets.QHBoxLayout()
         self.lytButton.setObjectName("lytButton")
         self.btnOK = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnOK.setMinimumSize(QtCore.QSize(0, 25))
         self.btnOK.setObjectName("btnOK")
         self.lytButton.addWidget(self.btnOK)
         self.btnCancel = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnCancel.setMinimumSize(QtCore.QSize(0, 25))
         self.btnCancel.setObjectName("btnCancel")
         self.lytButton.addWidget(self.btnCancel)
         self.lytMain.addLayout(self.lytButton)
@@ -337,7 +339,7 @@ class Ui_DlgAddResult(object):
         self.lblFriday.setText(_translate("DlgAddResult", "Friday"))
         self.lblSaturday.setText(_translate("DlgAddResult", "Saturday"))
         self.lblSunday.setText(_translate("DlgAddResult", "Sunday"))
-        self.lblTotal.setText(_translate("DlgAddResult", "Total:"))
+        self.lblTotal.setText(_translate("DlgAddResult", "Total"))
         self.lblGoal.setText(_translate("DlgAddResult", "INR Goal"))
         self.rbtnGoalDefault.setText(_translate("DlgAddResult", "Default"))
         self.rbtnGoalNew.setText(_translate("DlgAddResult", "New"))
@@ -348,6 +350,7 @@ class Ui_DlgAddResult(object):
         self.txtComment.setPlaceholderText(_translate("DlgAddResult", "Type any clinically relevant information pertaining to the result."))
         self.btnOK.setText(_translate("DlgAddResult", "OK"))
         self.btnCancel.setText(_translate("DlgAddResult", "Cancel"))
+import resource.resource_rc
 
 
 if __name__ == "__main__":

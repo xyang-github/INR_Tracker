@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>264</width>
-    <height>818</height>
+    <height>862</height>
    </rect>
   </property>
   <property name="palette">
@@ -82,7 +82,7 @@
 	background-color: #00b4d8;
 	color: white;
 	border-radius: 8px;
-	font-family: &quot;Readex Pro&quot;;
+	font-family: &quot;Raleway&quot;;
 	font: 12px;
 }
 
@@ -94,7 +94,7 @@ QLineEdit {
 	border: 2px  solid gray;
 	border-radius: 10px;
 	padding: 10px;
-	font-family:  &quot;Readex Pro&quot;;
+	font-family:  &quot;Raleway&quot;;
 	font: 12px;
 
 }
@@ -108,21 +108,21 @@ QLabel {
 
 QLabel#lblComment{
 	color: black;
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;Source Sans Pro&quot;;
 	font-size: 16px;
 	font-weight: bold;
 }
 
 QLabel#lblGoal{
 	color: black;
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;Source Sans Pro&quot;;
 	font-size: 16px;
 	font-weight: bold;
 }
 
 QLabel#lblDoseTitle{
 	color: black;
-	font-family: &quot;Raleway&quot;;
+	font-family: &quot;Source Sans Pro&quot;;
 	font-size: 16px;
 	font-weight: bold;
 }</string>
@@ -133,7 +133,7 @@ QLabel#lblDoseTitle{
      <x>10</x>
      <y>10</y>
      <width>241</width>
-     <height>791</height>
+     <height>841</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="lytMain">
@@ -229,7 +229,7 @@ QLabel#lblDoseTitle{
        <widget class="QLabel" name="lblDoseTitle">
         <property name="font">
          <font>
-          <family>Raleway</family>
+          <family>Source Sans Pro</family>
           <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -390,7 +390,7 @@ QLabel#lblDoseTitle{
            </font>
           </property>
           <property name="text">
-           <string>Total:</string>
+           <string>Total</string>
           </property>
          </widget>
         </item>
@@ -404,7 +404,7 @@ QLabel#lblDoseTitle{
           </property>
           <property name="font">
            <font>
-            <family>Readex Pro</family>
+            <family>Raleway</family>
             <pointsize>-1</pointsize>
             <weight>50</weight>
             <italic>false</italic>
@@ -436,7 +436,7 @@ QLabel#lblDoseTitle{
        <widget class="QLabel" name="lblGoal">
         <property name="font">
          <font>
-          <family>Raleway</family>
+          <family>Source Sans Pro</family>
           <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -537,7 +537,7 @@ QLabel#lblDoseTitle{
        <widget class="QLabel" name="lblComment">
         <property name="font">
          <font>
-          <family>Raleway</family>
+          <family>Source Sans Pro</family>
           <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -570,6 +570,12 @@ QLabel#lblDoseTitle{
      <layout class="QHBoxLayout" name="lytButton">
       <item>
        <widget class="QPushButton" name="btnOK">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
         <property name="text">
          <string>OK</string>
         </property>
@@ -577,6 +583,12 @@ QLabel#lblDoseTitle{
       </item>
       <item>
        <widget class="QPushButton" name="btnCancel">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
         <property name="text">
          <string>Cancel</string>
         </property>
@@ -608,7 +620,7 @@ QLabel#lblDoseTitle{
   <tabstop>ledTotal</tabstop>
  </tabstops>
  <resources>
-  <include location="../resource/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
  <buttongroups>
