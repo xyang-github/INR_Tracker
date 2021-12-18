@@ -17,7 +17,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
-        self.number_of_results_in_range = 0
         self.mrn = id
 
         # Result table widget formatting
@@ -81,6 +80,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Create a dialog window to add new results to the result table widget and database"""
         dlgAddResult = DlgAddUpdateResult(self.mrn)
         dlgAddResult.show()
+        dlgAddResult.btnOK.clicked.connect(dlgAddResult.add_result)
         dlgAddResult.exec_()
         self.populate_result_table()
 
@@ -90,8 +90,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             message_box_critical("No entries to edit.")
             return
         else:
-            self.current_selection_row = self.tblResult.currentRow()
-            self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+            self.current_selection_inr_id = self.tblResult.item(self.tblResult.currentRow(), 0).text()
 
         # Create the dialog window to edit the selected result
         dlgEditResult = DlgAddUpdateResult(self.mrn, self.current_selection_inr_id)
@@ -159,6 +158,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Populates the result table widget with information from the database"""
         self.tblResult.clearContents()  # Clears the result table widget to prevent displaying of duplicate entries
         self.tblResult.setRowCount(0)  # Resets row count to prevent empty rows
+        self.number_of_results_in_range = 0  # Resets the counter to prevent erroneous value
 
         # Query a request for information from the database
         query = QSqlQuery()
@@ -243,8 +243,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
-                self.current_selection_comment = f"<b>Comment:</b> <br>" \
-                                                 f"{self.tblResult.item(self.current_selection_row, 5).text()}"
+                self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
                 message_box_critical(self.current_selection_comment)
                 self.tblResult.selectionModel().clearSelection()
 
@@ -260,10 +259,13 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def query_delete_inr(self):
         """Query a request to delete record from the database"""
+        self.current_selection_inr_id = self.tblResult.item(self.tblResult.currentRow(), 0).text()
+
         query = QSqlQuery()
         query.prepare("DELETE FROM inr WHERE inr_id = :id")
         query.bindValue(":id", self.current_selection_inr_id)
         bOk = query.exec()
+        print(query.lastError().text())
         if bOk:
             message_box_critical("Record deleted.")
 
@@ -320,49 +322,59 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 shift_in_ttr = 0
                 calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
 
-                # Retrive dates of the first two results
+                # Retrieve dates of the first two results
                 date1 = self.tblResult.item(i+1, 1).text().split("-")  # Date for the older result
                 date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
 
                 date2 = self.tblResult.item(i, 1).text().split("-")  # Date for the newer result
                 date2 = datetime.date(int(date2[0]), int(date2[1]), int(date2[2]))
-                days_between_results = abs((date2 - date1).days)
+                days_between_results = (date2 - date1).days
 
                 # Retrieve the INR result for the first two results
                 result1 = Decimal(self.tblResult.item(i+1, 2).text())  # Older result pertaining to date1
                 result2 = Decimal(self.tblResult.item(i, 2).text())  # Newer result pertaining to date2
                 total_shift = abs(result2 - result1)
 
-                # Retrieve result-set INR goal for the first two results
+                # Retrieve result-set INR goal for the older result
+                inr_goal = self.tblResult.item(i+1, 3).text().split("-")
+                inr_goal_lower_limit1 = Decimal(inr_goal[0])
+                inr_goal_upper_limit1 = Decimal(inr_goal[1])
+
+                # Retrieve result-set INR goal for the newer result
                 inr_goal = self.tblResult.item(i, 3).text().split("-")
-                inr_goal_lower_limit = Decimal(inr_goal[0])
-                inr_goal_upper_limit = Decimal(inr_goal[1])
+                inr_goal_lower_limit2 = Decimal(inr_goal[0])
+                inr_goal_upper_limit2 = Decimal(inr_goal[1])
+
+                # I don't like this option as it can skew results if the patient INR goal changes.
+                # # Retrieve patient-set INR goal for the newer result
+                # inr_goal = self.ledGoal.text().split("-")
+                # inr_goal_lower_limit = Decimal(inr_goal[0])
+                # inr_goal_upper_limit = Decimal(inr_goal[1])
 
                 # Calculates TTR
-                if result1 < inr_goal_lower_limit:
-                    if result2 < inr_goal_lower_limit:
+                if result1 < inr_goal_lower_limit1:
+                    if result2 < inr_goal_lower_limit2:
                         ttr = 0
-                    elif result2 > inr_goal_upper_limit:
-                        shift_in_ttr = (inr_goal_upper_limit - inr_goal_lower_limit)
+                    elif result2 > inr_goal_upper_limit2:
+                        shift_in_ttr = (inr_goal_upper_limit2 - inr_goal_lower_limit2)
                         ttr = eval(calculate_ttr)
                     else:
-                        shift_in_ttr = result2 - inr_goal_lower_limit
+                        shift_in_ttr = result2 - inr_goal_lower_limit2
                         ttr = eval(calculate_ttr)
-                elif result1 > inr_goal_upper_limit:
-                    if result2 < inr_goal_lower_limit:
-                        shift_in_ttr = inr_goal_upper_limit - inr_goal_lower_limit
+                elif result1 > inr_goal_upper_limit1:
+                    if result2 < inr_goal_lower_limit2:
+                        shift_in_ttr = inr_goal_upper_limit2 - inr_goal_lower_limit2
                         ttr = eval(calculate_ttr)
-                    elif result2 > inr_goal_upper_limit:
+                    elif result2 > inr_goal_upper_limit2:
                         ttr = 0
                     else:
-                        shift_in_ttr = inr_goal_upper_limit - result2
+                        shift_in_ttr = inr_goal_upper_limit2 - result2
                         ttr = eval(calculate_ttr)
                 else:
-                    if result2 < inr_goal_lower_limit:
-                        shift_in_ttr = result1 - inr_goal_lower_limit
-                        ttr = eval(calculate_ttr)
-                    elif result2 > inr_goal_upper_limit:
-                        shift_in_ttr = inr_goal_upper_limit - result1
+                    if result2 < inr_goal_lower_limit2:
+                        shift_in_ttr = result1 - inr_goal_lower_limit2
+                    elif result2 > inr_goal_upper_limit2:
+                        shift_in_ttr = inr_goal_upper_limit2 - result1
                         ttr = eval(calculate_ttr)
                     else:
                         ttr = days_between_results
@@ -559,10 +571,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             <td style="background-color: gray; color: white; text-align: center">{query.value('comment')}</td>
         </tr>
         """
-            html += """
-        </table>
-        </div>
-        """
+
+        html += """
+                </table>
+                </div>
+                """
         return html
 
     def check_status(self):
@@ -744,6 +757,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         query.prepare("SELECT event_id from event WHERE event_name = :name")
         query.bindValue(":name", self.event_name)
         query.exec()
+
         query.next()
         self.event_id = query.value('event_id')
 
@@ -790,7 +804,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         for i in selected.indexes():
             if i.column() == 2 and self.current_selection_comment:
-                message_box_critical("<b>Comment:</b><br>" + self.current_selection_comment)
+                message_box_critical(self.current_selection_comment)
                 self.tblEvents.selectionModel().clearSelection()
                 return  # prevent duplicate message boxes for merged comment fields
 

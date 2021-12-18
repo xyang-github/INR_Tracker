@@ -17,8 +17,8 @@ class DlgAnalytics(QDialog):
 
         # Create pie chart
         self.pie_ttr = QPieSeries()
-        self.pie_ttr.append("% Days In Range", percent_ttr)
-        self.pie_ttr.append("% Days Out Of Range ", 1 - percent_ttr)
+        self.pie_ttr.append("% Days In Range", round(percent_ttr*100))
+        self.pie_ttr.append("% Days Out Of Range ", 100-round(percent_ttr*100))
         self.pie_slice_ttr = QPieSlice()
         self.pie_slice_ttr = self.pie_ttr.slices()[0]
         self.pie_slice_not_ttr = self.pie_ttr.slices()[1]

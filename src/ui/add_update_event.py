@@ -58,6 +58,7 @@ class Ui_DlgAddEditEvent(object):
         self.lblDate_event.setObjectName("lblDate_event")
         self.lytDate.addWidget(self.lblDate_event)
         self.dteDate_event = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dteDate_event.setCalendarPopup(True)
         self.dteDate_event.setObjectName("dteDate_event")
         self.lytDate.addWidget(self.dteDate_event)
         spacerItem = QtWidgets.QSpacerItem(800, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)

@@ -40,7 +40,6 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         self.chkNoChanges.clicked.connect(self.no_changes_to_dose)
         self.rbtnGoalNew.clicked.connect(self.set_new_goal)
         self.rbtnGoalDefault.clicked.connect(self.set_same_goal)
-        self.btnOK.clicked.connect(self.add_result)
         self.btnCancel.clicked.connect(self.close)
 
     def add_result(self):
@@ -102,7 +101,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
 
             # Populate the daily doses with the same values as the previous entry
             query = QSqlQuery()
-            query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date, inr_id DESC LIMIT 1")
+            query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date DESC, inr_id DESC LIMIT 1")
             query.bindValue(":id", self.mrn)
             bOk = query.exec()
             if bOk:

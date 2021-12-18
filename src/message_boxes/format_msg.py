@@ -9,7 +9,7 @@ def message_box_critical(msg):
     msg_box.setModal(True)
     msg_box.setWindowFlag(Qt.FramelessWindowHint)
     msg_box.setAttribute(Qt.WA_TranslucentBackground)
-    msg_box.tedMessage.setText(msg)
+    msg_box.tedMessage.setPlainText(msg)
     msg_box.show()
     msg_box.exec()
 
