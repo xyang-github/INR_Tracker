@@ -803,7 +803,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         for i in selected.indexes():
             if i.column() == 2 and self.current_selection_comment:
-                message_box_critical("<b>Comment:</b><br>" + self.current_selection_comment)
+                message_box_critical(self.current_selection_comment)
                 self.tblEvents.selectionModel().clearSelection()
                 return  # prevent duplicate message boxes for merged comment fields
 
