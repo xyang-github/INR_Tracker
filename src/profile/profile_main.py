@@ -571,10 +571,11 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             <td style="background-color: gray; color: white; text-align: center">{query.value('comment')}</td>
         </tr>
         """
-            html += """
-        </table>
-        </div>
-        """
+
+        html += """
+                </table>
+                </div>
+                """
         return html
 
     def check_status(self):
