@@ -144,7 +144,7 @@ class Ui_DlgPatients(object):
         item = self.tblPatientList.horizontalHeaderItem(0)
         item.setText(_translate("DlgPatients", "MRN"))
         item = self.tblPatientList.horizontalHeaderItem(1)
-        item.setText(_translate("DlgPatients", "New Column"))
+        item.setText(_translate("DlgPatients", "Last Name"))
         item = self.tblPatientList.horizontalHeaderItem(2)
         item.setText(_translate("DlgPatients", "First Name"))
         self.btnExit.setText(_translate("DlgPatients", "Exit"))
