@@ -81,7 +81,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Create a dialog window to add new results to the result table widget and database"""
         dlgAddResult = DlgAddUpdateResult(self.mrn)
         dlgAddResult.show()
-        dlgAddResult.btnOK.clicked.connect(dlgAddResult.add_result())
+        dlgAddResult.btnOK.clicked.connect(dlgAddResult.add_result)
         dlgAddResult.exec_()
         self.populate_result_table()
 
@@ -243,8 +243,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         for i in selected.indexes():
             if i.column() == 5 and self.current_selection_comment:
-                self.current_selection_comment = f"<b>Comment:</b> <br>" \
-                                                 f"{self.tblResult.item(self.current_selection_row, 5).text()}"
+                self.current_selection_comment = self.tblResult.item(self.current_selection_row, 5).text()
                 message_box_critical(self.current_selection_comment)
                 self.tblResult.selectionModel().clearSelection()
 
