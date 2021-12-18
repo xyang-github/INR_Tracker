@@ -17,7 +17,6 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
     def __init__(self, id):
         super(DlgPatientProfile, self).__init__()
         self.setupUi(self)
-        self.number_of_results_in_range = 0
         self.mrn = id
 
         # Result table widget formatting
@@ -159,6 +158,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Populates the result table widget with information from the database"""
         self.tblResult.clearContents()  # Clears the result table widget to prevent displaying of duplicate entries
         self.tblResult.setRowCount(0)  # Resets row count to prevent empty rows
+        self.number_of_results_in_range = 0
 
         # Query a request for information from the database
         query = QSqlQuery()
@@ -322,7 +322,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
                 shift_in_ttr = 0
                 calculate_ttr = "(shift_in_ttr / total_shift) * days_between_results"
 
-                # Retrive dates of the first two results
+                # Retrieve dates of the first two results
                 date1 = self.tblResult.item(i+1, 1).text().split("-")  # Date for the older result
                 date1 = datetime.date(int(date1[0]), int(date1[1]), int(date1[2]))
 
