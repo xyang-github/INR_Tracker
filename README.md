@@ -44,7 +44,7 @@ Python packages are listed in `requirements.txt`.
 <h2>How to Run</h2>
 <ul>
 <li>Download the repository, making sure not to change the internal file structure.</li>
-<li>Setup the python packages outlined in `requirements.txt`.</li>
+<li>Setup the python packages outlined in requirements.txt.</li>
 <li>Run main.py in the /src directory.</li>
 </ul>
 
