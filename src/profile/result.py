@@ -102,7 +102,7 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
 
             # Populate the daily doses with the same values as the previous entry
             query = QSqlQuery()
-            query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date, inr_id DESC LIMIT 1")
+            query.prepare("SELECT * FROM inr WHERE patient_id = :id ORDER BY date DESC, inr_id DESC LIMIT 1")
             query.bindValue(":id", self.mrn)
             bOk = query.exec()
             if bOk:
