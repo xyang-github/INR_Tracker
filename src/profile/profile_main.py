@@ -81,6 +81,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Create a dialog window to add new results to the result table widget and database"""
         dlgAddResult = DlgAddUpdateResult(self.mrn)
         dlgAddResult.show()
+        dlgAddResult.btnOK.clicked.connect(dlgAddResult.add_result())
         dlgAddResult.exec_()
         self.populate_result_table()
 
@@ -90,8 +91,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             message_box_critical("No entries to edit.")
             return
         else:
-            self.current_selection_row = self.tblResult.currentRow()
-            self.current_selection_inr_id = self.tblResult.item(self.current_selection_row, 0).text()
+            self.current_selection_inr_id = self.tblResult.item(self.tblResult.currentRow(), 0).text()
 
         # Create the dialog window to edit the selected result
         dlgEditResult = DlgAddUpdateResult(self.mrn, self.current_selection_inr_id)
@@ -260,10 +260,13 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
     def query_delete_inr(self):
         """Query a request to delete record from the database"""
+        self.current_selection_inr_id = self.tblResult.item(self.tblResult.currentRow(), 0).text()
+
         query = QSqlQuery()
         query.prepare("DELETE FROM inr WHERE inr_id = :id")
         query.bindValue(":id", self.current_selection_inr_id)
         bOk = query.exec()
+        print(query.lastError().text())
         if bOk:
             message_box_critical("Record deleted.")
 
@@ -744,6 +747,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         query.prepare("SELECT event_id from event WHERE event_name = :name")
         query.bindValue(":name", self.event_name)
         query.exec()
+
         query.next()
         self.event_id = query.value('event_id')
 
