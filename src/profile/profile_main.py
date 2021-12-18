@@ -158,7 +158,7 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
         """Populates the result table widget with information from the database"""
         self.tblResult.clearContents()  # Clears the result table widget to prevent displaying of duplicate entries
         self.tblResult.setRowCount(0)  # Resets row count to prevent empty rows
-        self.number_of_results_in_range = 0
+        self.number_of_results_in_range = 0  # Resets the counter to prevent erroneous value
 
         # Query a request for information from the database
         query = QSqlQuery()
@@ -328,43 +328,53 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
                 date2 = self.tblResult.item(i, 1).text().split("-")  # Date for the newer result
                 date2 = datetime.date(int(date2[0]), int(date2[1]), int(date2[2]))
-                days_between_results = abs((date2 - date1).days)
+                days_between_results = (date2 - date1).days
 
                 # Retrieve the INR result for the first two results
                 result1 = Decimal(self.tblResult.item(i+1, 2).text())  # Older result pertaining to date1
                 result2 = Decimal(self.tblResult.item(i, 2).text())  # Newer result pertaining to date2
                 total_shift = abs(result2 - result1)
 
-                # Retrieve result-set INR goal for the first two results
+                # Retrieve result-set INR goal for the older result
+                inr_goal = self.tblResult.item(i+1, 3).text().split("-")
+                inr_goal_lower_limit1 = Decimal(inr_goal[0])
+                inr_goal_upper_limit1 = Decimal(inr_goal[1])
+
+                # Retrieve result-set INR goal for the newer result
                 inr_goal = self.tblResult.item(i, 3).text().split("-")
-                inr_goal_lower_limit = Decimal(inr_goal[0])
-                inr_goal_upper_limit = Decimal(inr_goal[1])
+                inr_goal_lower_limit2 = Decimal(inr_goal[0])
+                inr_goal_upper_limit2 = Decimal(inr_goal[1])
+
+                # I don't like this option as it can skew results if the patient INR goal changes.
+                # # Retrieve patient-set INR goal for the newer result
+                # inr_goal = self.ledGoal.text().split("-")
+                # inr_goal_lower_limit = Decimal(inr_goal[0])
+                # inr_goal_upper_limit = Decimal(inr_goal[1])
 
                 # Calculates TTR
-                if result1 < inr_goal_lower_limit:
-                    if result2 < inr_goal_lower_limit:
+                if result1 < inr_goal_lower_limit1:
+                    if result2 < inr_goal_lower_limit2:
                         ttr = 0
-                    elif result2 > inr_goal_upper_limit:
-                        shift_in_ttr = (inr_goal_upper_limit - inr_goal_lower_limit)
+                    elif result2 > inr_goal_upper_limit2:
+                        shift_in_ttr = (inr_goal_upper_limit2 - inr_goal_lower_limit2)
                         ttr = eval(calculate_ttr)
                     else:
-                        shift_in_ttr = result2 - inr_goal_lower_limit
+                        shift_in_ttr = result2 - inr_goal_lower_limit2
                         ttr = eval(calculate_ttr)
-                elif result1 > inr_goal_upper_limit:
-                    if result2 < inr_goal_lower_limit:
-                        shift_in_ttr = inr_goal_upper_limit - inr_goal_lower_limit
+                elif result1 > inr_goal_upper_limit1:
+                    if result2 < inr_goal_lower_limit2:
+                        shift_in_ttr = inr_goal_upper_limit2 - inr_goal_lower_limit2
                         ttr = eval(calculate_ttr)
-                    elif result2 > inr_goal_upper_limit:
+                    elif result2 > inr_goal_upper_limit2:
                         ttr = 0
                     else:
-                        shift_in_ttr = inr_goal_upper_limit - result2
+                        shift_in_ttr = inr_goal_upper_limit2 - result2
                         ttr = eval(calculate_ttr)
                 else:
-                    if result2 < inr_goal_lower_limit:
-                        shift_in_ttr = result1 - inr_goal_lower_limit
-                        ttr = eval(calculate_ttr)
-                    elif result2 > inr_goal_upper_limit:
-                        shift_in_ttr = inr_goal_upper_limit - result1
+                    if result2 < inr_goal_lower_limit2:
+                        shift_in_ttr = result1 - inr_goal_lower_limit2
+                    elif result2 > inr_goal_upper_limit2:
+                        shift_in_ttr = inr_goal_upper_limit2 - result1
                         ttr = eval(calculate_ttr)
                     else:
                         ttr = days_between_results
