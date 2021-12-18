@@ -360,7 +360,7 @@ class Ui_dlgMain(object):
         self.menuEvents.setShortcut(_translate("dlgMain", "Ctrl+M"))
         self.menuReports.setText(_translate("dlgMain", "Reports"))
         self.menuReports.setShortcut(_translate("dlgMain", "Ctrl+R"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

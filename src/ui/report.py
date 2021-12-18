@@ -138,7 +138,7 @@ class Ui_DlgReport(object):
         self.btnPatientList.setText(_translate("DlgReport", "Patient List"))
         self.btnPDF.setText(_translate("DlgReport", "Export to PDF"))
         self.btnExit.setText(_translate("DlgReport", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

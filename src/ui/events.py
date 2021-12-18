@@ -132,7 +132,7 @@ class Ui_DlgEvents(object):
         self.btnEditEvent.setText(_translate("DlgEvents", "Edit"))
         self.btnDeleteEvent.setText(_translate("DlgEvents", "Delete"))
         self.btnExit.setText(_translate("DlgEvents", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

@@ -98,7 +98,7 @@ class Ui_DlgEditEvent(object):
         DlgEditEvent.setWindowTitle(_translate("DlgEditEvent", "Edit Event"))
         self.btnOk.setText(_translate("DlgEditEvent", "OK"))
         self.btnExit.setText(_translate("DlgEditEvent", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

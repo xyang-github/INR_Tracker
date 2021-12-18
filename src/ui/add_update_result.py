@@ -350,7 +350,7 @@ class Ui_DlgAddResult(object):
         self.txtComment.setPlaceholderText(_translate("DlgAddResult", "Type any clinically relevant information pertaining to the result."))
         self.btnOK.setText(_translate("DlgAddResult", "OK"))
         self.btnCancel.setText(_translate("DlgAddResult", "Cancel"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

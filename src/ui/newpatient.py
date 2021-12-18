@@ -312,7 +312,7 @@ class Ui_DlgNewPatient(object):
         self.ledGoalTo.setPlaceholderText(_translate("DlgNewPatient", "Enter higher end of INR goal"))
         self.btnOk.setText(_translate("DlgNewPatient", "OK"))
         self.btnExit.setText(_translate("DlgNewPatient", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

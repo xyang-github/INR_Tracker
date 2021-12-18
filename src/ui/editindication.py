@@ -98,7 +98,7 @@ class Ui_DlgEditIndication(object):
         DlgEditIndication.setWindowTitle(_translate("DlgEditIndication", "Edit Indication"))
         self.btnOk.setText(_translate("DlgEditIndication", "OK"))
         self.btnExit.setText(_translate("DlgEditIndication", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

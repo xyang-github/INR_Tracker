@@ -473,7 +473,7 @@ class Ui_DlgProfile(object):
         self.btnEditEvent.setText(_translate("DlgProfile", "Edit"))
         self.btnDeleteEvent.setText(_translate("DlgProfile", "Delete"))
         self.tabProfile.setTabText(self.tabProfile.indexOf(self.Events), _translate("DlgProfile", "Events"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":

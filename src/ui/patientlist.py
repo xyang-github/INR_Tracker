@@ -148,7 +148,7 @@ class Ui_DlgPatients(object):
         item = self.tblPatientList.horizontalHeaderItem(2)
         item.setText(_translate("DlgPatients", "First Name"))
         self.btnExit.setText(_translate("DlgPatients", "Exit"))
-import resource.resource_rc
+import resource_rc
 
 
 if __name__ == "__main__":
