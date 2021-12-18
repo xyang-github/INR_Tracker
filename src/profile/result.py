@@ -40,7 +40,6 @@ class DlgAddUpdateResult(QDialog, Ui_DlgAddResult):
         self.chkNoChanges.clicked.connect(self.no_changes_to_dose)
         self.rbtnGoalNew.clicked.connect(self.set_new_goal)
         self.rbtnGoalDefault.clicked.connect(self.set_same_goal)
-        self.btnOK.clicked.connect(self.add_result)
         self.btnCancel.clicked.connect(self.close)
 
     def add_result(self):
