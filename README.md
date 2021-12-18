@@ -51,7 +51,7 @@ Python packages are listed in `requirements.txt`.
 <hr>
 
 <h2>License</h2>
-Distributed under the GNU license. See `LICENSE.txt` for more information.
+Distributed under the GNU license. See LICENSE.txt for more information.
 
 <hr>
 
