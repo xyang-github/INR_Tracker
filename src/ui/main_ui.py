@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_dlgMain(object):
     def setupUi(self, dlgMain):
         dlgMain.setObjectName("dlgMain")
-        dlgMain.resize(701, 300)
+        dlgMain.setFixedSize(701, 300)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -54,6 +54,9 @@ class Ui_dlgMain(object):
         dlgMain.setFont(font)
         dlgMain.setStyleSheet(
             """
+            QWidget {
+                background-color: #f5f5f5;}
+                
             QLabel {
                 font-family: \"Source Sans Pro\";
                 font-size: 16px;
@@ -71,6 +74,7 @@ class Ui_dlgMain(object):
                 background-color: #b3e9f3;}
                 
             QLineEdit {
+                background-color: white;
                 border: none;
                 border-bottom: 2px solid #00b4d8;
                 padding: 10px;

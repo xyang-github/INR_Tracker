@@ -35,55 +35,93 @@ class Ui_DlgProfile(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgProfile.setPalette(palette)
-        DlgProfile.setStyleSheet("\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 20px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"    margin-top: 10px;\n"
-"}\n"
-"\n"
-"QLabel#lblNotice {\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 12px;    \n"
-"    font-weight: normal;\n"
-"    color: black;\n"
-"    margin: 0;\n"
-"}\n"
-"\n"
-"QTabBar::tab {\n"
-"    background-color: #023e8a;\n"
-"    color: white;\n"
-"    padding: 6px;\n"
-"    border-top-left-radius: 6px;\n"
-"    border-top-right-radius: 6px;\n"
-"}\n"
-"\n"
-"QTabBar::tab::hover{\n"
-"    background-color: #7400b8;\n"
-"}")
+        DlgProfile.setStyleSheet(
+                """
+        QDialog {
+                background-color: #f5f5f5;
+        }
+        
+        QLabel {
+                font-family: \"Source Sans Pro\";
+                font-size: 16px;
+                font-weight: bold;
+                color: #696969;}
+
+        QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+        QPushButton::hover {
+                background-color: #b3e9f3;}
+                
+        QLineEdit {
+                border: none;
+                border-bottom: 2px solid #00b4d8;
+                padding: 10px;
+                font-family:  \"Raleway\";
+                font: 12px;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;}
+            
+        QLabel#lblTitle {
+                color: #5E60CE;
+                margin-bottom: 5px;
+                font-family: "Righteous";
+                font-size: 48px;
+                font-weight: bold;}
+                
+        QTabWidget::pane{
+                border: none;
+        }
+        
+        QTabBar{
+          text-transform: uppercase;
+          font-weight: bold;}
+        
+        QTabBar::tab {
+          color: #00b4d8;
+          border: 0px;}
+        
+        QTabBar::tab:bottom,
+        QTabBar::tab:top{
+          padding: 0 15px;
+          height: 30px;}
+        
+        QTabBar::tab:left,
+        QTabBar::tab:right{
+          padding: 15px 0;
+          width: 30px;}
+        
+        QTabBar::tab:top:selected,
+        QTabBar::tab:top:hover {
+          color: #2979ff;
+          border-bottom: 2px solid #2979ff;}
+        
+        QTabBar::tab:bottom:selected,
+        QTabBar::tab:bottom:hover {
+          color: #2979ff;
+          border-top: 2px solid #2979ff;}
+        
+        QTabBar::tab:right:selected,
+        QTabBar::tab:right:hover {
+          color: #2979ff;
+          border-left: 2px solid #2979ff;}
+        
+        QTabBar::tab:left:selected,
+        QTabBar::tab:left:hover {
+          color: #2979ff;
+          border-right: 2px solid #2979ff;}
+        
+        QTabBar QToolButton:hover,
+        QTabBar QToolButton {
+          border: 20px;
+          background-color: #e6e6e6;}
+                """
+        )
         self.verticalLayout = QtWidgets.QVBoxLayout(DlgProfile)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tabProfile = QtWidgets.QTabWidget(DlgProfile)
