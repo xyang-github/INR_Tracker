@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgEditIndication(object):
     def setupUi(self, DlgEditIndication):
         DlgEditIndication.setObjectName("DlgEditIndication")
-        DlgEditIndication.resize(342, 102)
+        DlgEditIndication.setFixedSize(342, 102)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

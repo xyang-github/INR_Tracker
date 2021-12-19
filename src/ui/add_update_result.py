@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgAddResult(object):
     def setupUi(self, DlgAddResult):
         DlgAddResult.setObjectName("DlgAddResult")
-        DlgAddResult.resize(264, 862)
+        DlgAddResult.setFixedSize(264, 862)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

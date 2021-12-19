@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QButtonGroup
 class Ui_DlgNewPatient(object):
     def setupUi(self, DlgNewPatient):
         DlgNewPatient.setObjectName("DlgNewPatient")
-        DlgNewPatient.resize(614, 754)
+        DlgNewPatient.setFixedSize(614, 754)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

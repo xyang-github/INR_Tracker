@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgPatients(object):
     def setupUi(self, DlgPatients):
         DlgPatients.setObjectName("DlgPatients")
-        DlgPatients.resize(404, 584)
+        DlgPatients.setFixedSize(404, 584)
         DlgPatients.setStyleSheet(
             """
             QDialog {

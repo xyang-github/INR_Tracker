@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgEvents(object):
     def setupUi(self, DlgEvents):
         DlgEvents.setObjectName("DlgEvents")
-        DlgEvents.resize(385, 456)
+        DlgEvents.setFixedSize(385, 456)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

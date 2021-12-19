@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgReport(object):
     def setupUi(self, DlgReport):
         DlgReport.setObjectName("DlgReport")
-        DlgReport.resize(435, 646)
+        DlgReport.setFixedSize(435, 646)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

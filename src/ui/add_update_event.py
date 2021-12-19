@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgAddEditEvent(object):
     def setupUi(self, DlgAddEditEvent):
         DlgAddEditEvent.setObjectName("DlgAddEditEvent")
-        DlgAddEditEvent.resize(622, 621)
+        DlgAddEditEvent.setFixedSize(622, 621)
         DlgAddEditEvent.setStyleSheet(
             """
         QDialog {

@@ -15,7 +15,7 @@ class Ui_DlgEditEvent(object):
     def setupUi(self, DlgEditEvent):
         DlgEditEvent.setObjectName("DlgEditEvent")
         DlgEditEvent.setWindowModality(QtCore.Qt.ApplicationModal)
-        DlgEditEvent.resize(341, 102)
+        DlgEditEvent.setFixedSize(341, 102)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(226, 242, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)

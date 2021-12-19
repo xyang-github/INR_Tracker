@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DlgHelp(object):
     def setupUi(self, DlgHelp):
         DlgHelp.setObjectName("DlgHelp")
-        DlgHelp.resize(853, 853)
+        DlgHelp.setFixedSize(853, 853)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
