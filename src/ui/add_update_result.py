@@ -63,7 +63,13 @@ class Ui_DlgAddResult(object):
                 padding: 10px;
                 font-family:  \"Raleway\";
                 font: 12px;
-                border-radius: 10px;}  
+                border-radius: 10px;} 
+                
+        QTextEdit{
+            border: 2px dashed #00b4d8; 
+            border-radius:10px; 
+            background-color: palette(base);
+            padding: 15px;}            
             """
         )
         self.layoutWidget = QtWidgets.QWidget(DlgAddResult)
