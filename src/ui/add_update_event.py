@@ -15,37 +15,59 @@ class Ui_DlgAddEditEvent(object):
     def setupUi(self, DlgAddEditEvent):
         DlgAddEditEvent.setObjectName("DlgAddEditEvent")
         DlgAddEditEvent.resize(622, 621)
-        DlgAddEditEvent.setStyleSheet("QDialog {\n"
-"    background-color: #e2f2ff;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 10px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}")
+        DlgAddEditEvent.setStyleSheet(
+            """
+        QDialog {
+                background-color: #f5f5f5;}
+        
+        QLabel {
+                font-family: \"Source Sans Pro\";
+                font-size: 16px;
+                font-weight: bold;
+                color: #696969;}
+            
+        QListWidget{
+            border: 1px solid #00b4d8; 
+            border-radius:10px; 
+            background-color: palette(base);
+            padding: 5px;
+        }           
+        
+        QListWidget::item::hover{
+            background-color: #b3e9f3;}
+        
+        QListWidget::item::selected{
+            color: #004856;
+            background-color: #b3e9f3;}
+
+        QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+        QPushButton::hover {
+                background-color: #b3e9f3;}
+                
+        QLineEdit {
+                border-left: 2px solid #00b4d8;
+                border-right: 2px solid #00b4d8;
+                padding: 10px;
+                font-family:  \"Raleway\";
+                font: 12px;
+                border-radius: 10px;}   
+                
+        QTextEdit{
+            border: 2px dashed #00b4d8; 
+            border-radius:10px; 
+            background-color: palette(base);
+            padding: 15px;
+        }           
+            """
+
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgAddEditEvent)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 11, 601, 596))
         self.layoutWidget.setObjectName("layoutWidget")
