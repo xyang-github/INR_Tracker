@@ -15,42 +15,90 @@ class Ui_DlgPatients(object):
     def setupUi(self, DlgPatients):
         DlgPatients.setObjectName("DlgPatients")
         DlgPatients.resize(404, 584)
-        DlgPatients.setStyleSheet("QDialog {\n"
-"    background-color: #e2f2ff;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: none;\n"
-"    background-color: #e2f2ff;\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}\n"
-"\n"
-"QLabel#lblHeader {\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 24px;    \n"
-"    font-weight: bold;\n"
-"    color: #00b4d8;\n"
-"    border: 2px solid #00b4d8;\n"
-"    border-radius: 10px;\n"
-"}")
+        DlgPatients.setStyleSheet(
+            """
+            QDialog {
+                background-color: #f5f5f5;}
+                
+            QLabel#lblHeader {
+                color: #5E60CE;
+                font-family: \"Source Sans Pro\";
+                font-size: 24px;}
+                
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;}  
+                
+            QTableWidget{
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;}  
+                
+            QLineEdit {
+                border: none;
+                background-color: transparent;}
+                
+            QTableCornerButton::section {
+                background-color: #f5f5f5;
+                border-radius: 0px;
+                border-right: 1px solid;
+                border-bottom: 1px solid;
+                border-color: #e6e6e6;}
+                
+            QHeaderView {
+                border: none;}
+                
+            QTableView {
+                alternate-background-color: {{#f5f5f5|opacity(0.7)}};}
+            
+            QHeaderView::section {
+                color: {{#555555|opacity(0.7)}};
+                text-transform: uppercase;
+                background-color: #f5f5f5;
+                padding: 0 20px;
+                height: 35px;
+                border-radius: 0px;
+                border-right: 1px solid;
+                border-bottom: 1px solid;
+                border-color: #e6e6e6;}    
+    
+            QRadioButton{
+                spacing: 10px;
+                color: #555555;
+                line-height: 14px;
+                height: 30px;
+                background-color: transparent;
+                spacing: 5px;}
+
+            QRadioButton:disabled{
+              color: {{#555555|opacity(0.3)}};}
+
+            QRadioButton::indicator {
+                background-color: transparent;
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;}
+ 
+            QRadioButton::indicator:checked {
+                image: url(../resource/icon/radio button checked.svg);}
+
+            QRadioButton::indicator:unchecked {
+                image: url(..resource/icon/radio button unchecked.svg);}
+
+            QRadioButton::indicator:checked:disabled {
+                image: url(../resource/icon/radio button checked.svg);}
+            
+            QRadioButton::indicator:unchecked:disabled {
+                image: url(..resource/icon/radio button unchecked.svg);} 
+            """
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgPatients)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 561))
         self.layoutWidget.setObjectName("layoutWidget")
@@ -144,7 +192,7 @@ class Ui_DlgPatients(object):
         item = self.tblPatientList.horizontalHeaderItem(0)
         item.setText(_translate("DlgPatients", "MRN"))
         item = self.tblPatientList.horizontalHeaderItem(1)
-        item.setText(_translate("DlgPatients", "New Column"))
+        item.setText(_translate("DlgPatients", "Last Name"))
         item = self.tblPatientList.horizontalHeaderItem(2)
         item.setText(_translate("DlgPatients", "First Name"))
         self.btnExit.setText(_translate("DlgPatients", "Exit"))
