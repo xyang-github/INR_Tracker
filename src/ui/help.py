@@ -50,40 +50,35 @@ class Ui_DlgHelp(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgHelp.setPalette(palette)
-        DlgHelp.setStyleSheet("QDialog {\n"
-"    background-color: #e2f2ff;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QTextBrowser {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 10px;\n"
-"    padding: 5px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"\n"
-"QLabel#lblHeader {\n"
-"    color: #00b4d8;\n"
-"    font-size: 24px;    \n"
-"    font-weight: bold;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    border: 2px solid #00b4d8;\n"
-"    border-radius: 10px;\n"
-"}")
+        DlgHelp.setStyleSheet(
+            """
+            QDialog {
+                background-color: #f5f5f5;}
+                
+            QLabel {
+                color: #5E60CE;
+                font-family: \"Source Sans Pro\";
+                font-size: 24px;}
+                
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;} 
+                
+            QTextBrowser {
+                border: 2px  solid gray;
+                border-radius: 10px;
+                padding: 5px;
+                font-family:  \"Raleway\";
+                font: 12px;}
+            """
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgHelp)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 20, 831, 821))
         self.layoutWidget.setObjectName("layoutWidget")

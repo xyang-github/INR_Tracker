@@ -167,7 +167,7 @@ upon creation of a new patient profile. The MRN cannot be changed later. If an M
 <hr>
 
 <h2>Patient Profile - Editing</h2>
-<center><img src="../resource/screenshot/patient_profile_edit.JPG"></center>
+<center><img src="../resource/screenshot/patient_profile_update.JPG"></center>
 <p>
     The patient profile can also be edited, <b>with the exception of the medical record number</b>. Changing the status
 to inactive will disable the ability to add, edit or delete results and events. Note that the INR goal in the patient
