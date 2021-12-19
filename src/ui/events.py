@@ -35,36 +35,50 @@ class Ui_DlgEvents(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgEvents.setPalette(palette)
-        DlgEvents.setStyleSheet("QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 20px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #00b4d8;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 24px;\n"
-"    font-weight: bold;\n"
-"    border: 2px solid #00b4d8;\n"
-"    border-radius: 10px;\n"
-"}\n"
-"")
+        DlgEvents.setStyleSheet(
+            """
+            QDialog {
+                background-color: #f5f5f5;}
+                
+            QLabel {
+                color: #5E60CE;
+                font-family: \"Source Sans Pro\";
+                font-size: 24px;}
+                
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;} 
+                
+            QLineEdit {
+                border: none;
+                border-bottom: 2px solid #00b4d8;
+                padding: 10px;
+                font-family:  \"Raleway\";
+                font: 12px;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;}    
+                
+            QListWidget{
+                border: 1px solid #00b4d8; 
+                border-radius:10px; 
+                background-color: palette(base);
+                padding: 5px;}           
+        
+            QListWidget::item::hover{
+                background-color: #b3e9f3;}
+            
+            QListWidget::item::selected{
+                color: #004856;
+                background-color: #b3e9f3;}                   
+                """
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgEvents)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 361, 431))
         self.layoutWidget.setObjectName("layoutWidget")
