@@ -67,13 +67,6 @@ class Ui_DlgProfile(object):
                 border-top-right-radius: 10px;
                 border-top-left-radius: 10px;}
             
-        QLabel#lblTitle {
-                color: #5E60CE;
-                margin-bottom: 5px;
-                font-family: "Righteous";
-                font-size: 48px;
-                font-weight: bold;}
-                
         QTabWidget::pane{
                 border: none;
         }

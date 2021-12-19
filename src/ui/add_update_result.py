@@ -35,54 +35,37 @@ class Ui_DlgAddResult(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgAddResult.setPalette(palette)
-        DlgAddResult.setStyleSheet("QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 10px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #5E60CE;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}\n"
-"\n"
-"QLabel#lblComment{\n"
-"    color: black;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}\n"
-"\n"
-"QLabel#lblGoal{\n"
-"    color: black;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}\n"
-"\n"
-"QLabel#lblDoseTitle{\n"
-"    color: black;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 16px;\n"
-"    font-weight: bold;\n"
-"}")
+        DlgAddResult.setStyleSheet(
+            """
+        QDialog {
+                background-color: #f5f5f5;}
+        
+        QLabel {
+                font-family: \"Source Sans Pro\";
+                font-size: 16px;
+                font-weight: bold;
+                color: #696969;}
+
+        QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+        QPushButton::hover {
+                background-color: #b3e9f3;}
+                
+        QLineEdit {
+                border-left: 2px solid #00b4d8;
+                border-right: 2px solid #00b4d8;
+                padding: 10px;
+                font-family:  \"Raleway\";
+                font: 12px;
+                border-radius: 10px;}  
+            """
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgAddResult)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 841))
         self.layoutWidget.setObjectName("layoutWidget")
