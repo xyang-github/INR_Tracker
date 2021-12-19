@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_dlgMain(object):
     def setupUi(self, dlgMain):
         dlgMain.setObjectName("dlgMain")
-        dlgMain.resize(701, 280)
+        dlgMain.resize(701, 300)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -64,16 +64,7 @@ class Ui_dlgMain(object):
 "QPushButton::hover{\n"
 "    border: 3px solid #0077b6;\n"
 "}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 20px;\n"
-"    padding: 10px;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 12px;\n"
-"\n"
-"}\n"
-"\n"
+
 "QLabel#lblTitle {\n"
 "    color: #5E60CE;\n"
 "    margin-bottom: 5px;\n"
@@ -92,6 +83,9 @@ class Ui_dlgMain(object):
         self.lytButtons.setContentsMargins(0, 0, 0, 0)
         self.lytButtons.setObjectName("lytButtons")
         self.btnNewPatient = QtWidgets.QPushButton(self.layoutWidget)
+        self.btnNewPatient.setProperty('class', 'big_button')
+
+
         self.btnNewPatient.setMinimumSize(QtCore.QSize(0, 30))
         font = QtGui.QFont()
         font.setFamily("Readex Pro")
