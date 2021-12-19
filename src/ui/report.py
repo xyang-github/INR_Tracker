@@ -35,35 +35,65 @@ class Ui_DlgReport(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         DlgReport.setPalette(palette)
-        DlgReport.setStyleSheet("QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"    border: 2px  solid gray;\n"
-"    border-radius: 10px;\n"
-"    padding: 10px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font: 12px;\n"
-"\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #00b4d8;\n"
-"    font-family: \"Source Sans Pro\";\n"
-"    font-size: 24px;    \n"
-"    font-weight: bold;\n"
-"    border: 2px solid #00b4d8;\n"
-"    border-radius: 10px;\n"
-"}")
+        DlgReport.setStyleSheet(
+            """
+            QDialog {
+                background-color: #f5f5f5;}
+                
+            QLabel{
+                font-family: \"Source Sans Pro\";
+                font-size: 16px;
+                font-weight: bold;
+                color: #696969;}
+            }
+    
+            QLabel#lblHeader{
+                color: #5E60CE;
+                font-family: \"Source Sans Pro\";
+                font-size: 24px;
+                }
+            
+            QRadioButton{
+                spacing: 10px;
+                color: #555555;
+                line-height: 14px;
+                height: 30px;
+                background-color: transparent;
+                spacing: 5px;}
+
+            QRadioButton:disabled{
+              color: {{#555555|opacity(0.3)}};}
+
+            QRadioButton::indicator {
+                background-color: transparent;
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;}
+ 
+            QRadioButton::indicator:checked {
+                image: url(../resource/icon/radio button checked.svg);}
+
+            QRadioButton::indicator:unchecked {
+                image: url(..resource/icon/radio button unchecked.svg);}
+
+            QRadioButton::indicator:checked:disabled {
+                image: url(../resource/icon/radio button checked.svg);}
+            
+            QRadioButton::indicator:unchecked:disabled {
+                image: url(..resource/icon/radio button unchecked.svg);}
+    
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+    
+            QPushButton::hover {
+                background-color: #b3e9f3;}            
+            """
+        )
         self.layoutWidget = QtWidgets.QWidget(DlgReport)
         self.layoutWidget.setGeometry(QtCore.QRect(11, 11, 411, 621))
         self.layoutWidget.setObjectName("layoutWidget")
