@@ -21,9 +21,10 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Result table widget formatting
         self.tblResult.setAlternatingRowColors(True)
-        self.tblResult.setColumnWidth(2, 50)
-        self.tblResult.setColumnWidth(3, 60)
-        self.tblResult.setColumnWidth(4, 80)
+        self.tblResult.setColumnWidth(1, 80)
+        self.tblResult.setColumnWidth(2, 60)
+        self.tblResult.setColumnWidth(3, 70)
+        self.tblResult.setColumnWidth(4, 70)
         self.tblResult.horizontalHeader().setStretchLastSection(True)
         self.tblResult.setSortingEnabled(True)
         self.tblResult.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
@@ -31,6 +32,9 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
 
         # Event table widget formatting
         self.tblEvents.horizontalHeader().setStretchLastSection(True)
+        self.tblEvents.setAlternatingRowColors(True)
+        self.tblEvents.setColumnWidth(0, 80)
+        self.tblEvents.setColumnWidth(1, 220)
         self.tblEvents.setSelectionBehavior(QtWidgets.QTableWidget.SelectItems)
         self.tblEvents.setSelectionMode(1)
 

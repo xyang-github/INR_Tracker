@@ -113,6 +113,35 @@ class Ui_DlgProfile(object):
         QTabBar QToolButton {
           border: 20px;
           background-color: #e6e6e6;}
+          
+        QTableWidget{
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;}  
+          
+        QTableCornerButton::section {
+            background-color: #f5f5f5;
+            border-radius: 0px;
+            border-right: 1px solid;
+            border-bottom: 1px solid;
+            border-color: #e6e6e6;}
+                
+        QHeaderView {
+            border: none;}
+                
+        QTableView {
+            alternate-background-color: {{#f5f5f5|opacity(0.7)}};}
+            
+        QHeaderView::section {
+            color: {{#555555|opacity(0.7)}};
+            text-transform: uppercase;
+            background-color: #f5f5f5;
+            padding: 0 20px;
+            height: 35px;
+            border-radius: 0px;
+            border-right: 1px solid;
+            border-bottom: 1px solid;
+            border-color: #e6e6e6;}    
                 """
         )
         self.verticalLayout = QtWidgets.QVBoxLayout(DlgProfile)
@@ -485,7 +514,7 @@ class Ui_DlgProfile(object):
         item = self.tblResult.horizontalHeaderItem(3)
         item.setText(_translate("DlgProfile", "Goal"))
         item = self.tblResult.horizontalHeaderItem(4)
-        item.setText(_translate("DlgProfile", "Total Dose"))
+        item.setText(_translate("DlgProfile", "Dose"))
         item = self.tblResult.horizontalHeaderItem(5)
         item.setText(_translate("DlgProfile", "Comment"))
         self.btnAddResult.setText(_translate("DlgProfile", "Add"))
