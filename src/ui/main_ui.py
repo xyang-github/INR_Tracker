@@ -89,6 +89,29 @@ class Ui_dlgMain(object):
                 font-family: "Righteous";
                 font-size: 48px;
                 font-weight: bold;}
+            
+            QMenuBar {
+                background-color: #f5f5f5;
+                color: #555555;}
+            
+            QMenuBar::item {
+                height: 30px;
+                padding: 8px;
+                background-color: transparent;
+                color: #555555;}
+            
+            QMenuBar::item:selected,
+            QMenuBar::item:pressed {
+                color: #3c3c3c;
+                background-color: #b3e9f3;}
+                
+            QMenu::item {
+                height: 26px;
+                color: #555555;}
+            
+            QMenu::item:selected {
+                color: #3c3c3c;
+                background-color: #b3e9f3;}
             """
         )
         self.centralwidget = QtWidgets.QWidget(dlgMain)
