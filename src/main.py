@@ -1,7 +1,5 @@
-import os
 import sys
 import dateutil
-from qt_material import apply_stylesheet
 from dateutil.relativedelta import relativedelta
 from PyQt5.QtSql import *
 from ui.main_ui import *
@@ -391,7 +389,6 @@ A summary report can be saved for each patient. This report can be provided at t
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     dlgMain = DlgMain()
-    apply_stylesheet(app, theme="light_blue.xml")
 
     font_database = QFontDatabase()
     font_database.addApplicationFont(":/tff/font/Righteous-Regular.ttf")

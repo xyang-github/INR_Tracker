@@ -52,26 +52,39 @@ class Ui_dlgMain(object):
         font = QtGui.QFont()
         font.setFamily("bodyText")
         dlgMain.setFont(font)
-        dlgMain.setStyleSheet("QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Raleway\";\n"
-"    font-size: 12px;\n"
-"    \n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
+        dlgMain.setStyleSheet(
+            """
+            QLabel {
+                font-family: \"Source Sans Pro\";
+                font-size: 16px;
+                font-weight: bold;}
 
-"QLabel#lblTitle {\n"
-"    color: #5E60CE;\n"
-"    margin-bottom: 5px;\n"
-"    font-family: \"Righteous\";\n"
-"    font-size: 48px;\n"
-"    font-weight: bold;\n"
-"}")
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;}
+                
+            QLineEdit {
+                border: none;
+                border-bottom: 2px solid #00b4d8;
+                padding: 10px;
+                font-family:  \"Raleway\";
+                font: 12px;}
+            
+            QLabel#lblTitle {
+                color: #5E60CE;
+                margin-bottom: 5px;
+                font-family: "Righteous";
+                font-size: 48px;
+                font-weight: bold;}
+            """
+        )
         self.centralwidget = QtWidgets.QWidget(dlgMain)
         palette = QtGui.QPalette()
         self.centralwidget.setPalette(palette)
