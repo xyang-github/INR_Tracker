@@ -75,7 +75,9 @@ class Ui_dlgMain(object):
                 border-bottom: 2px solid #00b4d8;
                 padding: 10px;
                 font-family:  \"Raleway\";
-                font: 12px;}
+                font: 12px;
+                border-top-right-radius: 10px;
+                border-top-left-radius: 10px;}
             
             QLabel#lblTitle {
                 color: #5E60CE;
