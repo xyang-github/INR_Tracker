@@ -14,6 +14,16 @@ class DlgAnalytics(QDialog):
         self.setFixedSize(width, height)
         self.setWindowTitle("Analytics")
         self.lytMain = QVBoxLayout()
+        self.setStyleSheet(
+            """
+        QTextEdit{
+            border: 2px solid #00b4d8; 
+            border-radius:10px; 
+            background-color: palette(base);
+            padding: 15px;} 
+            
+            """
+        )
 
         # Create pie chart
         self.pie_ttr = QPieSeries()
@@ -51,25 +61,50 @@ class DlgAnalytics(QDialog):
         # Create text edit widget for summary data
         description = f"""
         <h2>Summary</h2>
-        <ul style="font-size: 14px">
-            <li><strong>Total Days On Record: </strong> <span style="color: blue">{round(total_days)}</span></li>
-            <li><strong>Days Within Range: </strong> <span style="color: blue">{round(total_days_in_ttr)}</span></li>
-            <li><strong>Percent of Days Within Range: </strong> <span style="color: blue">
-            {round((total_days_in_ttr / total_days) * 100)}%</span><br></li>
-            <li><strong>Total Number of Tests:</strong> <span style="color: blue">{total_tests}</span></li>
-            <li><strong>Number of Tests in Range: </strong> 
-            <span style="color: blue">{number_of_results_in_range}</span></li>
-            <li><strong>Percent of Test in Range: </strong> <span style="color: blue">
-            {round((number_of_results_in_range / total_tests) * 100)}%</span></li>
-        </ul>
+        <table cellspacing=10>
+            <tr>
+                <td>Total Days On Record:</td>
+                <td>{round(total_days)}</td>
+            </tr>
+            <tr>
+                <td>Days Within Range:</td>
+                <td>{round(total_days_in_ttr)}</td>
+            </tr>
+            <tr>
+                <td><strong>Percent of Days Within Range: </strong></td>
+                <td>{round((total_days_in_ttr / total_days) * 100)}%</td>
+            </tr>
+            <tr>
+                <td>Total Number of Tests:</td>
+                <td>{total_tests}</td>
+            </tr>
+            <tr>
+                <td>Number of Tests in Range:</td>
+                <td>{number_of_results_in_range}</td>
+            </tr>
+            <tr>
+                <td><strong>Percent of Test in Range: </strong></td>
+                <td> {round((number_of_results_in_range / total_tests) * 100)}%</td>
+            </tr>
+        </table>
+
         <br>
         <h2>Clinical Events:</h2>
-        <ul style="font-size: 14px">
-            <li><strong>Past 6 months:</strong><span style="color: blue"> {number_of_events[0]}</span></li>
-            <li><strong>Past 12 months:</strong> <span style="color: blue">{number_of_events[1]}</span></li>
-            <li><strong>All time:</strong> <span style="color: blue">{number_of_events[2]}</span></li>
-        </ul>
-
+        <table cellspacing=10>>
+            <tr>
+                <td>Past 6 months:</td>
+                <td>{number_of_events[0]}</td>
+            </tr>
+            <tr>
+                <td>Past 12 months:</td>
+                <td>{number_of_events[1]}</td>
+            </tr>
+            <tr>
+                <td>All time:</td>
+                <td>{number_of_events[2]}</td>
+            </tr>
+        </table>
+ 
         <br>
         <div style = "font-size: 14px">
         <em>TTR was calculated using the Rosendaal linear interpolation method, which assumes a linear change between 
