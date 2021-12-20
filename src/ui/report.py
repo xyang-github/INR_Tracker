@@ -91,7 +91,7 @@ class Ui_DlgReport(object):
                 border: none;}
     
             QPushButton::hover {
-                background-color: #b3e9f3;}            
+                background-color: #b3e9f3;}  
             """
         )
         self.layoutWidget = QtWidgets.QWidget(DlgReport)

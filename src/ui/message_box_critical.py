@@ -16,49 +16,50 @@ from PyQt5.QtGui import *
 class Ui_DlgMessageBoxCritical(QDialog):
     def setupUi(self, dlgMessageBoxCritical):
         dlgMessageBoxCritical.setObjectName("dlgMessageBoxCritical")
-        dlgMessageBoxCritical.resize(494, 212)
+        dlgMessageBoxCritical.setFixedSize(694, 212)
         palette = QtGui.QPalette()
         dlgMessageBoxCritical.setPalette(palette)
-        dlgMessageBoxCritical.setStyleSheet("QTextEdit {\n"
-"    border: none;"                                           
-"    background-color: white;\n"
-"    padding: 3px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font-size: 14px;\n"
-"}\n"
-"\n"
-"QLabel#lblColor {\n"
-"    border: 3px solid #00b4d8;\n"
-"    border-radius: 15px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"")
+        dlgMessageBoxCritical.setStyleSheet(
+            """
+            QLabel#lblColor {
+                border: 3px solid #00b4d8;
+                border-radius: 15px;
+                background-color: white;}
+            
+            QTextEdit {
+                border: none;                                         
+                background-color: white;
+                padding: 3px;
+                font-family:  \"Raleway\";
+                font-size: 14px;}
+            
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;}
+            
+            """
+)
         self.tedMessage = QtWidgets.QTextEdit(dlgMessageBoxCritical)
-        self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 61))
+        self.tedMessage.setGeometry(QtCore.QRect(30, 10, 441, 141))
         self.tedMessage.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.tedMessage.setObjectName("tedMsg")
         self.tedMessage.setReadOnly(True)
         self.tedMessage.LineWrapMode(QTextEdit.WidgetWidth)
         self.tedMessage.setWordWrapMode(QTextOption.WordWrap)
         self.btnOk = QtWidgets.QPushButton(dlgMessageBoxCritical)
-        self.btnOk.setGeometry(QtCore.QRect(430, 80, 51, 25))
+        self.btnOk.setGeometry(QtCore.QRect(430, 170, 51, 25))
         self.btnOk.setObjectName("btnOk")
         self.btnOk.clicked.connect(self.close)
         self.lblColor = QtWidgets.QLabel(dlgMessageBoxCritical)
         # self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 211))
-        self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 111))
+        self.lblColor.setGeometry(QtCore.QRect(10, 0, 481, 211))
         self.lblColor.setText("")
         self.lblColor.setObjectName("lblColor")
         self.lblColor.lower()
@@ -68,11 +69,30 @@ class Ui_DlgMessageBoxCritical(QDialog):
         self.retranslateUi(dlgMessageBoxCritical)
         QtCore.QMetaObject.connectSlotsByName(dlgMessageBoxCritical)
 
+        self.offset = None
+
+
     def retranslateUi(self, dlgMessageBoxCritical):
         _translate = QtCore.QCoreApplication.translate
         dlgMessageBoxCritical.setWindowTitle(_translate("DlgMessageBox", "Dialog"))
         self.tedMessage.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnOk.setText(_translate("DlgMessageBox", "Okay"))
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.offset = event.pos()
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.offset is not None and event.buttons() == QtCore.Qt.LeftButton:
+            self.move(self.pos() + event.pos() - self.offset)
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.offset = None
+        super().mouseReleaseEvent(event)
 
 
 if __name__ == "__main__":
