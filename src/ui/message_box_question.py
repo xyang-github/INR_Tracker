@@ -20,32 +20,44 @@ class Ui_DlgMessageBoxQuestion(QDialog):
         dlgMessageBoxQuestion.resize(494, 212)
         palette = QtGui.QPalette()
         dlgMessageBoxQuestion.setPalette(palette)
-        dlgMessageBoxQuestion.setStyleSheet("QTextEdit {\n"
-"    border: none;\n"                                      
-"    background-color: white;\n"
-"    padding: 20px;\n"
-"    font-family:  \"Raleway\";\n"
-"    font-size: 14px;\n"
-"}\n"
-"\n"
-"QLabel#lblColor {\n"
-"    border: 3px solid #00b4d8;\n"
-"    border-radius: 15px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #00b4d8;\n"
-"    color: white;\n"
-"    border-radius: 8px;\n"
-"    font-family: \"Readex Pro\";\n"
-"    font: 12px;\n"
-"}\n"
-"\n"
-"QPushButton::hover{\n"
-"    border: 3px solid #0077b6;\n"
-"}\n"
-"")
+        dlgMessageBoxQuestion.setStyleSheet(
+            """
+                        QLabel#lblColor {
+                border: 3px solid #00b4d8;
+                border-radius: 15px;
+                background-color: white;}
+            
+            QTextEdit {
+                border: none;                                         
+                background-color: white;
+                padding: 3px;
+                font-family:  \"Raleway\";
+                font-size: 14px;}
+            
+            QPushButton {
+                background-color: #00b4d8;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+            
+            QPushButton#btnAccept {
+                background-color: #F08080;
+                color: white;
+                border-radius: 8px;
+                font-family: \"Raleway\";
+                font-size: 12px;
+                border: none;}
+            
+            QPushButton#btnAccept::hover {
+                background-color: #fce6e6;}
+                
+            QPushButton::hover {
+                background-color: #b3e9f3;}
+            """
+        )
+
         self.tedMsg = QtWidgets.QTextEdit(dlgMessageBoxQuestion)
         self.tedMsg.setGeometry(QtCore.QRect(30, 10, 441, 141))
         self.tedMsg.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -71,6 +83,7 @@ class Ui_DlgMessageBoxQuestion(QDialog):
 
         self.retranslateUi(dlgMessageBoxQuestion)
         QtCore.QMetaObject.connectSlotsByName(dlgMessageBoxQuestion)
+        self.offset = None
 
     def retranslateUi(self, DlgMessageBox):
         _translate = QtCore.QCoreApplication.translate
@@ -78,6 +91,22 @@ class Ui_DlgMessageBoxQuestion(QDialog):
         self.tedMsg.setText(_translate("DlgMessageBox", "TextLabel"))
         self.btnAccept.setText(_translate("DlgMessageBox", "Accept"))
         self.btnDecline.setText(_translate("DlgMessageBox", "Decline"))
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.offset = event.pos()
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.offset is not None and event.buttons() == QtCore.Qt.LeftButton:
+            self.move(self.pos() + event.pos() - self.offset)
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.offset = None
+        super().mouseReleaseEvent(event)
 
 
 if __name__ == "__main__":

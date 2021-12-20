@@ -43,7 +43,6 @@ class Ui_DlgMessageBoxCritical(QDialog):
                 
             QPushButton::hover {
                 background-color: #b3e9f3;}
-            
             """
 )
         self.tedMessage = QtWidgets.QTextEdit(dlgMessageBoxCritical)
