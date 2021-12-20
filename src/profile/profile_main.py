@@ -592,8 +592,12 @@ class DlgPatientProfile(QDialog, Ui_DlgProfile):
             self.btnAddEvent.setDisabled(True)
             self.btnEditEvent.setDisabled(True)
             self.btnDeleteEvent.setDisabled(True)
-            self.lblNotice.setText("This patient's status is currently INACTIVE. Only ACTIVE patients can have "
-                                   "results and events added,\n edited, and deleted.")
+            self.lblNotice.setWordWrap(True)
+            self.lblNotice.setText("""
+This patient's status is currently INACTIVE.
+Only ACTIVE patients can have results and events added, edited, and deleted.
+            """
+            )
         else:
             self.lblNotice.setText("")
             self.btnAddResult.setDisabled(False)

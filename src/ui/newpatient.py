@@ -39,14 +39,14 @@ class Ui_DlgNewPatient(object):
         DlgNewPatient.setStyleSheet(
             """
             QDialog {
-                background-color: #f5f5f5;}
+                background-color: #f5f5f5;
+                }
                 
             QLabel{
                 font-family: \"Source Sans Pro\";
                 font-size: 16px;
                 font-weight: bold;
                 color: #696969;}
-            }
     
             QLabel#lblHeader{
                 color: #5E60CE;
@@ -60,28 +60,26 @@ class Ui_DlgNewPatient(object):
                 line-height: 14px;
                 height: 30px;
                 background-color: transparent;
-                spacing: 5px;}
-
-            QRadioButton:disabled{
-              color: {{#555555|opacity(0.3)}};}
-
+                spacing: 5px;
+                }
+            
             QRadioButton::indicator {
-                background-color: transparent;
                 width: 24px;
                 height: 24px;
-                border-radius: 4px;}
- 
+                border-radius: 4px;
+                }
+
             QRadioButton::indicator:checked {
-                image: url(../resource/icon/radio button checked.svg);}
+                image: url(../resource/icon/radio button checked.svg);
+                }
 
             QRadioButton::indicator:unchecked {
-                image: url(..resource/icon/radio button unchecked.svg);}
-
-            QRadioButton::indicator:checked:disabled {
-                image: url(../resource/icon/radio button checked.svg);}
-            
+                image: url(../resource/icon/radio button unchecked.svg);
+                }
+                
             QRadioButton::indicator:unchecked:disabled {
-                image: url(..resource/icon/radio button unchecked.svg);}
+                image: url(../resource/icon/radio button unchecked disabled.svg);
+                }
     
             QPushButton {
                 background-color: #00b4d8;
@@ -89,10 +87,12 @@ class Ui_DlgNewPatient(object):
                 border-radius: 8px;
                 font-family: \"Raleway\";
                 font-size: 12px;
-                border: none;}
+                border: none;
+                }
     
             QPushButton::hover {
-                background-color: #b3e9f3;} 
+                background-color: #b3e9f3;
+                } 
     
             QLineEdit {
                     border-left: 2px solid #00b4d8;
@@ -100,20 +100,24 @@ class Ui_DlgNewPatient(object):
                     padding: 10px;
                     font-family:  \"Raleway\";
                     font: 12px;
-                    border-radius: 10px;}   
+                    border-radius: 10px;
+                    }   
     
             QListWidget{
                 border: 1px solid #00b4d8; 
                 border-radius:10px; 
                 background-color: palette(base);
-                padding: 5px;}           
+                padding: 5px;
+                }           
     
             QListWidget::item::hover{
-                background-color: #b3e9f3;}
+                background-color: #b3e9f3;
+                }
     
             QListWidget::item::selected{
                 color: #004856;
-                background-color: #b3e9f3;}                   
+                background-color: #b3e9f3;
+                }                   
                 """
         )
         self.layoutWidget = QtWidgets.QWidget(DlgNewPatient)
@@ -197,16 +201,21 @@ class Ui_DlgNewPatient(object):
         self.lblStatus.setFont(font)
         self.lblStatus.setObjectName("lblStatus")
         self.lytFormTop.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.lblStatus)
+
+        # Radio buttons
         self.btgStatus = QButtonGroup()
+
         self.rbtnStatusActive = QtWidgets.QRadioButton(self.layoutWidget)
         self.rbtnStatusActive.setChecked(True)
         self.rbtnStatusActive.setObjectName("rbtnStatusActive")
         self.lytFormTop.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.rbtnStatusActive)
+
         self.rbtnStatusInactive = QtWidgets.QRadioButton(self.layoutWidget)
         self.rbtnStatusInactive.setObjectName("rbtnStatusInactive")
         self.btgStatus.addButton(self.rbtnStatusActive)
         self.btgStatus.addButton(self.rbtnStatusInactive)
         self.lytFormTop.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.rbtnStatusInactive)
+
         self.lytMain.addLayout(self.lytFormTop)
         self.line_indication_top = QtWidgets.QFrame(self.layoutWidget)
         self.line_indication_top.setLineWidth(3)

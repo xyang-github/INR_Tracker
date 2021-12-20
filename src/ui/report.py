@@ -72,15 +72,9 @@ class Ui_DlgReport(object):
  
             QRadioButton::indicator:checked {
                 image: url(../resource/icon/radio button checked.svg);}
-
-            QRadioButton::indicator:unchecked {
-                image: url(..resource/icon/radio button unchecked.svg);}
-
-            QRadioButton::indicator:checked:disabled {
-                image: url(../resource/icon/radio button checked.svg);}
             
-            QRadioButton::indicator:unchecked:disabled {
-                image: url(..resource/icon/radio button unchecked.svg);}
+            QRadioButton::indicator:unchecked {
+                image: url(../resource/icon/radio button unchecked.svg);}
     
             QPushButton {
                 background-color: #00b4d8;

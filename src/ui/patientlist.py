@@ -90,7 +90,7 @@ class Ui_DlgPatients(object):
                 image: url(../resource/icon/radio button checked.svg);}
 
             QRadioButton::indicator:unchecked {
-                image: url(..resource/icon/radio button unchecked.svg);}
+                image: url(../resource/icon/radio button unchecked.svg);}
 
             QRadioButton::indicator:checked:disabled {
                 image: url(../resource/icon/radio button checked.svg);}
